@@ -3,7 +3,7 @@
     "title": "Portal Tehnic Educațional — Electronică, Automatizări și Calculatoare",
     "institution": "Liceul Tehnologic „Ioniță G. Andron” Negrești Oaș",
     "author": "prof. ing. Ștefan Dan POP",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "classes": [
     {
@@ -33,7 +33,22 @@
             "labs": 8,
             "worksheets": 10,
             "assessments": 4
-          }
+          },
+          "lucrari": [
+            {
+              "id": "m2-fl08",
+              "cod": "M2-FL08",
+              "titlu": "Metode de măsurare a mărimilor electrice",
+              "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL08/fisa-documentare.pdf",
+              "cale_pdf_secundar": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL08/fisa-lucru.pdf"
+            },
+            {
+              "id": "m2-lab05",
+              "cod": "M2-LAB05",
+              "titlu": "Verificarea experimentală a Legii lui Ohm",
+              "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-LAB05/fisa-laborator.pdf"
+            }
+          ]
         },
         {
           "id": "ix-caip",
