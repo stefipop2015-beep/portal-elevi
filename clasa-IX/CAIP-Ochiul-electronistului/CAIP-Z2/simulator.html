@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="ro" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CAIP Ziua 2 – Măsurarea Tensiunii și a Curentului. Legea lui Ohm din Date</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            lab: {
+              bg: '#090d16',
+              panel: '#111827',
+              card: '#1e293b',
+              border: '#334155',
+              cyan: '#38bdf8',
+              emerald: '#34d399',
+              amber: '#fbbf24',
+              rose: '#fb7185'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Segoe UI', 'Roboto', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Fallback & Custom Technical Lab Styles for High-Contrast Projector View */
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+    .lab-grid-bg {
+      background-image: 
+        linear-gradient(to right, rgba(51, 65, 85, 0.16) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(51, 65, 85, 0.16) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .lcd-screen {
+      background: linear-gradient(180deg, #062219 0%, #041711 100%);
+      border: 2px solid #10b981;
+      box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.25), 0 0 8px rgba(16, 185, 129, 0.15);
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    .lcd-screen-amber {
+      background: linear-gradient(180deg, #271a05 0%, #181002 100%);
+      border: 2px solid #f59e0b;
+      box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.25), 0 0 8px rgba(245, 158, 11, 0.15);
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    .lcd-screen-danger {
+      background: linear-gradient(180deg, #2c0b0e 0%, #1a0507 100%);
+      border: 2px solid #f43f5e;
+      box-shadow: inset 0 0 12px rgba(244, 63, 94, 0.35), 0 0 10px rgba(244, 63, 94, 0.25);
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 10px;
+      background: #1e293b;
+      border-radius: 999px;
+      border: 1px solid #475569;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .formula-box {
+      background: rgba(15, 23, 42, 0.9);
+      border-left: 4px solid #38bdf8;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.55; }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 1.8s infinite ease-in-out;
+    }
+    /* Offline-Ready Fallback Utility Styles (for interactive whiteboards without internet) */
+    .hidden { display: none !important; }
+    .max-w-7xl { max-width: 80rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .p-2 { padding: 0.5rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-3\.5 { padding: 0.875rem; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .pb-3 { padding-bottom: 0.75rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pb-12 { padding-bottom: 3rem; }
+    .pt-1 { padding-top: 0.25rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .my-1 { margin-top: 0.25rem; margin-bottom: 0.25rem; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-1 { flex: 1 1 0%; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.25rem; }
+    .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+    .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
+    .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+    .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem; }
+    .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem; }
+    .space-y-14 > :not([hidden]) ~ :not([hidden]) { margin-top: 3.5rem; }
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (min-width: 640px) {
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (min-width: 768px) {
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .lg\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+      .lg\:col-span-5 { grid-column: span 5 / span 5; }
+      .lg\:col-span-6 { grid-column: span 6 / span 6; }
+      .lg\:col-span-7 { grid-column: span 7 / span 7; }
+    }
+    .w-full { width: 100%; }
+    .h-auto { height: auto; }
+    .rounded { border-radius: 0.25rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #334155; }
+    .border-2 { border-width: 2px; border-style: solid; border-color: #475569; }
+    .border-b { border-bottom: 1px solid #334155; }
+    .border-t { border-top: 1px solid #334155; }
+    .bg-slate-950, .bg-slate-950\/95, .bg-slate-950\/90, .bg-slate-950\/80 { background-color: #020617; }
+    .bg-slate-900, .bg-slate-900\/95, .bg-slate-900\/90 { background-color: #0f172a; }
+    .bg-slate-800, .bg-slate-800\/80 { background-color: #1e293b; }
+    .bg-amber-500 { background-color: #f59e0b; color: #020617; }
+    .bg-emerald-500 { background-color: #10b981; color: #020617; }
+    .bg-sky-500 { background-color: #0ea5e9; color: #020617; }
+    .text-white { color: #ffffff; }
+    .text-slate-100, .text-slate-200 { color: #e2e8f0; }
+    .text-slate-300 { color: #cbd5e1; }
+    .text-slate-400 { color: #94a3b8; }
+    .text-sky-300, .text-sky-400 { color: #38bdf8; }
+    .text-emerald-300, .text-emerald-400 { color: #34d399; }
+    .text-amber-300, .text-amber-400 { color: #fbbf24; }
+    .text-rose-200, .text-rose-300, .text-rose-400 { color: #fb7185; }
+    .text-purple-300 { color: #d8b4fe; }
+    .font-bold { font-weight: 700; }
+    .font-extrabold, .font-black { font-weight: 800; }
+    .font-mono { font-family: 'Consolas', 'Courier New', monospace; }
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.875rem; }
+    .text-lg { font-size: 1.125rem; }
+    .text-xl { font-size: 1.25rem; }
+    .text-2xl { font-size: 1.5rem; }
+    .text-3xl { font-size: 1.875rem; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .sticky { position: sticky; top: 0; z-index: 50; }
+    .relative { position: relative; }
+    .overflow-x-auto { overflow-x: auto; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body class="lab-grid-bg min-h-screen text-slate-100 selection:bg-sky-500 selection:text-slate-950">
+
+  <!-- TOP STICKY HEADER -->
+  <header class="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b border-slate-700/80 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-sky-500/20 border border-sky-400/50 flex items-center justify-center text-sky-300 font-bold text-xl shadow-inner">
+          Ω
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/40 rounded">
+              CAIP • Ochiul Electronistului
+            </span>
+            <span class="px-2 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded">
+              Ziua 2 • Practică
+            </span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white mt-0.5">
+            Măsurarea Tensiunii și a Curentului. Legea lui Ohm din Date
+          </h1>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <nav class="flex flex-wrap items-center gap-2" aria-label="Navigare secțiuni">
+        <a href="#sectiunea-1" data-nav="sectiunea-1" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-sky-500/20 text-slate-200 hover:text-sky-300 border border-slate-700 hover:border-sky-400/50 transition flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-sky-500/30 text-sky-300 text-xs flex items-center justify-center font-mono">1</span>
+          <span>Sinteză &amp; Formule</span>
+        </a>
+        <a href="#sectiunea-2" data-nav="sectiunea-2" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-emerald-500/20 text-slate-200 hover:text-emerald-300 border border-slate-700 hover:border-emerald-400/50 transition flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-emerald-500/30 text-emerald-300 text-xs flex items-center justify-center font-mono">2</span>
+          <span>Laborator Virtual</span>
+        </a>
+        <a href="#sectiunea-3" data-nav="sectiunea-3" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-amber-500/20 text-slate-200 hover:text-amber-300 border border-slate-700 hover:border-amber-400/50 transition flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-amber-500/30 text-amber-300 text-xs flex items-center justify-center font-mono">3</span>
+          <span>Antrenament &amp; Autoevaluare</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-14">
+
+    <!-- =====================================================================
+         SECȚIUNEA 1: SINTEZĂ VIZUALĂ & FORMULE
+         ===================================================================== -->
+    <section id="sectiunea-1" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-sky-400">Secțiunea 01 • Baza Teoretică &amp; SSM</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+            Sinteză Vizuală &amp; Formule Esențiale
+          </h2>
+        </div>
+        <p class="text-sm text-slate-300 max-w-xl">
+          Montarea corectă a voltmetrului și a ampermetrului în circuitul cu potențiometru și descoperirea legăturii dintre tensiunea <em>U</em> pe un rezistor și curentul <em>I</em> prin el.
+        </p>
+      </div>
+
+      <!-- 3 Carduri Mărimi Fizice & Unități de Măsură -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Card 1: Tensiunea electrică -->
+        <div class="bg-slate-900/95 border-2 border-amber-500/40 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-2.5 py-1 text-xs font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-md">
+                Mărime Fizică 1
+              </span>
+              <span class="font-mono text-2xl font-black text-amber-400">U [ V ]</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Tensiunea Electrică (<em class="not-italic text-amber-400">U</em>)</h3>
+            <p class="text-slate-300 text-sm mb-4">
+              Se măsoară în <strong>volți (V)</strong> cu ajutorul <strong>voltmetrului</strong>. Pe breadboard, echipa măsoară tensiunea între bornele <strong>M</strong> și <strong>N</strong> ale rezistorului studiat <em>R</em>.
+            </p>
+          </div>
+          <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Unitate SI:</span>
+              <span class="font-mono font-bold text-amber-300">1 Volt (1 V)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Conectare aparat:</span>
+              <span class="font-bold text-emerald-400">ÎN PARALEL cu R</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Rezistență internă:</span>
+              <span class="font-mono text-slate-200">Foarte mare (R<sub>V</sub> ≫ R)</span>
+            </div>
+            <div class="pt-1 border-t border-slate-800 text-xs text-slate-300">
+              <strong class="text-amber-300">Regulă:</strong> Nu se desface circuitul! Cât timp multimetrul măsoară <em>U</em>, în locul ampermetrului stă <strong>firul F</strong>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Intensitatea curentului -->
+        <div class="bg-slate-900/95 border-2 border-sky-500/40 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-2.5 py-1 text-xs font-bold uppercase bg-sky-500/20 text-sky-300 border border-sky-500/40 rounded-md">
+                Mărime Fizică 2
+              </span>
+              <span class="font-mono text-2xl font-black text-sky-400">I [ A / mA ]</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Intensitatea Curentului (<em class="not-italic text-sky-400">I</em>)</h3>
+            <p class="text-slate-300 text-sm mb-4">
+              Se măsoară în <strong>amperi (A)</strong> sau <strong>miliamperi (mA)</strong> cu <strong>ampermetrul</strong>. În lucrarea de azi curenții sunt sub 1 mA, deci folosim domeniul de <strong>mA</strong>.
+            </p>
+          </div>
+          <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Conversie uzuală:</span>
+              <span class="font-mono font-bold text-sky-300">1 mA = 0,001 A = 10<sup>-3</sup> A</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Conectare aparat:</span>
+              <span class="font-bold text-emerald-400">ÎN SERIE cu R</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Rezistență internă:</span>
+              <span class="font-mono text-slate-200">Foarte mică (R<sub>A</sub> ≪ R)</span>
+            </div>
+            <div class="pt-1 border-t border-slate-800 text-xs text-slate-300">
+              <strong class="text-rose-400">ATENȚIE:</strong> Circuitul se desface (se scoate <strong>firul F</strong>) și ampermetrul se intercalează în serie. <strong>Niciodată în paralel!</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Rezistența electrică -->
+        <div class="bg-slate-900/95 border-2 border-emerald-500/40 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-2.5 py-1 text-xs font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-md">
+                Mărime Fizică 3
+              </span>
+              <span class="font-mono text-2xl font-black text-emerald-400">R [ Ω / kΩ ]</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Rezistența Electrică (<em class="not-italic text-emerald-400">R</em>)</h3>
+            <p class="text-slate-300 text-sm mb-4">
+              Exprimă opoziția rezistorului față de trecerea curentului electric. Pentru același rezistor, raportul <strong>U / I rămâne constant</strong> și este egal cu rezistența <em>R</em>.
+            </p>
+          </div>
+          <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Multiplu practic:</span>
+              <span class="font-mono font-bold text-emerald-300">1 kΩ = 1000 Ω = 10<sup>3</sup> Ω</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Regulă directă:</span>
+              <span class="font-mono font-bold text-white">1 V / 1 mA = 1 kΩ</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Rezistoare studiate:</span>
+              <span class="font-mono text-slate-200">R<sub>1</sub> = 4,7 kΩ • R<sub>2</sub> = 10 kΩ</span>
+            </div>
+            <div class="pt-1 border-t border-slate-800 text-xs text-slate-300">
+              <strong class="text-emerald-300">Protecție:</strong> Rezistorul <em>R</em><sub>p</sub> ≥ 220 Ω rămâne mereu în serie pentru a limita curentul la maximum 22,7 mA.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formule Esențiale & Relații de Calcul -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Card Formule Legea lui Ohm -->
+        <div class="bg-slate-900/95 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+              Formulele Esențiale ale Lecției
+            </h3>
+            <span class="text-xs font-mono text-sky-300 bg-sky-950/80 border border-sky-700/50 px-2.5 py-1 rounded">
+              Capitolul 2 • Legea lui Ohm
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="formula-box p-3.5 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400 uppercase font-bold">Legea lui Ohm (Tensiune)</div>
+              <div class="font-mono text-xl font-black text-amber-300 mt-1">U = R · I</div>
+              <div class="text-xs text-slate-400 mt-1">1 V = 1 kΩ · 1 mA</div>
+            </div>
+            <div class="formula-box p-3.5 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400 uppercase font-bold">Intensitatea Curentului</div>
+              <div class="font-mono text-xl font-black text-sky-300 mt-1">I = U / R</div>
+              <div class="text-xs text-slate-400 mt-1">1 mA = 1 V / 1 kΩ</div>
+            </div>
+            <div class="formula-box p-3.5 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400 uppercase font-bold">Rezistența din Date</div>
+              <div class="font-mono text-xl font-black text-emerald-300 mt-1">R = U / I = const.</div>
+              <div class="text-xs text-slate-400 mt-1">Grafic I(U): dreaptă prin (0,0)</div>
+            </div>
+          </div>
+
+          <!-- Formula Abaterii -->
+          <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-300">
+              Calculul Abaterii Procentuale (ε) – Convenția CAIP (3 cifre semnificative)
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="text-xs text-slate-400 mb-1">Tabelul 1 (Abaterea rezistenței măsurate):</div>
+                <div class="font-mono text-sm sm:text-base font-bold text-white">
+                  ε = ( |U/I − R<sub>n</sub>| / (U/I) ) · 100 %
+                </div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="text-xs text-slate-400 mb-1">Tabelul 2 (Abaterea curentului în Tinkercad):</div>
+                <div class="font-mono text-sm sm:text-base font-bold text-white">
+                  ε = ( |I<sub>măs</sub> − I<sub>calc</sub>| / I<sub>măs</sub> ) · 100 %
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabelul Multimetrului & Reguli SSM -->
+        <div class="bg-slate-900/95 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              Configurarea Multimetrului Echipei &amp; SSM
+            </h3>
+            <span class="text-xs font-mono text-emerald-300 bg-emerald-950/80 border border-emerald-700/50 px-2.5 py-1 rounded">
+              1 Multimetru + Firul F
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-slate-700 text-slate-300 bg-slate-950/60">
+                  <th class="py-2 px-3 font-bold">Element</th>
+                  <th class="py-2 px-3 font-bold text-amber-300">Ca Voltmetru (măsoară U)</th>
+                  <th class="py-2 px-3 font-bold text-sky-300">Ca Ampermetru (măsoară I)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-200">
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-slate-400">Firul negru</td>
+                  <td class="py-2 px-3 font-mono">borna COM (la N / GND)</td>
+                  <td class="py-2 px-3 font-mono">borna COM (spre M)</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-slate-400">Firul roșu</td>
+                  <td class="py-2 px-3 font-mono text-amber-300 font-bold">borna V (la M)</td>
+                  <td class="py-2 px-3 font-mono text-sky-300 font-bold">borna mA (spre R<sub>p</sub>)</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-slate-400">Comutatorul</td>
+                  <td class="py-2 px-3">Tensiune continuă (V⎓)</td>
+                  <td class="py-2 px-3">Curent continuu, domeniul <strong>mA</strong></td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-slate-400">În circuit</td>
+                  <td class="py-2 px-3">În paralel pe R (<strong>firul F</strong> pus în serie)</td>
+                  <td class="py-2 px-3">În serie, în locul <strong>firului F</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-rose-950/40 border border-rose-500/40 rounded-xl p-3.5 text-xs sm:text-sm text-rose-200 space-y-1">
+            <div class="font-bold text-rose-300 uppercase tracking-wide flex items-center gap-1.5">
+              <span>⚠️ Reguli de Securitate (SSM) Obligatorii:</span>
+            </div>
+            <ul class="list-disc list-inside space-y-0.5 text-slate-200">
+              <li>Montajul se modifică <strong>numai cu cablul USB scos</strong>; după măsurarea curentului, firul roșu se mută imediat înapoi în borna <strong>V</strong>.</li>
+              <li><strong>Colegul verifică, profesorul aprobă, abia apoi alimentăm</strong> (la fiecare montare a voltmetrului și a ampermetrului!).</li>
+              <li><strong>Ampermetrul nu se pune niciodată în paralel!</strong> (scurtcircuitează rezistorul <em>R</em>).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SECȚIUNEA 2: LABORATOR VIRTUAL INTERACTIV
+         ===================================================================== -->
+    <section id="sectiunea-2" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-emerald-400">Secțiunea 02 • Simulare SCH-009 &amp; Caracteristica I = f(U)</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+            Laborator Virtual Interactiv
+          </h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300">
+            Sursă Arduino: <strong class="text-white">5,00 V</strong> (Pin 5V &amp; GND) • Potențiometru P = <strong class="text-white">10 kΩ</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Rândul Principal: Panou de Control (Slidere) + Schemă Tehnică SVG Dinamică -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- COLOANA STÂNGA (5 col): Slidere & Parametri de Intrare -->
+        <div class="lg:col-span-5 bg-slate-900/95 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-lg font-bold text-white">Parametrii Montajului</h3>
+            <span id="lab-status-badge" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              MONTAJ CORECT (SERIE / PARALEL)
+            </span>
+          </div>
+
+          <!-- Selector Mod Montaj (Normal vs Greșeala de la pasul 5.2.2) -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+              1. Mod Conectare Aparate (Pasul 5.2.1 vs. Pasul 5.2.2):
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" id="btn-mode-normal" class="px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-emerald-500 bg-emerald-500/20 text-white transition text-left flex items-center justify-between">
+                <span>✅ Montaj Corect<br><span class="font-normal text-emerald-300">A în serie, V în paralel</span></span>
+              </button>
+              <button type="button" id="btn-mode-error" class="px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-slate-700 bg-slate-800/80 text-slate-300 hover:border-rose-500/60 transition text-left flex items-center justify-between">
+                <span>⚠️ Greșeala (Pas 5.2.2)<br><span class="font-normal text-rose-300">A în paralel (scurtcircuit)</span></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Slider 1: Tensiunea pe rezistor / Poziția Cursorului P -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <label for="slider-u" class="text-sm font-bold text-amber-300">
+                2. Tensiunea reglată din P (<em class="not-italic">U</em>):
+              </label>
+              <div class="font-mono text-lg font-black text-amber-400 bg-amber-950/60 px-2.5 py-0.5 rounded border border-amber-500/40">
+                <span id="val-u-label">2,00</span> V
+              </div>
+            </div>
+
+            <input type="range" id="slider-u" min="0" max="4.78" step="0.01" value="2.00" aria-label="Tensiunea U în volți" />
+
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span>0,00 V (GND)</span>
+              <span>Cursor P: <strong id="val-pot-pct" class="text-slate-200">58,2%</strong></span>
+              <span id="val-u-max-hint">Max: 4,78 V</span>
+            </div>
+
+            <!-- Butoane preset tensiune din Caietul de practică -->
+            <div class="pt-1">
+              <div class="text-xs text-slate-400 mb-1.5">Reglaje rapide din Caietul de Practică:</div>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" data-u-preset="1.00" class="u-preset-btn px-2.5 py-1 text-xs font-mono font-bold rounded bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 hover:border-amber-400 transition">
+                  1,00 V (Rând 1)
+                </button>
+                <button type="button" data-u-preset="1.58" class="u-preset-btn px-2.5 py-1 text-xs font-mono font-bold rounded bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 hover:border-amber-400 transition">
+                  1,58 V (P=50%)
+                </button>
+                <button type="button" data-u-preset="2.00" class="u-preset-btn px-2.5 py-1 text-xs font-mono font-bold rounded bg-amber-500/30 text-white border border-amber-400 transition">
+                  2,00 V (Rând 2)
+                </button>
+                <button type="button" data-u-preset="2.50" class="u-preset-btn px-2.5 py-1 text-xs font-mono font-bold rounded bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 hover:border-amber-400 transition">
+                  2,50 V (Provocare)
+                </button>
+                <button type="button" data-u-preset="3.00" class="u-preset-btn px-2.5 py-1 text-xs font-mono font-bold rounded bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 hover:border-amber-400 transition">
+                  3,00 V (Rând 3)
+                </button>
+                <button type="button" data-u-preset="max" class="u-preset-btn px-2.5 py-1 text-xs font-mono font-bold rounded bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 hover:border-amber-400 transition">
+                  Cursor la 5V
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider 2: Rezistența Nominală R -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <label for="slider-r" class="text-sm font-bold text-emerald-300">
+                3. Rezistorul studiat (<em class="not-italic">R</em><sub>n</sub>):
+              </label>
+              <div class="font-mono text-lg font-black text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-500/40">
+                <span id="val-r-label">4,7</span> kΩ
+              </div>
+            </div>
+
+            <input type="range" id="slider-r" min="1.0" max="15.0" step="0.1" value="4.7" aria-label="Rezistența R în kiloohmi" />
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button type="button" data-r-preset="4.7" class="r-preset-btn flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-emerald-500/30 text-white border border-emerald-400 transition">
+                R = 4,7 kΩ (Lucrarea Principală)
+              </button>
+              <button type="button" data-r-preset="10.0" class="r-preset-btn flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-emerald-300 border border-slate-700 transition">
+                R = 10 kΩ (Activitatea Secundară)
+              </button>
+            </div>
+          </div>
+
+          <!-- Slider 3: Rezistorul de protecție Rp & Toleranța practică -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <label for="slider-rp" class="text-xs font-bold text-sky-300">Protecție R<sub>p</sub>:</label>
+                <span class="font-mono text-sm font-bold text-white"><span id="val-rp-label">220</span> Ω</span>
+              </div>
+              <input type="range" id="slider-rp" min="220" max="1000" step="10" value="220" aria-label="Rezistența de protecție Rp în ohmi" />
+              <div class="text-[11px] text-slate-400">Minim 220 Ω (regulă SSM)</div>
+            </div>
+
+            <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <label for="slider-tol" class="text-xs font-bold text-purple-300">Abatere placă ΔR:</label>
+                <span class="font-mono text-sm font-bold text-white"><span id="val-tol-label">0,0</span> %</span>
+              </div>
+              <input type="range" id="slider-tol" min="-5.0" max="5.0" step="0.5" value="0.0" aria-label="Toleranța rezistorului în procente" />
+              <div class="text-[11px] text-slate-400">0% = Ideal (Tinkercad) / ±5% Placă</div>
+            </div>
+          </div>
+
+          <!-- Buton Adaugă în Tabelul Experimental -->
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button type="button" id="btn-record-point" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-lg shadow-sky-500/20 transition">
+              + Înregistrează Măsurătoarea în Tabel
+            </button>
+            <button type="button" id="btn-autofill-tables" class="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 transition" title="Completează valorile etalon 1V, 2V, 3V din Ghidul Profesorului">
+              Valori Etalon (1V, 2V, 3V)
+            </button>
+          </div>
+        </div>
+
+        <!-- COLOANA DREAPTA (7 col): Schema Tehnică SVG + Indicatoare Multimetre -->
+        <div class="lg:col-span-7 bg-slate-900/95 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-white">Schema Tehnică Dinamică (Figura 1 • SCH-009)</h3>
+              <p class="text-xs text-slate-400">
+                5V → Potențiometrul P (divizor) → R<sub>p</sub> → Ampermetru (sau Firul F) → nodul M → Rezistor R → nodul N (GND)
+              </p>
+            </div>
+            <!-- Comutator vizualizare Breadboard cu Firul F vs 2 Multimetre -->
+            <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+              <button type="button" data-view-mode="dual" class="view-mode-btn px-2.5 py-1 rounded font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                2 Aparate (Tinkercad)
+              </button>
+              <button type="button" data-view-mode="firF" class="view-mode-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white">
+                Firul F + Voltmetru
+              </button>
+            </div>
+          </div>
+
+          <!-- Panou Ecrane Digitale Multimetre -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Voltmetru LCD -->
+            <div id="lcd-volt-box" class="lcd-screen-amber rounded-xl p-3 flex flex-col justify-between">
+              <div class="flex items-center justify-between text-xs text-amber-300/90 font-sans font-bold">
+                <span>VOLTMETRU (Paralel M-N)</span>
+                <span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-[10px]">DC V⎓</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-black text-amber-400 tracking-wider my-1 text-right">
+                <span id="lcd-u-val">2,00</span> <span class="text-base font-bold">V</span>
+              </div>
+              <div class="text-[11px] text-amber-200/80 font-sans flex justify-between">
+                <span>Roșu: V (M)</span>
+                <span>Negru: COM (N)</span>
+              </div>
+            </div>
+
+            <!-- Ampermetru LCD -->
+            <div id="lcd-amp-box" class="lcd-screen rounded-xl p-3 flex flex-col justify-between">
+              <div class="flex items-center justify-between text-xs text-emerald-300/90 font-sans font-bold">
+                <span id="lcd-amp-title">AMPERMETRU (În Serie)</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-[10px]">DC mA⎓</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-black text-emerald-400 tracking-wider my-1 text-right">
+                <span id="lcd-i-val">0,426</span> <span class="text-base font-bold">mA</span>
+              </div>
+              <div class="text-[11px] text-emerald-200/80 font-sans flex justify-between">
+                <span>Roșu: mA (spre R<sub>p</sub>)</span>
+                <span>Negru: COM (M)</span>
+              </div>
+            </div>
+
+            <!-- Raport U / I în timp real -->
+            <div class="bg-slate-950 border-2 border-sky-500/50 rounded-xl p-3 flex flex-col justify-between">
+              <div class="flex items-center justify-between text-xs text-sky-300 font-bold">
+                <span>RAPORT CALCULAT U / I</span>
+                <span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-[10px] font-mono">V / mA = kΩ</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-black text-sky-400 font-mono my-1 text-right">
+                <span id="lcd-ratio-val">4,70</span> <span class="text-base font-bold">kΩ</span>
+              </div>
+              <div class="text-[11px] text-slate-300 flex justify-between">
+                <span>Nominal R<sub>n</sub>: <strong id="lcd-rn-sub">4,7 kΩ</strong></span>
+                <span>ε = <strong id="lcd-eps-sub" class="text-emerald-400">0%</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta de Greșeală (afișată doar în modul Greșeală Pas 5.2.2) -->
+          <div id="error-mode-banner" class="hidden bg-rose-950/90 border-2 border-rose-500 rounded-xl p-3.5 text-xs sm:text-sm text-rose-100">
+            <div class="font-extrabold text-rose-300 uppercase flex items-center gap-2 mb-1">
+              <span>🚨 GREȘEALĂ DE MONTAJ ACTIVĂ (Pasul 5.2, punctul 2): Ampermetrul este legat în PARALEL cu R!</span>
+            </div>
+            <p>
+              Deoarece ampermetrul are rezistența internă foarte mică (<em class="not-italic">R</em><sub>A</sub> ≈ 0 Ω), el <strong>scurtcircuitează rezistorul R</strong>! Voltmetrul indică aproape <strong>0 V</strong>, iar tot curentul trece prin ampermetru (<strong id="error-current-text">1,20 mA</strong>, limitat doar de potențiometrul P și de <em class="not-italic">R</em><sub>p</sub>). Dacă rotești cursorul spre 5V, curentul ajunge la <strong id="error-max-current-text">22,7 mA</strong>!
+            </p>
+          </div>
+
+          <!-- SVG SCHEMATIC INTERACTIV (SCH-009 Figura 1) -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 overflow-hidden">
+            <svg id="circuit-svg" viewBox="0 0 760 350" class="w-full h-auto select-none" role="img" aria-label="Schema electrică a montajului cu potențiometru, rezistor de protecție, ampermetru, voltmetru și rezistorul studiat">
+              <defs>
+                <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="2.5" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+
+              <!-- Fundal grilă discretă în SVG -->
+              <rect x="0" y="0" width="760" height="350" fill="#070b12" rx="10" />
+
+              <!-- Placa Arduino Uno (Stânga) -->
+              <rect x="20" y="45" width="95" height="255" rx="8" fill="#0f2942" stroke="#38bdf8" stroke-width="2" />
+              <text x="67" y="72" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="bold" font-family="monospace">ARDUINO</text>
+              <text x="67" y="90" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="monospace">UNO R3 (USB)</text>
+              <rect x="32" y="105" width="70" height="24" rx="4" fill="#1e293b" stroke="#475569" />
+              <text x="67" y="121" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="bold" font-family="monospace">Pin 5V</text>
+              <circle cx="115" cy="117" r="5" fill="#fbbf24" />
+
+              <rect x="32" y="245" width="70" height="24" rx="4" fill="#1e293b" stroke="#475569" />
+              <text x="67" y="261" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold" font-family="monospace">Pin GND</text>
+              <circle cx="115" cy="257" r="5" fill="#64748b" />
+
+              <!-- Linia 5V de la Arduino la capătul de sus al potențiometrului P -->
+              <line x1="115" y1="117" x2="185" y2="117" stroke="#fbbf24" stroke-width="3" />
+              <line x1="185" y1="117" x2="185" y2="132" stroke="#fbbf24" stroke-width="3" />
+              <text x="150" y="108" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="bold" font-family="monospace">+5 V</text>
+
+              <!-- Corpul Potențiometrului P -->
+              <rect x="167" y="132" width="36" height="108" rx="4" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
+              <text x="153" y="185" text-anchor="end" fill="#f8fafc" font-size="14" font-weight="bold">P</text>
+              <text x="153" y="202" text-anchor="end" fill="#94a3b8" font-size="11" font-family="monospace">10 kΩ</text>
+
+              <!-- Linia GND de la capătul de jos al potențiometrului la N -->
+              <line x1="185" y1="240" x2="185" y2="257" stroke="#64748b" stroke-width="3" />
+              <line x1="115" y1="257" x2="680" y2="257" stroke="#64748b" stroke-width="3" />
+
+              <!-- Cursorul mobil al Potențiometrului P (se mișcă vertical între y=236 și y=136) -->
+              <g id="svg-pot-wiper" transform="translate(0, 175)">
+                <line x1="228" y1="0" x2="206" y2="0" stroke="#38bdf8" stroke-width="3" />
+                <polygon points="203,0 213,-6 213,6" fill="#38bdf8" />
+                <circle cx="228" cy="0" r="4" fill="#38bdf8" />
+              </g>
+              <!-- Fir de la cursorul P la linia superioară spre Rp -->
+              <line id="svg-wiper-vertical" x1="228" y1="175" x2="228" y2="117" stroke="#38bdf8" stroke-width="3" />
+              <line x1="228" y1="117" x2="265" y2="117" stroke="#38bdf8" stroke-width="3" />
+
+              <!-- Rezistorul de protecție Rp -->
+              <rect x="265" y="101" width="76" height="32" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5" />
+              <text x="303" y="121" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="bold" font-family="monospace">R<tspan dy="3" font-size="10">p</tspan></text>
+              <text id="svg-rp-text" x="303" y="92" text-anchor="middle" fill="#38bdf8" font-size="12" font-weight="bold" font-family="monospace">220 Ω</text>
+
+              <!-- Legătura de la Rp la Ampermetru (sau Firul F) -->
+              <line x1="341" y1="117" x2="407" y2="117" stroke="#38bdf8" stroke-width="3" />
+
+              <!-- GRUPUL AMPERMETRULUI ÎN SERIE (vizibil în modul normal dual) -->
+              <g id="svg-series-ammeter">
+                <!-- Borna roșie mA și borna neagră COM -->
+                <circle cx="403" cy="117" r="4.5" fill="#f43f5e" />
+                <text x="378" y="136" text-anchor="middle" fill="#fda4af" font-size="10" font-weight="bold">roșu (mA)</text>
+                <circle cx="435" cy="117" r="28" fill="#062e22" stroke="#10b981" stroke-width="3" />
+                <text x="435" y="124" text-anchor="middle" fill="#34d399" font-size="20" font-weight="bold" font-family="monospace">A</text>
+                <circle cx="467" cy="117" r="4.5" fill="#94a3b8" />
+                <text x="486" y="102" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="bold">COM</text>
+                <text id="svg-ammeter-reading" x="435" y="76" text-anchor="middle" fill="#34d399" font-size="13" font-weight="bold" font-family="monospace">0,426 mA</text>
+              </g>
+
+              <!-- GRUPUL FIRULUI F (vizibil în modul Firul F sau în modul Greșeală) -->
+              <g id="svg-series-wire-f" class="hidden">
+                <line x1="407" y1="117" x2="463" y2="117" stroke="#f59e0b" stroke-width="4" stroke-dasharray="6,3" />
+                <rect x="403" y="84" width="64" height="20" rx="4" fill="#451a03" stroke="#f59e0b" />
+                <text x="435" y="98" text-anchor="middle" fill="#fde68a" font-size="11" font-weight="bold" font-family="monospace">Firul F</text>
+              </g>
+
+              <!-- Linia de la Ampermetru / Firul F la nodul M -->
+              <line x1="463" y1="117" x2="545" y2="117" stroke="#38bdf8" stroke-width="3" />
+
+              <!-- Nodul M -->
+              <circle cx="545" cy="117" r="6" fill="#f8fafc" stroke="#38bdf8" stroke-width="2" />
+              <text x="545" y="98" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="bold">M</text>
+
+              <!-- Ramura Rezistorului studiat R (între M și N) -->
+              <line x1="545" y1="117" x2="545" y2="148" stroke="#38bdf8" stroke-width="3" />
+              <rect id="svg-r-box" x="525" y="148" width="40" height="78" rx="5" fill="#1e293b" stroke="#34d399" stroke-width="3" />
+              <!-- Inele codul culorilor pe rezistorul R -->
+              <line id="svg-band-1" x1="527" y1="164" x2="563" y2="164" stroke="#facc15" stroke-width="5" />
+              <line id="svg-band-2" x1="527" y1="178" x2="563" y2="178" stroke="#a855f7" stroke-width="5" />
+              <line id="svg-band-3" x1="527" y1="192" x2="563" y2="192" stroke="#ef4444" stroke-width="5" />
+              <line x1="527" y1="210" x2="563" y2="210" stroke="#eab308" stroke-width="3" />
+
+              <text x="513" y="185" text-anchor="end" fill="#ffffff" font-size="15" font-weight="bold">R</text>
+              <text id="svg-r-text" x="513" y="203" text-anchor="end" fill="#34d399" font-size="12" font-weight="bold" font-family="monospace">4,7 kΩ</text>
+              <line x1="545" y1="226" x2="545" y2="257" stroke="#64748b" stroke-width="3" />
+
+              <!-- Nodul N (jos, pe linia GND) -->
+              <circle cx="545" cy="257" r="6" fill="#f8fafc" stroke="#64748b" stroke-width="2" />
+              <text x="545" y="280" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="bold">N (GND)</text>
+
+              <!-- Ramura în paralel pentru Voltmetru (între M și N) -->
+              <line x1="545" y1="117" x2="680" y2="117" stroke="#fbbf24" stroke-width="2.5" />
+              <line x1="680" y1="117" x2="680" y2="159" stroke="#fbbf24" stroke-width="2.5" />
+              <circle cx="680" cy="155" r="4.5" fill="#f43f5e" />
+              <text x="720" y="152" text-anchor="middle" fill="#fda4af" font-size="10" font-weight="bold">roșu (V)</text>
+
+              <!-- Cerc Voltmetru V -->
+              <circle cx="680" cy="187" r="28" fill="#271a05" stroke="#fbbf24" stroke-width="3" />
+              <text x="680" y="194" text-anchor="middle" fill="#fbbf24" font-size="20" font-weight="bold" font-family="monospace">V</text>
+              <text id="svg-voltmeter-reading" x="680" y="98" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="bold" font-family="monospace">2,00 V</text>
+
+              <circle cx="680" cy="219" r="4.5" fill="#94a3b8" />
+              <text x="720" y="226" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="bold">COM</text>
+              <line x1="680" y1="215" x2="680" y2="257" stroke="#64748b" stroke-width="2.5" />
+
+              <!-- RAMURA GREȘELII (Ampermetru pus în paralel cu R, vizibil doar în modul Greșeală) -->
+              <g id="svg-parallel-ammeter-error" class="hidden">
+                <line x1="545" y1="117" x2="612" y2="117" stroke="#f43f5e" stroke-width="3.5" />
+                <line x1="612" y1="117" x2="612" y2="160" stroke="#f43f5e" stroke-width="3.5" />
+                <circle cx="612" cy="187" r="25" fill="#3b0712" stroke="#f43f5e" stroke-width="3" />
+                <text x="612" y="194" text-anchor="middle" fill="#fda4af" font-size="18" font-weight="bold" font-family="monospace">A!</text>
+                <line x1="612" y1="212" x2="612" y2="257" stroke="#f43f5e" stroke-width="3.5" />
+                <text x="612" y="298" text-anchor="middle" fill="#fb7185" font-size="11" font-weight="bold" font-family="monospace">SCURTCIRCUIT PE R!</text>
+              </g>
+
+              <!-- Legendă sens curent I -->
+              <g id="svg-current-arrow">
+                <polygon points="508,117 496,111 496,123" fill="#38bdf8" />
+                <text x="502" y="136" text-anchor="middle" fill="#38bdf8" font-size="12" font-weight="bold" font-style="italic">I</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rândul Secundar: Graficul Caracteristic I = f(U) + Calcule Pas cu Pas & Tabelele 1 și 2 -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Graficul Caracteristic I = f(U) (6 col) -->
+        <div class="lg:col-span-6 bg-slate-900/95 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-white">Caracteristica Curent–Tensiune: <em class="not-italic text-sky-400">I = f(U)</em></h3>
+              <p class="text-xs text-slate-400">
+                Pentru un rezistor, graficul <em>I</em> în funcție de <em>U</em> este o <strong>dreaptă care trece prin origine</strong> (panta = 1/<em>R</em>).
+              </p>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-mono rounded bg-slate-950 border border-slate-800 text-sky-300">
+              Punct activ: (<span id="graph-pt-u">2,00</span> V ; <span id="graph-pt-i">0,426</span> mA)
+            </span>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <svg id="ivu-graph-svg" viewBox="0 0 520 310" class="w-full h-auto select-none" role="img" aria-label="Graficul I în funcție de U">
+              <rect x="0" y="0" width="520" height="310" fill="#070b12" rx="8" />
+
+              <!-- Grile orizontale și verticale (U: 0..5V -> x: 60..480, câte 84px/V; I: 0..1.2mA -> y: 260..20, câte 200px/mA) -->
+              <g stroke="#1e293b" stroke-width="1">
+                <!-- Linii verticale U = 1, 2, 3, 4, 5 V -->
+                <line x1="144" y1="20" x2="144" y2="260" />
+                <line x1="228" y1="20" x2="228" y2="260" />
+                <line x1="312" y1="20" x2="312" y2="260" />
+                <line x1="396" y1="20" x2="396" y2="260" />
+                <line x1="480" y1="20" x2="480" y2="260" />
+                <!-- Linii orizontale I = 0.2, 0.4, 0.6, 0.8, 1.0, 1.2 mA -->
+                <line x1="60" y1="220" x2="480" y2="220" />
+                <line x1="60" y1="180" x2="480" y2="180" />
+                <line x1="60" y1="140" x2="480" y2="140" />
+                <line x1="60" y1="100" x2="480" y2="100" />
+                <line x1="60" y1="60" x2="480" y2="60" />
+                <line x1="60" y1="20" x2="480" y2="20" />
+              </g>
+
+              <!-- Axele principale -->
+              <line x1="60" y1="260" x2="490" y2="260" stroke="#94a3b8" stroke-width="2" />
+              <line x1="60" y1="260" x2="60" y2="15" stroke="#94a3b8" stroke-width="2" />
+
+              <!-- Etichete axa U (V) -->
+              <g fill="#cbd5e1" font-size="11" font-family="monospace" text-anchor="middle">
+                <text x="60" y="278">0</text>
+                <text x="144" y="278">1 V</text>
+                <text x="228" y="278">2 V</text>
+                <text x="312" y="278">3 V</text>
+                <text x="396" y="278">4 V</text>
+                <text x="480" y="278">5 V</text>
+                <text x="275" y="298" fill="#fbbf24" font-size="12" font-weight="bold">Tensiunea U (V)</text>
+              </g>
+
+              <!-- Etichete axa I (mA) -->
+              <g fill="#cbd5e1" font-size="11" font-family="monospace" text-anchor="end">
+                <text x="52" y="264">0,0</text>
+                <text x="52" y="224">0,2</text>
+                <text x="52" y="184">0,4</text>
+                <text x="52" y="144">0,6</text>
+                <text x="52" y="104">0,8</text>
+                <text x="52" y="64">1,0</text>
+                <text x="52" y="24">1,2</text>
+              </g>
+              <text x="18" y="140" fill="#38bdf8" font-size="12" font-weight="bold" font-family="monospace" transform="rotate(-90, 18, 140)" text-anchor="middle">Curentul I (mA)</text>
+
+              <!-- Drepte de referință pentru 10 kΩ și 4,7 kΩ -->
+              <line x1="60" y1="260" x2="480" y2="160" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,5" />
+              <text x="475" y="175" text-anchor="end" fill="#94a3b8" font-size="10" font-family="monospace">Ref: R = 10 kΩ</text>
+
+              <line x1="60" y1="260" x2="480" y2="47.2" stroke="#475569" stroke-width="1.5" stroke-dasharray="5,5" />
+              <text x="415" y="42" text-anchor="end" fill="#94a3b8" font-size="10" font-family="monospace">Ref: R = 4,7 kΩ</text>
+
+              <!-- Dreapta activă a rezistorului curent -->
+              <line id="graph-active-line" x1="60" y1="260" x2="480" y2="47.2" stroke="#34d399" stroke-width="3" />
+
+              <!-- Grup pentru punctele înregistrate în tabel -->
+              <g id="graph-recorded-points"></g>
+
+              <!-- Linii punctate de proiecție ale punctului activ -->
+              <line id="graph-proj-x" x1="228" y1="260" x2="228" y2="174.8" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,4" />
+              <line id="graph-proj-y" x1="60" y1="174.8" x2="228" y2="174.8" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4" />
+
+              <!-- Punctul de funcționare curent (U, I) -->
+              <circle id="graph-active-point" cx="228" cy="174.8" r="6.5" fill="#fbbf24" stroke="#ffffff" stroke-width="2" />
+            </svg>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <strong class="text-emerald-400">Observație cheie (Secțiunea 5.3):</strong> La aceeași tensiune <em>U</em>, prin rezistorul de <strong>4,7 kΩ</strong> trece un curent de circa <strong>2,1 ori mai mare</strong> decât prin cel de <strong>10 kΩ</strong>, deoarece are rezistența mai mică!
+            </div>
+          </div>
+        </div>
+
+        <!-- Calcule Pas cu Pas & Tabelele Experimentale 1 și 2 (6 col) -->
+        <div class="lg:col-span-6 bg-slate-900/95 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-5">
+          <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Calcule Pas cu Pas (În Timp Real)</h3>
+            <span class="text-xs font-mono text-sky-400">3 cifre semnificative</span>
+          </div>
+
+          <!-- Carduri Pas cu Pas -->
+          <div class="space-y-3 font-mono text-xs sm:text-sm">
+            <div class="bg-slate-950 border-l-4 border-amber-400 rounded-r-xl p-3">
+              <div class="text-slate-400 font-sans text-xs font-bold uppercase">Pasul 1 • Curentul așteptat prin Legea lui Ohm (I = U / R)</div>
+              <div id="step-calc-1" class="text-white font-bold mt-1">
+                I_calc = U / R_n = 2,00 V / 4,7 kΩ = 0,426 mA
+              </div>
+            </div>
+
+            <div class="bg-slate-950 border-l-4 border-sky-400 rounded-r-xl p-3">
+              <div class="text-slate-400 font-sans text-xs font-bold uppercase">Pasul 2 • Raportul U / I din valorile măsurate</div>
+              <div id="step-calc-2" class="text-white font-bold mt-1">
+                R_măs = U / I_măs = 2,00 V / 0,426 mA = 4,70 kΩ
+              </div>
+            </div>
+
+            <div class="bg-slate-950 border-l-4 border-emerald-400 rounded-r-xl p-3">
+              <div class="text-slate-400 font-sans text-xs font-bold uppercase">Pasul 3 • Abaterea relativă ε față de valoarea măsurată</div>
+              <div id="step-calc-3" class="text-white font-bold mt-1">
+                ε = ( |4,70 − 4,7| / 4,70 ) · 100 % = 0 %
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabelul Experimental Interactiv (Tabelul 1 & Tabelul 2 din Caiet) -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h4 class="text-sm font-bold text-white">
+                Jurnalul de Date Experimentale (Tabelul 1: 4,7 kΩ &amp; Tabelul 2: 10 kΩ)
+              </h4>
+              <button type="button" id="btn-clear-table" class="text-xs text-rose-400 hover:text-rose-300 font-semibold underline">
+                Golește tabelul
+              </button>
+            </div>
+
+            <div class="overflow-x-auto bg-slate-950 border border-slate-800 rounded-xl">
+              <table class="w-full text-center border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-300 bg-slate-900/90 font-mono">
+                    <th class="py-2 px-2">#</th>
+                    <th class="py-2 px-2 text-amber-300">U (V)</th>
+                    <th class="py-2 px-2 text-sky-300">I<sub>măs</sub> (mA)</th>
+                    <th class="py-2 px-2 text-emerald-300">U / I (kΩ)</th>
+                    <th class="py-2 px-2">R<sub>n</sub> (kΩ)</th>
+                    <th class="py-2 px-2 text-purple-300">ε (%)</th>
+                  </tr>
+                </thead>
+                <tbody id="exp-table-body" class="divide-y divide-slate-800/80 font-mono text-slate-200">
+                  <!-- Populat dinamic prin JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SECȚIUNEA 3: ANTRENAMENT & AUTOEVALUARE
+         ===================================================================== -->
+    <section id="sectiunea-3" class="scroll-mt-24 space-y-6 pb-12">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Secțiunea 03 • Exerciții din Fișă &amp; Verificare Instantanee</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+            Antrenament &amp; Autoevaluare
+          </h2>
+        </div>
+
+        <!-- Scorul elevului -->
+        <div class="flex items-center gap-3 bg-slate-900 border border-slate-700 px-4 py-2 rounded-xl">
+          <div class="text-xs text-slate-400 uppercase font-bold">Scor Sesiune:</div>
+          <div class="font-mono text-lg font-black text-emerald-400">
+            <span id="score-correct">0</span> / <span id="score-total">0</span>
+          </div>
+          <span id="score-streak" class="px-2 py-0.5 text-xs font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+            Serie: 0 🔥
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Generatorul de Probleme Numerice (7 col) -->
+        <div class="lg:col-span-7 bg-slate-900/95 border-2 border-amber-500/40 rounded-2xl p-6 shadow-xl space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span id="problem-badge-type" class="px-2.5 py-1 text-xs font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-md">
+                Tipul 1 • Calculul raportului U / I
+              </span>
+              <span id="problem-badge-diff" class="px-2.5 py-1 text-xs font-bold bg-slate-800 text-slate-300 rounded-md">
+                Nivel: Mediu
+              </span>
+            </div>
+
+            <button type="button" id="btn-generate-problem" class="px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 transition flex items-center gap-2">
+              <span>🔄 Generează alte valori</span>
+            </button>
+          </div>
+
+          <!-- Filtru tip exercițiu din caiet -->
+          <div class="space-y-1.5">
+            <label for="select-problem-category" class="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Alege categoria de exercițiu din Caietul Zilei 2:
+            </label>
+            <select id="select-problem-category" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white font-semibold focus:outline-none focus:border-amber-400">
+              <option value="all">🎲 Toate tipurile de probleme din fișă (Aleatoriu)</option>
+              <option value="type1">1. Calculul raportului U / I din măsurători (Tabelul 1 &amp; Întrebarea 7.3)</option>
+              <option value="type2">2. Predicția curentului I = U / R (Tabelul 2 &amp; Provocarea 5.4)</option>
+              <option value="type3">3. Calculul abaterii procentuale ε (Secțiunea 5.2 pasul 8)</option>
+              <option value="type4">4. Proporționalitate directă fără calculul rezistenței (Întrebarea 7.4)</option>
+              <option value="type5">5. Analiza greșelii: curent maxim prin Rp la scurtcircuit (Pasul 5.2.2)</option>
+            </select>
+          </div>
+
+          <!-- Enunțul Problemei -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="text-xs font-mono text-slate-400" id="problem-source-ref">
+              Sursă: Caietul de practică Ziua 2 – Secțiunea 7, Întrebarea 3
+            </div>
+            <p id="problem-statement" class="text-base sm:text-lg font-medium text-white leading-relaxed">
+              Pe un rezistor s-au măsurat tensiunea U = 3,0 V și intensitatea curentului I = 0,64 mA. Calculează raportul U / I (în kΩ), rotunjit la două zecimale:
+            </p>
+          </div>
+
+          <!-- Zona de Input Răspuns + Buton Verificare -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div class="relative flex-1">
+              <input
+                type="number"
+                id="input-student-answer"
+                step="any"
+                placeholder="Introdu rezultatul numeric (ex: 4.69)"
+                class="w-full bg-slate-950 border-2 border-slate-700 focus:border-sky-400 rounded-xl px-4 py-3 text-lg font-mono font-bold text-white placeholder:text-slate-500 placeholder:font-sans placeholder:text-sm focus:outline-none"
+              />
+              <span id="problem-unit-label" class="absolute right-4 top-1/2 -translate-y-1/2 font-mono font-bold text-amber-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">
+                kΩ
+              </span>
+            </div>
+
+            <button type="button" id="btn-check-answer" class="px-6 py-3.5 rounded-xl font-extrabold text-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition">
+              Verifică răspunsul
+            </button>
+          </div>
+
+          <!-- Caseta de Feedback și Rezolvare Detaliată -->
+          <div id="feedback-container" class="hidden rounded-xl p-5 border-2 space-y-3">
+            <div id="feedback-title" class="font-extrabold text-base flex items-center gap-2"></div>
+            <div id="feedback-solution" class="text-sm text-slate-200 space-y-2 font-mono bg-slate-950/90 p-4 rounded-lg border border-slate-800"></div>
+          </div>
+        </div>
+
+        <!-- Verificare Rapidă Concepte & Diagnoza Erorilor (Secțiunea 7 & 10 din Ghid) (5 col) -->
+        <div class="lg:col-span-5 bg-slate-900/95 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="text-lg font-bold text-white">Autoevaluare: Întrebări de Ieșire &amp; Remediere</h3>
+            <p class="text-xs text-slate-400">
+              Verifică-ți cunoștințele teoretice și de depanare din secțiunile 7, 8 și 10 ale fișei.
+            </p>
+          </div>
+
+          <div class="space-y-4" id="quick-quiz-list">
+            <!-- Întrebarea conceptuală 1 -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 space-y-2.5">
+              <div class="text-sm font-bold text-white">
+                1.Dacă tensiunea <em>U</em> pe rezistor devine de două ori mai mare, ce se întâmplă cu intensitatea curentului <em>I</em> prin el?
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <button type="button" data-q="q1" data-correct="false" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  A) Scade de două ori
+                </button>
+                <button type="button" data-q="q1" data-correct="false" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  B) Rămâne la fel
+                </button>
+                <button type="button" data-q="q1" data-correct="true" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  C) Crește de două ori
+                </button>
+                <button type="button" data-q="q1" data-correct="false" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  D) Crește de patru ori
+                </button>
+              </div>
+              <div id="quiz-msg-q1" class="hidden text-xs pt-1 font-medium"></div>
+            </div>
+
+            <!-- Întrebarea conceptuală 2 -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 space-y-2.5">
+              <div class="text-sm font-bold text-white">
+                2. Un coleg a legat ampermetrul în paralel cu <em>R</em>. Ce va indica voltmetrul legat la bornele lui <em>R</em>?
+              </div>
+              <div class="grid grid-cols-1 gap-2 text-xs">
+                <button type="button" data-q="q2" data-correct="true" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  A) Aproape 0 V, deoarece ampermetrul scurtcircuitează rezistorul R.
+                </button>
+                <button type="button" data-q="q2" data-correct="false" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  B) 5,00 V, deoarece toată tensiunea sursei cade pe rezistorul R.
+                </button>
+              </div>
+              <div id="quiz-msg-q2" class="hidden text-xs pt-1 font-medium"></div>
+            </div>
+
+            <!-- Întrebarea conceptuală 3 (Remediere din Ghid secțiunea 10) -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 space-y-2.5">
+              <div class="text-sm font-bold text-white">
+                3. Depanare pe placă: Ampermetrul pus în serie arată 0 mA. Care este cauza probabilă?
+              </div>
+              <div class="grid grid-cols-1 gap-2 text-xs">
+                <button type="button" data-q="q3" data-correct="true" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  A) Firul roșu a rămas în borna V sau comutatorul nu a fost trecut pe domeniul mA.
+                </button>
+                <button type="button" data-q="q3" data-correct="false" class="quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-sky-400 text-left text-slate-200">
+                  B) Rezistorul de protecție Rp = 220 Ω blochează complet curentul.
+                </button>
+              </div>
+              <div id="quiz-msg-q3" class="hidden text-xs pt-1 font-medium"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-slate-950/90 py-5 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
+      <span>Modul: <strong>CAIP – Ochiul electronistului (Ziua 2)</strong> • Măsurarea tensiunii și a curentului. Legea lui Ohm din date</span>
+      <span class="font-mono text-slate-500">Fișier autonom HTML5 • Contrast ridicat pentru videoproiector / tablă interactivă</span>
+    </div>
+  </footer>
+
+  <!-- =======================================================================
+       JAVASCRIPT: LOGICA SIMULATORULUI, GRAFICULUI ȘI GENERATORULUI DE PROBLEME
+       ======================================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      // Formatare numere cu virgulă zecimală (stil românesc)
+      function fmt(num, decimals) {
+        if (decimals === undefined) decimals = 2;
+        return Number(num).toFixed(decimals).replace('.', ',');
+      }
+
+      // Formatare cu 3 cifre semnificative fără zerouri inutile (convenția CAIP din Ghid secțiunea 3 & 6)
+      function fmtSig3(num) {
+        if (!isFinite(num) || num === 0) return '0';
+        var s = Number(Number(num).toPrecision(3)).toString();
+        return s.replace('.', ',');
+      }
+
+      // Starea Laboratorului Virtual
+      var state = {
+        U_source: 5.0,       // 5V de la Arduino
+        P_total: 10.0,       // Potențiometru 10 kΩ
+        U: 2.00,             // Tensiunea pe rezistorul R (V)
+        R_n: 4.7,            // Rezistența nominală (kΩ)
+        R_p: 220,            // Rezistorul de protecție (Ω)
+        tolPct: 0.0,         // Abaterea rezistorului pe placă (%)
+        errorMode: false,    // false = montaj corect; true = pasul 5.2.2 (ampermetru în paralel)
+        viewMode: 'dual',    // 'dual' = 2 aparate (Tinkercad), 'firF' = Firul F + Voltmetru
+        alpha: 0.58,         // Poziția cursorului potențiometrului (0..1)
+        recordedRows: []
+      };
+
+      // Referințe DOM Laborator
+      var sliderU = document.getElementById('slider-u');
+      var sliderR = document.getElementById('slider-r');
+      var sliderRp = document.getElementById('slider-rp');
+      var sliderTol = document.getElementById('slider-tol');
+
+      var valULabel = document.getElementById('val-u-label');
+      var valPotPct = document.getElementById('val-pot-pct');
+      var valUMaxHint = document.getElementById('val-u-max-hint');
+      var valRLabel = document.getElementById('val-r-label');
+      var valRpLabel = document.getElementById('val-rp-label');
+      var valTolLabel = document.getElementById('val-tol-label');
+
+      var lcdUVal = document.getElementById('lcd-u-val');
+      var lcdIVal = document.getElementById('lcd-i-val');
+      var lcdRatioVal = document.getElementById('lcd-ratio-val');
+      var lcdRnSub = document.getElementById('lcd-rn-sub');
+      var lcdEpsSub = document.getElementById('lcd-eps-sub');
+      var lcdAmpBox = document.getElementById('lcd-amp-box');
+      var lcdAmpTitle = document.getElementById('lcd-amp-title');
+
+      var labStatusBadge = document.getElementById('lab-status-badge');
+      var errorModeBanner = document.getElementById('error-mode-banner');
+      var errorCurrentText = document.getElementById('error-current-text');
+      var errorMaxCurrentText = document.getElementById('error-max-current-text');
+
+      var btnModeNormal = document.getElementById('btn-mode-normal');
+      var btnModeError = document.getElementById('btn-mode-error');
+
+      // Referințe SVG Schemă
+      var svgPotWiper = document.getElementById('svg-pot-wiper');
+      var svgWiperVertical = document.getElementById('svg-wiper-vertical');
+      var svgRpText = document.getElementById('svg-rp-text');
+      var svgRText = document.getElementById('svg-r-text');
+      var svgAmmeterReading = document.getElementById('svg-ammeter-reading');
+      var svgVoltmeterReading = document.getElementById('svg-voltmeter-reading');
+      var svgSeriesAmmeter = document.getElementById('svg-series-ammeter');
+      var svgSeriesWireF = document.getElementById('svg-series-wire-f');
+      var svgParallelError = document.getElementById('svg-parallel-ammeter-error');
+      var svgBand1 = document.getElementById('svg-band-1');
+      var svgBand2 = document.getElementById('svg-band-2');
+      var svgBand3 = document.getElementById('svg-band-3');
+
+      // Referințe SVG Grafic I = f(U)
+      var graphPtU = document.getElementById('graph-pt-u');
+      var graphPtI = document.getElementById('graph-pt-i');
+      var graphActiveLine = document.getElementById('graph-active-line');
+      var graphActivePoint = document.getElementById('graph-active-point');
+      var graphProjX = document.getElementById('graph-proj-x');
+      var graphProjY = document.getElementById('graph-proj-y');
+      var graphRecordedPoints = document.getElementById('graph-recorded-points');
+
+      // Referințe Calcule Pas cu Pas & Tabel
+      var stepCalc1 = document.getElementById('step-calc-1');
+      var stepCalc2 = document.getElementById('step-calc-2');
+      var stepCalc3 = document.getElementById('step-calc-3');
+      var expTableBody = document.getElementById('exp-table-body');
+
+      // Calculează tensiunea maximă posibilă pe R când cursorul P este la 5V (alpha = 1)
+      function getMaxVoltageOnR(R_actual_kOhm, Rp_Ohm) {
+        var Rp_kOhm = Rp_Ohm / 1000.0;
+        return state.U_source * (R_actual_kOhm / (R_actual_kOhm + Rp_kOhm));
+      }
+
+      // Calculează poziția cursorului alpha (0..1) pentru o tensiune U pe rezistorul R în divizorul potențiometric cu P = 10 kΩ
+      function computeAlphaFromU(U_target, R_actual_kOhm, Rp_Ohm) {
+        var Rp_kOhm = Rp_Ohm / 1000.0;
+        var R_branch = R_actual_kOhm + Rp_kOhm;
+        var U_branch = U_target * (R_branch / R_actual_kOhm);
+        if (U_branch <= 0) return 0;
+        if (U_branch >= state.U_source) return 1;
+        // Din ecuația divizorului încărcat: U_branch = U_source * alpha * R_branch / (R_branch + P * alpha * (1 - alpha))
+        // Rezolvăm numeric rapid și exact pe [0, 1] (funcție strict crescătoare):
+        var low = 0.0, high = 1.0;
+        for (var iter = 0; iter < 30; iter++) {
+          var mid = 0.5 * (low + high);
+          var r_th = state.P_total * mid * (1.0 - mid);
+          var u_est = state.U_source * mid * (R_branch / (R_branch + r_th));
+          if (u_est < U_branch) {
+            low = mid;
+          } else {
+            high = mid;
+          }
+        }
+        return 0.5 * (low + high);
+      }
+
+      // Actualizează inelele de culoare pe rezistorul SVG
+      function updateResistorColorBands(R_n) {
+        if (Math.abs(R_n - 4.7) < 0.05) {
+          // 4,7 kΩ: Galben (4), Violet (7), Roșu (x100)
+          svgBand1.setAttribute('stroke', '#facc15');
+          svgBand2.setAttribute('stroke', '#a855f7');
+          svgBand3.setAttribute('stroke', '#ef4444');
+        } else if (Math.abs(R_n - 10.0) < 0.05) {
+          // 10 kΩ: Maro (1), Negru (0), Portocaliu (x1000)
+          svgBand1.setAttribute('stroke', '#92400e');
+          svgBand2.setAttribute('stroke', '#111827');
+          svgBand3.setAttribute('stroke', '#f97316');
+        } else {
+          svgBand1.setAttribute('stroke', '#38bdf8');
+          svgBand2.setAttribute('stroke', '#34d399');
+          svgBand3.setAttribute('stroke', '#fbbf24');
+        }
+      }
+
+      // Funcția principală de actualizare a Laboratorului Virtual
+      function updateLab() {
+        var R_actual = state.R_n * (1.0 + state.tolPct / 100.0); // kΩ
+        var U_max = getMaxVoltageOnR(R_actual, state.R_p);
+
+        sliderU.max = U_max.toFixed(2);
+        if (state.U > U_max) {
+          state.U = Number(U_max.toFixed(2));
+          sliderU.value = state.U;
+        }
+
+        state.alpha = computeAlphaFromU(state.U, R_actual, state.R_p);
+
+        valULabel.textContent = fmt(state.U, 2);
+        valPotPct.textContent = fmt(state.alpha * 100, 1) + '%';
+        valUMaxHint.textContent = 'Max: ' + fmt(U_max, 2) + ' V';
+        valRLabel.textContent = fmtSig3(state.R_n);
+        valRpLabel.textContent = state.R_p.toString();
+        valTolLabel.textContent = (state.tolPct > 0 ? '+' : '') + fmt(state.tolPct, 1);
+
+        updateResistorColorBands(state.R_n);
+
+        // Calcule fizice în funcție de modul de conectare (Normal vs Greșeală Pas 5.2.2)
+        var U_measured, I_measured, I_calc, R_measured, eps;
+        var Rp_kOhm = state.R_p / 1000.0;
+
+        if (!state.errorMode) {
+          // MONTAJ CORECT: Ampermetrul în serie, Voltmetrul în paralel pe R
+          U_measured = state.U;
+          I_calc = U_measured / state.R_n;         // mA (valoare teoretică cu R nominal)
+          I_measured = U_measured / R_actual;      // mA (valoare măsurată pe rezistorul real)
+          R_measured = I_measured > 0 ? (U_measured / I_measured) : state.R_n;
+          eps = R_measured > 0 ? (Math.abs(R_measured - state.R_n) / R_measured) * 100.0 : 0.0;
+
+          lcdUVal.textContent = fmt(U_measured, 2);
+          lcdIVal.textContent = fmtSig3(I_measured);
+          lcdRatioVal.textContent = I_measured > 0 ? fmtSig3(R_measured) : fmtSig3(state.R_n);
+          lcdRnSub.textContent = fmtSig3(state.R_n) + ' kΩ';
+          lcdEpsSub.textContent = fmtSig3(eps) + ' %';
+
+          lcdAmpBox.className = 'lcd-screen rounded-xl p-3 flex flex-col justify-between';
+          lcdAmpTitle.textContent = state.viewMode === 'firF' ? 'AMPERMETRU (Înlocuit de Firul F)' : 'AMPERMETRU (În Serie)';
+          errorModeBanner.classList.add('hidden');
+          labStatusBadge.textContent = 'MONTAJ CORECT (SERIE / PARALEL)';
+          labStatusBadge.className = 'px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+
+          // Vizibilitate elemente SVG
+          svgParallelError.classList.add('hidden');
+          if (state.viewMode === 'firF') {
+            svgSeriesAmmeter.classList.add('hidden');
+            svgSeriesWireF.classList.remove('hidden');
+          } else {
+            svgSeriesAmmeter.classList.remove('hidden');
+            svgSeriesWireF.classList.add('hidden');
+          }
+        } else {
+          // MODUL GREȘEALĂ (Pasul 5.2, punctul 2): Fir în locul ampermetrului, Ampermetrul în paralel cu R!
+          // Ampermetrul scurtcircuitează rezistorul R (U_measured ≈ 0.00 V), curentul este limitat doar de P și Rp
+          var r_th = state.P_total * state.alpha * (1.0 - state.alpha); // kΩ
+          var u_th = state.U_source * state.alpha;                      // V
+          U_measured = 0.00;
+          I_measured = u_th / (r_th + Rp_kOhm);                         // mA (curentul de scurtcircuit prin A)
+          var I_max_5V = state.U_source / Rp_kOhm;                      // ex: 5V / 0.22 kΩ = 22.7 mA
+          I_calc = state.U / state.R_n;
+          R_measured = 0.0;
+          eps = 100.0;
+
+          lcdUVal.textContent = '0,00';
+          lcdIVal.textContent = fmtSig3(I_measured);
+          lcdRatioVal.textContent = '0,00';
+          lcdRnSub.textContent = fmtSig3(state.R_n) + ' kΩ';
+          lcdEpsSub.textContent = 'SCURTCIRCUIT';
+
+          lcdAmpBox.className = 'lcd-screen-danger rounded-xl p-3 flex flex-col justify-between';
+          lcdAmpTitle.textContent = '⚠️ AMPERMETRU ÎN PARALEL!';
+          errorModeBanner.classList.remove('hidden');
+          errorCurrentText.textContent = fmtSig3(I_measured) + ' mA';
+          errorMaxCurrentText.textContent = fmtSig3(I_max_5V) + ' mA';
+
+          labStatusBadge.textContent = '⚠️ GREȘEALĂ: AMPERMETRU ÎN PARALEL';
+          labStatusBadge.className = 'px-2.5 py-1 text-xs font-bold rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40';
+
+          svgSeriesAmmeter.classList.add('hidden');
+          svgSeriesWireF.classList.remove('hidden');
+          svgParallelError.classList.remove('hidden');
+        }
+
+        // Actualizare SVG Schemă
+        var wiperY = 236 - state.alpha * 100; // 236 (jos, 0V) .. 136 (sus, 5V)
+        svgPotWiper.setAttribute('transform', 'translate(0, ' + wiperY.toFixed(1) + ')');
+        svgWiperVertical.setAttribute('y1', wiperY.toFixed(1));
+        svgRpText.textContent = state.R_p + ' Ω';
+        svgRText.textContent = fmtSig3(state.R_n) + ' kΩ';
+        svgAmmeterReading.textContent = fmtSig3(I_measured) + ' mA';
+        svgVoltmeterReading.textContent = fmt(U_measured, 2) + ' V';
+
+        // Actualizare Grafic I = f(U)
+        // Scala: U (0..5V) -> x = 60 + U * 84; I (0..1.2mA) -> y = 260 - I * 200
+        var uEnd = 5.0;
+        var iEnd = uEnd / R_actual;
+        if (iEnd > 1.2) {
+          iEnd = 1.2;
+          uEnd = iEnd * R_actual;
+        }
+        var lineX2 = 60 + uEnd * 84;
+        var lineY2 = 260 - iEnd * 200;
+        graphActiveLine.setAttribute('x2', lineX2.toFixed(1));
+        graphActiveLine.setAttribute('y2', lineY2.toFixed(1));
+
+        var ptU = state.errorMode ? 0 : U_measured;
+        var ptI = state.errorMode ? Math.min(I_measured, 1.2) : Math.min(I_measured, 1.2);
+        var cx = 60 + ptU * 84;
+        var cy = 260 - ptI * 200;
+
+        graphActivePoint.setAttribute('cx', cx.toFixed(1));
+        graphActivePoint.setAttribute('cy', cy.toFixed(1));
+        graphProjX.setAttribute('x1', cx.toFixed(1));
+        graphProjX.setAttribute('x2', cx.toFixed(1));
+        graphProjX.setAttribute('y2', cy.toFixed(1));
+        graphProjY.setAttribute('y1', cy.toFixed(1));
+        graphProjY.setAttribute('y2', cy.toFixed(1));
+        graphProjY.setAttribute('x2', cx.toFixed(1));
+
+        graphPtU.textContent = fmt(U_measured, 2);
+        graphPtI.textContent = fmtSig3(I_measured);
+
+        // Actualizare Calcule Pas cu Pas
+        if (!state.errorMode) {
+          stepCalc1.textContent =
+            'I_calc = U / R_n = ' + fmt(U_measured, 2) + ' V / ' + fmtSig3(state.R_n) + ' kΩ = ' + fmtSig3(I_calc) + ' mA';
+          stepCalc2.textContent =
+            'U / I_măs = ' + fmt(U_measured, 2) + ' V / ' + fmtSig3(I_measured) + ' mA = ' + fmtSig3(R_measured) + ' kΩ';
+          stepCalc3.textContent =
+            'ε = ( |' + fmtSig3(R_measured) + ' − ' + fmtSig3(state.R_n) + '| / ' + fmtSig3(R_measured) + ' ) · 100 % = ' + fmtSig3(eps) + ' %';
+        } else {
+          stepCalc1.textContent =
+            'GREȘEALĂ: Ampermetrul în paralel are R_A ≈ 0 Ω și scurtcircuitează rezistorul R!';
+          stepCalc2.textContent =
+            'Voltmetrul indică U ≈ 0,00 V, iar curentul prin ampermetru urcă la I = ' + fmtSig3(I_measured) + ' mA.';
+          stepCalc3.textContent =
+            'La cursor rotit la 5V, curentul ajunge la 5 V / ' + state.R_p + ' Ω = ' + fmtSig3(state.U_source / Rp_kOhm) + ' mA!';
+        }
+      }
+
+      // Randarea tabelului experimental și a punctelor pe grafic
+      function renderTableAndPoints() {
+        expTableBody.innerHTML = '';
+        graphRecordedPoints.innerHTML = '';
+
+        state.recordedRows.forEach(function (row, idx) {
+          var tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-900/60 transition';
+          tr.innerHTML =
+            '<td class="py-2 px-2 text-slate-400">' + (idx + 1) + '</td>' +
+            '<td class="py-2 px-2 text-amber-300 font-bold">' + fmt(row.U, 2) + '</td>' +
+            '<td class="py-2 px-2 text-sky-300 font-bold">' + fmtSig3(row.I) + '</td>' +
+            '<td class="py-2 px-2 text-emerald-300 font-bold">' + fmtSig3(row.ratio) + '</td>' +
+            '<td class="py-2 px-2 text-slate-200">' + fmtSig3(row.Rn) + '</td>' +
+            '<td class="py-2 px-2 text-purple-300">' + fmtSig3(row.eps) + '%</td>';
+          expTableBody.appendChild(tr);
+
+          // Desenare cerc pe graficul I = f(U)
+          if (row.U <= 5.0 && row.I <= 1.2) {
+            var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', (60 + row.U * 84).toFixed(1));
+            c.setAttribute('cy', (260 - row.I * 200).toFixed(1));
+            c.setAttribute('r', '4.5');
+            c.setAttribute('fill', '#38bdf8');
+            c.setAttribute('stroke', '#0f172a');
+            c.setAttribute('stroke-width', '1.5');
+            graphRecordedPoints.appendChild(c);
+          }
+        });
+      }
+
+      // Popularea inițială cu valorile etalon din Ghidul Profesorului (Secțiunea 6)
+      function loadDefaultTableRows() {
+        state.recordedRows = [
+          { U: 1.00, I: 0.213, ratio: 4.70, Rn: 4.7, eps: 0 },
+          { U: 2.00, I: 0.426, ratio: 4.70, Rn: 4.7, eps: 0 },
+          { U: 3.00, I: 0.638, ratio: 4.70, Rn: 4.7, eps: 0 },
+          { U: 1.00, I: 0.100, ratio: 10.0, Rn: 10.0, eps: 0 },
+          { U: 2.00, I: 0.200, ratio: 10.0, Rn: 10.0, eps: 0 },
+          { U: 3.00, I: 0.300, ratio: 10.0, Rn: 10.0, eps: 0 }
+        ];
+        renderTableAndPoints();
+      }
+
+      // Event Listeners Slidere
+      sliderU.addEventListener('input', function () {
+        state.U = parseFloat(sliderU.value);
+        updateLab();
+      });
+
+      sliderR.addEventListener('input', function () {
+        state.R_n = parseFloat(sliderR.value);
+        updateLab();
+      });
+
+      sliderRp.addEventListener('input', function () {
+        state.R_p = parseInt(sliderRp.value, 10);
+        updateLab();
+      });
+
+      sliderTol.addEventListener('input', function () {
+        state.tolPct = parseFloat(sliderTol.value);
+        updateLab();
+      });
+
+      // Butoane preset Tensiune U
+      document.querySelectorAll('.u-preset-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var preset = btn.getAttribute('data-u-preset');
+          var R_actual = state.R_n * (1.0 + state.tolPct / 100.0);
+          var U_max = getMaxVoltageOnR(R_actual, state.R_p);
+          if (preset === 'max') {
+            state.U = Number(U_max.toFixed(2));
+          } else {
+            state.U = Math.min(parseFloat(preset), Number(U_max.toFixed(2)));
+          }
+          sliderU.value = state.U;
+          updateLab();
+        });
+      });
+
+      // Butoane preset Rezistență R (4,7 kΩ și 10 kΩ)
+      document.querySelectorAll('.r-preset-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.R_n = parseFloat(btn.getAttribute('data-r-preset'));
+          sliderR.value = state.R_n;
+          document.querySelectorAll('.r-preset-btn').forEach(function (b) {
+            b.className = 'r-preset-btn flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-emerald-300 border border-slate-700 transition';
+          });
+          btn.className = 'r-preset-btn flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-emerald-500/30 text-white border border-emerald-400 transition';
+          updateLab();
+        });
+      });
+
+      // Butoane Mod Conectare (Corect vs Greșeală Pas 5.2.2)
+      btnModeNormal.addEventListener('click', function () {
+        state.errorMode = false;
+        btnModeNormal.className = 'px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-emerald-500 bg-emerald-500/20 text-white transition text-left flex items-center justify-between';
+        btnModeError.className = 'px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-slate-700 bg-slate-800/80 text-slate-300 hover:border-rose-500/60 transition text-left flex items-center justify-between';
+        updateLab();
+      });
+
+      btnModeError.addEventListener('click', function () {
+        state.errorMode = true;
+        btnModeError.className = 'px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-rose-500 bg-rose-500/20 text-white transition text-left flex items-center justify-between';
+        btnModeNormal.className = 'px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-slate-700 bg-slate-800/80 text-slate-300 hover:border-emerald-500/60 transition text-left flex items-center justify-between';
+        updateLab();
+      });
+
+      // Butoane mod vizualizare 2 Multimetre vs Firul F
+      document.querySelectorAll('.view-mode-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.viewMode = btn.getAttribute('data-view-mode');
+          document.querySelectorAll('.view-mode-btn').forEach(function (b) {
+            b.className = 'view-mode-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white';
+          });
+          btn.className = 'view-mode-btn px-2.5 py-1 rounded font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40';
+          updateLab();
+        });
+      });
+
+      // Înregistrare punct în tabel
+      document.getElementById('btn-record-point').addEventListener('click', function () {
+        if (state.errorMode) return;
+        var R_actual = state.R_n * (1.0 + state.tolPct / 100.0);
+        var U_m = state.U;
+        var I_m = U_m / R_actual;
+        var ratio = I_m > 0 ? (U_m / I_m) : state.R_n;
+        var eps = ratio > 0 ? (Math.abs(ratio - state.R_n) / ratio) * 100.0 : 0.0;
+        state.recordedRows.push({
+          U: U_m,
+          I: I_m,
+          ratio: ratio,
+          Rn: state.R_n,
+          eps: eps
+        });
+        renderTableAndPoints();
+      });
+
+      document.getElementById('btn-autofill-tables').addEventListener('click', loadDefaultTableRows);
+
+      document.getElementById('btn-clear-table').addEventListener('click', function () {
+        state.recordedRows = [];
+        renderTableAndPoints();
+      });
+
+      // =====================================================================
+      // SECȚIUNEA 3: GENERATORUL DE PROBLEME & AUTOEVALUARE
+      // =====================================================================
+      var currentProblem = null;
+      var scoreCorrect = 0;
+      var scoreTotal = 0;
+      var scoreStreak = 0;
+
+      var elProblemBadgeType = document.getElementById('problem-badge-type');
+      var elProblemBadgeDiff = document.getElementById('problem-badge-diff');
+      var elProblemSourceRef = document.getElementById('problem-source-ref');
+      var elProblemStatement = document.getElementById('problem-statement');
+      var elProblemUnitLabel = document.getElementById('problem-unit-label');
+      var elInputAnswer = document.getElementById('input-student-answer');
+      var elFeedbackContainer = document.getElementById('feedback-container');
+      var elFeedbackTitle = document.getElementById('feedback-title');
+      var elFeedbackSolution = document.getElementById('feedback-solution');
+      var elSelectCategory = document.getElementById('select-problem-category');
+
+      function randomChoice(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function generateProblem() {
+        var cat = elSelectCategory.value;
+        var types = ['type1', 'type2', 'type3', 'type4', 'type5'];
+        var chosenType = cat === 'all' ? randomChoice(types) : cat;
+
+        elFeedbackContainer.classList.add('hidden');
+        elInputAnswer.value = '';
+
+        if (chosenType === 'type1') {
+          // Tipul 1: Calculul raportului U / I (Tabelul 1 și Întrebarea 7.3)
+          var rBase = randomChoice([4.7, 10.0, 2.2, 3.3, 6.8]);
+          var uVal = randomChoice([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]);
+          // Adăugăm o mică variație realistă de afișaj ca în Întrebarea 7.3 (ex: 3.0 V și 0.64 mA -> 4.69 kΩ)
+          var iMeasured = Number((uVal / rBase).toFixed(2));
+          if (iMeasured <= 0) iMeasured = 0.21;
+          var exactRatio = uVal / iMeasured;
+          var ansRounded = Number(exactRatio.toFixed(2));
+
+          currentProblem = {
+            typeLabel: 'Tipul 1 • Raportul U / I (Rezistența din date)',
+            diffLabel: 'Nivel: Mediu',
+            sourceRef: 'Sursă: Caietul de practică Ziua 2 – Tabelul 1 & Secțiunea 7, Întrebarea 3',
+            statement:
+              'Pe un rezistor s-au măsurat cu multimetrul tensiunea U = ' + fmt(uVal, 1) +
+              ' V și intensitatea curentului I = ' + fmt(iMeasured, 2) +
+              ' mA. Calculează raportul U / I (în kΩ), rotunjit la două zecimale:',
+            unit: 'kΩ',
+            expected: ansRounded,
+            tolerance: 0.06,
+            solutionHtml:
+              '<div><strong>1. Formula aplicată:</strong> R = U / I</div>' +
+              '<div><strong>2. Conversie unități:</strong> Cu U în volți (V) și I în miliamperi (mA), raportul U / I iese direct în kiloohmi (kΩ): 1 V / 1 mA = 1 kΩ.</div>' +
+              '<div><strong>3. Înlocuire numerică:</strong> U / I = ' + fmt(uVal, 1) + ' V / ' + fmt(iMeasured, 2) + ' mA = <strong>' + fmt(ansRounded, 2) + ' kΩ</strong></div>'
+          };
+        } else if (chosenType === 'type2') {
+          // Tipul 2: Predicția curentului I = U / R (Tabelul 2 & Provocarea 5.4)
+          var rNom = randomChoice([4.7, 10.0, 2.5, 5.0]);
+          var uSet = randomChoice([1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 4.7]);
+          var iExpected = uSet / rNom;
+          var ansI = Number(iExpected.toFixed(3));
+
+          currentProblem = {
+            typeLabel: 'Tipul 2 • Predicția Curentului (Legea lui Ohm)',
+            diffLabel: 'Nivel: Dificil (Provocarea 5.4)',
+            sourceRef: 'Sursă: Caietul de practică Ziua 2 – Tabelul 2 (10 kΩ) & Secțiunea 5.4 (Provocare)',
+            statement:
+              'În montajul cu rezistorul nominal R = ' + fmtSig3(rNom) +
+              ' kΩ, se reglează din potențiometrul P o tensiune U = ' + fmt(uSet, 1) +
+              ' V la bornele rezistorului. Prezice prin calcul ce intensitate a curentului I (în mA) va indica ampermetrul (cu 3 zecimale):',
+            unit: 'mA',
+            expected: ansI,
+            tolerance: 0.015,
+            solutionHtml:
+              '<div><strong>1. Formula din Legea lui Ohm:</strong> U = R · I  ⇒  I<sub>calc</sub> = U / R</div>' +
+              '<div><strong>2. Înlocuire numerică:</strong> I<sub>calc</sub> = ' + fmt(uSet, 1) + ' V / ' + fmtSig3(rNom) + ' kΩ = <strong>' + fmt(ansI, 3) + ' mA</strong></div>' +
+              '<div><strong>3. Verificare:</strong> ' + fmtSig3(rNom) + ' kΩ · ' + fmt(ansI, 3) + ' mA ≈ ' + fmt(uSet, 1) + ' V.</div>'
+          };
+        } else if (chosenType === 'type3') {
+          // Tipul 3: Calculul abaterii procentuale ε (Pasul 5.2.8: ε = |U/I - Rn| / (U/I) * 100%)
+          var sample = randomChoice([
+            { U: 1.0, I: 0.21, Rn: 4.7, ratio: 4.76 },
+            { U: 2.0, I: 0.43, Rn: 4.7, ratio: 4.65 },
+            { U: 3.0, I: 0.64, Rn: 4.7, ratio: 4.69 },
+            { U: 2.0, I: 0.195, Rn: 10.0, ratio: 10.26 },
+            { U: 3.0, I: 0.305, Rn: 10.0, ratio: 9.84 }
+          ]);
+          var epsExact = (Math.abs(sample.ratio - sample.Rn) / sample.ratio) * 100.0;
+          var ansEps = Number(epsExact.toFixed(2));
+
+          currentProblem = {
+            typeLabel: 'Tipul 3 • Calculul Abaterii Relativă ε (%)',
+            diffLabel: 'Nivel: Mediu',
+            sourceRef: 'Sursă: Caietul de practică Ziua 2 – Secțiunea 5.2, Pasul 8 (Formula abaterii)',
+            statement:
+              'Pentru un rezistor cu valoarea nominală R_n = ' + fmtSig3(sample.Rn) +
+              ' kΩ, s-a obținut din măsurători raportul U / I = ' + fmt(sample.ratio, 2) +
+              ' kΩ. Calculează abaterea procentuală ε (%) față de valoarea măsurată U / I:',
+            unit: '%',
+            expected: ansEps,
+            tolerance: 0.15,
+            solutionHtml:
+              '<div><strong>1. Formula abaterii (Secțiunea 5.2, pasul 8):</strong> ε = ( |U/I − R<sub>n</sub>| / (U/I) ) · 100 %</div>' +
+              '<div><strong>2. Diferența absolută:</strong> |' + fmt(sample.ratio, 2) + ' − ' + fmtSig3(sample.Rn) + '| = ' + fmt(Math.abs(sample.ratio - sample.Rn), 2) + ' kΩ</div>' +
+              '<div><strong>3. Calcul procentual:</strong> ε = ( ' + fmt(Math.abs(sample.ratio - sample.Rn), 2) + ' / ' + fmt(sample.ratio, 2) + ' ) · 100 % = <strong>' + fmt(ansEps, 2) + ' %</strong></div>'
+          };
+        } else if (chosenType === 'type4') {
+          // Tipul 4: Proporționalitate directă fără calculul rezistenței (Întrebarea 7.4)
+          var u1 = randomChoice([1.0, 1.2, 1.5]);
+          var mult = randomChoice([2, 3, 4]);
+          var u2 = Number((u1 * mult).toFixed(1));
+          var i1 = randomChoice([0.15, 0.22, 0.32, 0.40]);
+          var i2 = Number((i1 * mult).toFixed(2));
+
+          currentProblem = {
+            typeLabel: 'Tipul 4 • Proporționalitate Directă U și I',
+            diffLabel: 'Nivel: Dificil (Întrebarea 4)',
+            sourceRef: 'Sursă: Caietul de practică Ziua 2 – Secțiunea 7, Întrebarea 4',
+            statement:
+              'Prin același rezistor trec I₁ = ' + fmt(i1, 2) +
+              ' mA atunci când tensiunea la bornele lui este U₁ = ' + fmt(u1, 1) +
+              ' V. Ce intensitate a curentului I₂ (în mA) te aștepți să treacă prin el la tensiunea U₂ = ' + fmt(u2, 1) +
+              ' V, fără să calculezi rezistența?',
+            unit: 'mA',
+            expected: i2,
+            tolerance: 0.01,
+            solutionHtml:
+              '<div><strong>1. Observație:</strong> Pentru același rezistor, raportul U / I rămâne constant (curentul este direct proporțional cu tensiunea).</div>' +
+              '<div><strong>2. Factorul de creștere a tensiunii:</strong> k = U₂ / U₁ = ' + fmt(u2, 1) + ' V / ' + fmt(u1, 1) + ' V = ' + mult + ' (tensiunea a crescut de ' + mult + ' ori).</div>' +
+              '<div><strong>3. Calculul curentului:</strong> Deoarece U crește de ' + mult + ' ori, și curentul I crește de ' + mult + ' ori: I₂ = ' + mult + ' · ' + fmt(i1, 2) + ' mA = <strong>' + fmt(i2, 2) + ' mA</strong>.</div>'
+          };
+        } else {
+          // Tipul 5: Curentul maxim de scurtcircuit limitat de Rp (Ghid secțiunea 5 & 7, Pasul 5.2.2)
+          var rpVal = randomChoice([220, 250, 330, 470, 500, 1000]);
+          var rpK = rpVal / 1000.0;
+          var iMax = Number((5.0 / rpK).toFixed(2));
+
+          currentProblem = {
+            typeLabel: 'Tipul 5 • Rolul Rezistorului de Protecție Rp',
+            diffLabel: 'Nivel: Mediu (SSM & Greșeala 5.2.2)',
+            sourceRef: 'Sursă: Ghidul Profesorului Ziua 2 – Secțiunea 5 & 7 (Pasul 5.2, punctul 2)',
+            statement:
+              'Un elev a legat din greșeală ampermetrul în paralel cu rezistorul R (scurtcircuitându-l) și a rotit cursorul potențiometrului P până la capătul de 5 V. Știind că rezistorul de protecție în serie este R_p = ' + rpVal +
+              ' Ω, calculează curentul maxim I_max (în mA) care trece prin ampermetru:',
+            unit: 'mA',
+            expected: iMax,
+            tolerance: 0.15,
+            solutionHtml:
+              '<div><strong>1. Explicație fizică:</strong> Ampermetrul în paralel scurtcircuitează rezistorul R, iar cu cursorul la capătul de 5 V, singura rezistență rămasă în serie cu sursa de 5 V este rezistorul de protecție R<sub>p</sub>.</div>' +
+              '<div><strong>2. Conversie în kΩ:</strong> R<sub>p</sub> = ' + rpVal + ' Ω = ' + fmt(rpK, 3) + ' kΩ.</div>' +
+              '<div><strong>3. Aplicarea Legii lui Ohm:</strong> I<sub>max</sub> = U<sub>sursă</sub> / R<sub>p</sub> = 5 V / ' + fmt(rpK, 3) + ' kΩ = <strong>' + fmt(iMax, 2) + ' mA</strong>.</div>'
+          };
+        }
+
+        elProblemBadgeType.textContent = currentProblem.typeLabel;
+        elProblemBadgeDiff.textContent = currentProblem.diffLabel;
+        elProblemSourceRef.textContent = currentProblem.sourceRef;
+        elProblemStatement.textContent = currentProblem.statement;
+        elProblemUnitLabel.textContent = currentProblem.unit;
+      }
+
+      function checkStudentAnswer() {
+        if (!currentProblem) return;
+        var raw = elInputAnswer.value.trim().replace(',', '.');
+        var val = parseFloat(raw);
+
+        elFeedbackContainer.classList.remove('hidden');
+
+        if (isNaN(val)) {
+          elFeedbackContainer.className = 'rounded-xl p-5 border-2 border-amber-500 bg-amber-950/40 space-y-3';
+          elFeedbackTitle.className = 'font-extrabold text-base text-amber-300 flex items-center gap-2';
+          elFeedbackTitle.textContent = '⚠️ Te rugăm să introduci o valoare numerică înainte de verificare!';
+          elFeedbackSolution.innerHTML = '<div>Exemplu de format acceptat: <strong>' + fmt(currentProblem.expected, 2) + '</strong></div>';
+          return;
+        }
+
+        scoreTotal += 1;
+        var diff = Math.abs(val - currentProblem.expected);
+        var isCorrect = diff <= currentProblem.tolerance;
+
+        if (isCorrect) {
+          scoreCorrect += 1;
+          scoreStreak += 1;
+          elFeedbackContainer.className = 'rounded-xl p-5 border-2 border-emerald-500 bg-emerald-950/40 space-y-3';
+          elFeedbackTitle.className = 'font-extrabold text-base text-emerald-300 flex items-center gap-2';
+          elFeedbackTitle.textContent = '✅ Răspuns Corect! Excelent! (' + fmt(currentProblem.expected, 2) + ' ' + currentProblem.unit + ')';
+        } else {
+          scoreStreak = 0;
+          elFeedbackContainer.className = 'rounded-xl p-5 border-2 border-rose-500 bg-rose-950/40 space-y-3';
+          elFeedbackTitle.className = 'font-extrabold text-base text-rose-300 flex items-center gap-2';
+          elFeedbackTitle.textContent =
+            '❌ Răspuns incorect (Ai introdus ' + fmt(val, 2) + ' ' + currentProblem.unit +
+            ', valoarea corectă este ' + fmt(currentProblem.expected, 2) + ' ' + currentProblem.unit + '). Vezi rezolvarea pas cu pas:';
+        }
+
+        elFeedbackSolution.innerHTML = currentProblem.solutionHtml;
+
+        document.getElementById('score-correct').textContent = scoreCorrect.toString();
+        document.getElementById('score-total').textContent = scoreTotal.toString();
+        document.getElementById('score-streak').textContent = 'Serie: ' + scoreStreak + ' 🔥';
+      }
+
+      document.getElementById('btn-generate-problem').addEventListener('click', generateProblem);
+      elSelectCategory.addEventListener('change', generateProblem);
+      document.getElementById('btn-check-answer').addEventListener('click', checkStudentAnswer);
+      elInputAnswer.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkStudentAnswer();
+        }
+      });
+
+      // Chestionarul rapid de concepte și depanare (dreapta jos)
+      var quizExplanations = {
+        q1: {
+          ok: '✅ Corect! Conform Legii lui Ohm (I = U / R), pentru același rezistor, când tensiunea U se dublează, intensitatea curentului I crește tot de două ori.',
+          err: '❌ Recitește observația de la Tabelul 1: raportul U / I este constant, deci când U crește de 2 ori, și curentul I crește de 2 ori!'
+        },
+        q2: {
+          ok: '✅ Corect! Ampermetrul are rezistența internă foarte mică și scurtcircuitează rezistorul R, deci voltmetrul arată aproape 0 V.',
+          err: '❌ Atenție: Ampermetrul în paralel scurtcircuitează rezistorul R! De aceea voltmetrul va indica aproape 0 V.'
+        },
+        q3: {
+          ok: '✅ Corect! Dacă firul roșu a rămas în borna V (care are rezistență internă uriașă) sau comutatorul nu e pe mA, aparatul nu măsoară curentul.',
+          err: '❌ Rezistorul Rp = 220 Ω doar limitează curentul de scurtcircuit, nu blochează circuitul. Cauza reală este firul roșu rămas în borna V!'
+        }
+      };
+
+      document.querySelectorAll('.quiz-opt-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var qId = btn.getAttribute('data-q');
+          var isCorr = btn.getAttribute('data-correct') === 'true';
+          var msgEl = document.getElementById('quiz-msg-' + qId);
+
+          document.querySelectorAll('.quiz-opt-btn[data-q="' + qId + '"]').forEach(function (b) {
+            b.className = 'quiz-opt-btn p-2 rounded-lg bg-slate-900 border border-slate-700 text-left text-slate-300';
+          });
+
+          if (isCorr) {
+            btn.className = 'quiz-opt-btn p-2 rounded-lg bg-emerald-500/20 border-2 border-emerald-400 text-left text-white font-bold';
+            msgEl.className = 'text-xs pt-1 font-medium text-emerald-300';
+            msgEl.textContent = quizExplanations[qId].ok;
+          } else {
+            btn.className = 'quiz-opt-btn p-2 rounded-lg bg-rose-500/20 border-2 border-rose-400 text-left text-white font-bold';
+            msgEl.className = 'text-xs pt-1 font-medium text-rose-300';
+            msgEl.textContent = quizExplanations[qId].err;
+          }
+          msgEl.classList.remove('hidden');
+        });
+      });
+
+      // Inițializare la încărcarea paginii
+      loadDefaultTableRows();
+      updateLab();
+      generateProblem();
+    })();
+  </script>
+</body>
+</html>
