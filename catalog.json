@@ -3,7 +3,8 @@
     "title": "Portal Tehnic Educațional — Electronică, Automatizări și Calculatoare",
     "institution": "Liceul Tehnologic „Ioniță G. Andron” Negrești Oaș",
     "author": "prof. ing. Ștefan Dan POP",
-    "version": "1.4.0"
+    "schoolYear": "2026-2027",
+    "version": "1.5.0"
   },
   "classes": [
     {
@@ -115,6 +116,37 @@
             "worksheets": 6,
             "assessments": 3
           }
+        },
+        {
+          "id": "ix-m3",
+          "code": "M3",
+          "title": "Instalații electrice",
+          "fullTitle": "M3 Instalații electrice",
+          "path": "clasa-X/M3-Instalatii-electrice",
+          "sharedWith": "x-m3",
+          "type": "Modul de specialitate",
+          "summary": "Proiectarea, execuția, verificarea și întreținerea instalațiilor electrice de iluminat și forță de joasă tensiune, aparataj de protecție și scheme monofilare și multifilare.",
+          "topics": [
+            "Conductoare, cabluri, tuburi de protecție și accesorii de montaj",
+            "Scheme electrice pentru instalații de iluminat și prize (simplă, dublă aprindere, cap-scară, cruce)",
+            "Aparataj electric de comandă și protecție (siguranțe fuzibile, întrerupătoare automate, DDR)",
+            "Tablouri electrice de distribuție și instalații de legare la pământ",
+            "Normative tehnice (I7) și măsuri de electrosecuritate în instalațiile de joasă tensiune"
+          ],
+          "resources": {
+            "courses": 12,
+            "labs": 10,
+            "worksheets": 9,
+            "assessments": 4
+          },
+          "lucrari": [],
+          "admin": {
+            "schoolYear": "2026-2027",
+            "sharedSourceId": "x-m3",
+            "sharedPath": "clasa-X/M3-Instalatii-electrice",
+            "officialCodeConfirmed": false,
+            "note": "Partajează același conținut și aceleași fișiere de materiale cu intrarea x-m3 (clasa-X/M3-Instalatii-electrice) în anul școlar 2026–2027. Codul oficial al modulului pentru clasa a IX-a nu a putut fi confirmat din documentele proiectului (păstrat M3 fără a inventa alt cod)."
+          }
         }
       ]
     },
@@ -189,6 +221,14 @@
             "labs": 10,
             "worksheets": 9,
             "assessments": 4
+          },
+          "lucrari": [],
+          "admin": {
+            "status": "temporary",
+            "schoolYear": "2026-2027",
+            "reviewFor": "2027-2028",
+            "autoRemove": false,
+            "note": "Intrare temporară la clasa a X-a pentru anul școlar 2026–2027. Trebuie revizuită pentru anul școlar 2027–2028; nu se elimină automat."
           }
         }
       ]
