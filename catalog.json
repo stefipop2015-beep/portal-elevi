@@ -49,6 +49,47 @@
               "titlu": "Verificarea experimentală a Legii lui Ohm",
               "cale_simulator": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-LAB05/simulator.html",
               "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-LAB05/fisa-laborator.pdf"
+            },
+            {
+              "id": "m2-fl09",
+              "cod": "M2-FL09",
+              "titlu": "Sarcina electrică. Câmpul electric. Legea lui Coulomb",
+              "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL09-sarcina-camp-coulomb/fisa-documentare.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "Fișa 1 - Sarcina electrică",
+                  "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL09-sarcina-camp-coulomb/fisa-lucru-1-sarcina-electrica.pdf"
+                },
+                {
+                  "titlu": "Fișa 2 - Legea lui Coulomb",
+                  "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL09-sarcina-camp-coulomb/fisa-lucru-2-legea-lui-coulomb.pdf"
+                },
+                {
+                  "titlu": "Fișa 3 - Câmpul electric",
+                  "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL09-sarcina-camp-coulomb/fisa-lucru-3-campul-electric.pdf"
+                }
+              ]
+            },
+            {
+              "id": "m2-fl10",
+              "cod": "M2-FL10",
+              "titlu": "Tensiunea electrică",
+              "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL10-tensiunea-electrica/fisa-lucru-4-tensiunea-electrica.pdf"
+            },
+            {
+              "id": "m2-fl11",
+              "cod": "M2-FL11",
+              "titlu": "Capacitatea electrică și gruparea condensatoarelor",
+              "fise_lucru": [
+                {
+                  "titlu": "Fișa 5 - Capacitatea electrică",
+                  "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL11-capacitate-condensatoare/fisa-lucru-5-capacitatea-electrica.pdf"
+                },
+                {
+                  "titlu": "Fișa 6 - Gruparea condensatoarelor",
+                  "cale_pdf": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-FL11-capacitate-condensatoare/fisa-lucru-6-gruparea-condensatoarelor.pdf"
+                }
+              ]
             }
           ]
         },
