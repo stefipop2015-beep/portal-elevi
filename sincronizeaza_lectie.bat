@@ -1,7 +1,7 @@
 @echo off
 if "%~1"=="" (
     echo [EROARE] Specificati calea folderului lectiei din 05_materiale.
-    echo Utilizare: sincronizeaza_lectie.bat "D:\01.WorkspaceCLAUDE\echipa-didactica-constructie\05_materiale\2026-2027\clasa-IX\CAIP-Ochiul-electronistului\CAIP-Z2-tensiune-curent-ohm"
+    echo Utilizare: sincronizeaza_lectie.bat "D:\01.WorkspaceCLAUDE\echipa-didactica-constructie\05_materiale\2026-2027\clasa-IX\M4-CAIP-Ochiul-electronistului\CAIP-Z2-tensiune-curent-ohm"
     exit /b 1
 )
 set "LECTIE_SURSA=%~1"

@@ -11,7 +11,7 @@ Reguli de sincronizare:
   4. Ignoră complet directorul "iesire/profesor/".
 
 Utilizare:
-  python sincronizeaza_lectie.py "D:\01.WorkspaceCLAUDE\echipa-didactica-constructie\05_materiale\2026-2027\clasa-IX\CAIP-Ochiul-electronistului\CAIP-Z2-tensiune-curent-ohm"
+  python sincronizeaza_lectie.py "D:\01.WorkspaceCLAUDE\echipa-didactica-constructie\05_materiale\2026-2027\clasa-IX\M4-CAIP-Ochiul-electronistului\CAIP-Z2-tensiune-curent-ohm"
 """
 
 import argparse
