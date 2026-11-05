@@ -224,7 +224,41 @@
             "labs": 10,
             "worksheets": 10,
             "assessments": 4
-          }
+          },
+          "lucrari": [
+            {
+              "id": "m1-pn01",
+              "cod": "M1-PN01",
+              "titlu": "Semiconductoare și joncțiunea PN (S13–S15)",
+              "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/01-s13-fisa-de-documentare-materiale-semiconductoare.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "S13: Materiale semiconductoare (Doc)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/01-s13-fisa-de-documentare-materiale-semiconductoare.pdf"
+                },
+                {
+                  "titlu": "S13: De la siliciu la tipurile N și P (Lucru)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/02-s13-fisa-de-lucru-de-la-siliciu-la-tipurile-n-si-p.pdf"
+                },
+                {
+                  "titlu": "S14: Formarea și polarizarea joncțiunii PN (Doc)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/03-s14-fisa-de-documentare-formarea-si-polarizarea-jonctiunii-pn.pdf"
+                },
+                {
+                  "titlu": "S14: Joncțiunea PN în trei situații (Lucru)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/04-s14-fisa-de-lucru-jonctiunea-pn-in-trei-situatii.pdf"
+                },
+                {
+                  "titlu": "S15: Modele echivalente și regim dinamic (Doc)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/05-s15-fisa-de-documentare-modele-echivalente-si-regim-dinamic.pdf"
+                },
+                {
+                  "titlu": "S15: Curentul și trecerea în blocare (Lucru)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/06-s15-fisa-de-lucru-calculul-curentului-si-trecerea-in-blocare.pdf"
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "x-m2",
