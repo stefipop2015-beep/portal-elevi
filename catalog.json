@@ -98,7 +98,7 @@
           "code": "CAIP",
           "title": "Ochiul electronistului",
           "fullTitle": "CAIP Ochiul electronistului",
-          "path": "clasa-IX/CAIP-Ochiul-electronistului",
+          "path": "clasa-IX/M4-CAIP-Ochiul-electronistului",
           "type": "Curriculum adaptat / Aplicații practice",
           "summary": "Identificarea vizuală și instrumentală a componentelor pasive și active, citirea codurilor de marcare, interpretarea schemelor electronice și inspecția cablajelor imprimate.",
           "lucrari": [
@@ -106,20 +106,26 @@
               "id": "caip-ssm",
               "cod": "CAIP-SSM",
               "titlu": "Instruire SSM și Securitatea Muncii în Laborator",
-              "cale_pdf": "./clasa-IX/CAIP-Ochiul-electronistului/CAIP-SSM/instruire-ssm.pdf"
+              "cale_pdf": "./clasa-IX/M4-CAIP-Ochiul-electronistului/CAIP-SSM/instruire-ssm.pdf"
             },
             {
               "id": "caip-z1",
               "cod": "CAIP-Z1",
               "titlu": "Aparate de măsură și analiza erorilor experimentale",
-              "cale_pdf": "./clasa-IX/CAIP-Ochiul-electronistului/CAIP-Z1/caiet-ziua-1.pdf"
+              "cale_pdf": "./clasa-IX/M4-CAIP-Ochiul-electronistului/CAIP-Z1/caiet-ziua-1.pdf"
             },
             {
               "id": "caip-z2",
               "cod": "CAIP-Z2",
               "titlu": "Studiul rezistorului și Legea lui Ohm",
-              "cale_simulator": "./clasa-IX/CAIP-Ochiul-electronistului/CAIP-Z2/simulator.html",
-              "cale_pdf": "./clasa-IX/CAIP-Ochiul-electronistului/CAIP-Z2/caiet-ziua-2.pdf"
+              "cale_simulator": "./clasa-IX/M4-CAIP-Ochiul-electronistului/CAIP-Z2/simulator.html",
+              "cale_pdf": "./clasa-IX/M4-CAIP-Ochiul-electronistului/CAIP-Z2/caiet-ziua-2.pdf"
+            },
+            {
+              "id": "caip-z3",
+              "cod": "CAIP-Z3",
+              "titlu": "Circuite electrice și măsurarea rezistenței",
+              "cale_pdf": "./clasa-IX/M4-CAIP-Ochiul-electronistului/CAIP-Z3-circuite-si-rezistenta/caiet-ziua-3.pdf"
             }
           ],
           "topics": [
