@@ -24,6 +24,26 @@
 .portal-doc-item .button svg{width:13px;height:13px}
 @media(max-width:700px){.portal-doc-item{flex-direction:column;align-items:flex-start;gap:.75rem}.portal-doc-actions{width:100%}.portal-doc-item .button{min-height:40px;flex:1}}
 
+
+.search-wrap{position:relative;flex:1;min-width:260px}
+.search-wrap label{display:block;font-weight:700;font-size:.85rem;margin-bottom:.4rem}
+.search-wrap input{width:100%;padding:.8rem 1rem;color:white;background:#0d1e31;border:1px solid #617b91;border-radius:9px}
+.search-wrap input:focus{border-color:var(--mint);outline:none;box-shadow:0 0 0 3px rgba(56,225,188,0.2)}
+.search-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--panel);border:1px solid #3f6282;border-radius:12px;box-shadow:0 18px 45px rgba(0,0,0,0.75);list-style:none;margin:0;padding:.4rem;z-index:75;max-height:360px;overflow-y:auto}
+.search-suggestions[hidden]{display:none}
+.search-sugg-item{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.55rem .8rem;border-radius:8px;cursor:pointer;color:var(--text);text-decoration:none;transition:background .14s}
+.search-sugg-item:hover,.search-sugg-item:focus-visible{background:#183654;color:#fff}
+.search-sugg-main{display:flex;align-items:center;gap:.7rem;min-width:0;flex:1}
+.search-sugg-icon{width:18px;height:18px;flex-shrink:0;color:var(--item-accent,var(--mint));display:inline-flex;align-items:center}
+.search-sugg-icon svg{width:18px;height:18px}
+.search-sugg-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.search-sugg-title{font-size:.88rem;font-weight:700;color:#fff;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-sugg-meta{font-size:.74rem;color:var(--muted)}
+.search-sugg-badge{font-size:.72rem;font-weight:750;color:#9edfff;background:#09192b;border:1px solid #2e4d6b;padding:.2rem .5rem;border-radius:5px;flex-shrink:0}
+.search-sugg-badge.badge-sim{color:#55fbd4;border-color:#2a7e78;background:#0d2d33}
+.search-sugg-all{padding:.45rem .8rem;text-align:center;font-size:.78rem;font-weight:700;color:var(--mint);border-top:1px solid var(--line);cursor:pointer;margin-top:.3rem}
+.search-sugg-all:hover{color:#fff;text-decoration:underline}
+
 </style>
 </head>
 <body><a class="skip" href="#continut">Sari la conținut</a>
@@ -31,7 +51,7 @@
 <main id="continut"><div class="hero" id="inceput"><div class="wrap hero-inner"><div class="hero-content"><div class="eyebrow">PENTRU ELEVII DIN CLASELE IX–XII</div><h1>Învață tehnica,<br><span>pas cu pas</span></h1><p>Electronică, electrotehnică și automatizări, explicate clar, cu exemple practice, simulatoare și resurse pentru ore și studiu individual.</p><a class="button" href="#clase">Explorează modulele <span aria-hidden="true">→</span></a></div></div></div>
 <section id="noutati" class="news-section"><div class="wrap"><div class="news-head"><div><div class="eyebrow">Actualizări recente</div><h2>Noutăți în portal</h2><p class="lead" style="margin-bottom:0">Ultimele lucrări practice, simulatoare și fișe de documentare adăugate.</p></div><a href="#module" class="news-all-link">Vezi tot catalogul <span aria-hidden="true">→</span></a></div><ul class="portal-doc-list" id="newsList" role="list"></ul></div></section>
 <section id="clase"><div class="wrap"><div class="eyebrow">Alege drumul tău</div><h2>Alege clasa ta</h2><p class="lead">Descoperă modulele și temele din fiecare an de studiu.</p><div class="classes" id="classCards"></div></div></section>
-<section id="module" class="catalog"><div class="wrap"><div class="eyebrow">Catalogul disciplinelor</div><h2>Explorează modulele</h2><p class="lead">Alege o clasă sau caută după modul, temă ori activitate.</p><div class="toolbar"><div class="search"><label for="search">Caută în catalog</label><input type="search" id="search" placeholder="De exemplu: măsurări, Ohm, robotică…"></div><div class="filters" id="filters" aria-label="Filtrează după clasă"></div></div><p class="status" id="resultStatus" role="status"></p><div class="module-grid" id="moduleGrid"></div><noscript><p>Activează JavaScript pentru a căuta și explora catalogul.</p></noscript></div></section></main>
+<section id="module" class="catalog"><div class="wrap"><div class="eyebrow">Catalogul disciplinelor</div><h2>Explorează modulele</h2><p class="lead">Alege o clasă sau caută după modul, temă ori activitate.</p><div class="toolbar"><div class="search-wrap" id="searchWrap"><label for="search">Caută documente, fișe sau teme</label><input type="search" id="search" placeholder="De exemplu: Ohm, siliciu, măsurări, tranzistor, simulator..." autocomplete="off" aria-autocomplete="list" aria-controls="searchSuggestions"><ul class="search-suggestions" id="searchSuggestions" role="listbox" hidden></ul></div><div class="filters" id="filters" aria-label="Filtrează după clasă"></div></div><p class="status" id="resultStatus" role="status"></p><div class="module-grid" id="moduleGrid"></div><noscript><p>Activează JavaScript pentru a căuta și explora catalogul.</p></noscript></div></section></main>
 <footer id="despre"><div class="wrap" style="text-align:center"><div><strong>Liceul Tehnologic „Ioniță G. Andron” Negrești Oaș</strong></div><div style="margin-top:.25rem">prof. ing. Ștefan Dan POP</div></div></footer>
 <div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden><div class="qr-dialog"><div class="eyebrow" style="margin-bottom:.35rem">Scanare rapidă pe telefon</div><h2 id="qrTitle">Acces Mobil (QR)</h2><p>Scanează codul QR de pe ecran sau proiector pentru a deschide portalul pe telefon:</p><div class="qr-stage" id="qrStage"></div><div><a class="qr-url" id="qrUrlLink" href="https://stefipop2015-beep.github.io/portal-elevi/" target="_blank" rel="noopener">https://stefipop2015-beep.github.io/portal-elevi/</a></div><div><button type="button" class="button secondary" id="qrClose" style="padding:.55rem 1.4rem;font-size:.9rem">Închide</button></div></div></div>
 <script>
@@ -57,18 +77,264 @@ const ICON_CHEVRON='<svg class="nav-chevron" viewBox="0 0 24 24" fill="none" str
 function closeNavDropdown(){const w=byId('navModuleWrap');if(!w)return;if(w.classList){w.classList.remove('is-open');w.classList.add('force-closed');setTimeout(()=>w.classList.remove('force-closed'),350);}else{w.className='nav-dropdown force-closed';}}
 function selectClass(code){active=code;selectedModuleId=null;render();byId('module').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
 function focusModule(code,modId){active=code;selectedModuleId=modId;query='';const s=byId('search');if(s)s.value='';render();byId('module').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+function getAllCatalogDocuments(){
+  const docs=[];
+  const classes=Array.isArray(catalog.classes)?catalog.classes:[];
+  classes.forEach(c=>{
+    (c.modules||[]).forEach(m=>{
+      const works=getModuleWorks(m);
+      works.forEach(w=>{
+        const sim=safePath(w.cale_simulator);
+        const pdf1=safePath(w.cale_pdf);
+        const pdf2=safePath(w.cale_pdf_secundar);
+        const fise=Array.isArray(w.fise_lucru)?w.fise_lucru:[];
+        const inFise=p=>p&&fise.some(f=>safePath(f&&f.cale_pdf)===p);
+        if(sim){
+          docs.push({
+            id:w.id+"-sim",
+            title:w.titlu+" (Simulator interactiv)",
+            fileLabel:"Deschide Simulator",
+            type:"simulator",
+            url:sim,
+            classCode:c.code,
+            className:c.name,
+            moduleId:m.id,
+            moduleCode:m.code,
+            moduleTitle:m.title,
+            workCode:w.cod,
+            workTitle:w.titlu,
+            searchIndex:normal([w.cod,w.titlu,"simulator",m.code,m.title,c.name,...(m.topics||[])].join(" "))
+          });
+        }
+        if(pdf1&&!inFise(pdf1)){
+          const l1=getPdfLabel(pdf1);
+          docs.push({
+            id:w.id+"-pdf1",
+            title:w.titlu+" — "+l1.replace(" (PDF)",""),
+            fileLabel:l1,
+            type:"pdf",
+            url:pdf1,
+            classCode:c.code,
+            className:c.name,
+            moduleId:m.id,
+            moduleCode:m.code,
+            moduleTitle:m.title,
+            workCode:w.cod,
+            workTitle:w.titlu,
+            searchIndex:normal([w.cod,w.titlu,l1,"pdf",m.code,m.title,c.name,...(m.topics||[])].join(" "))
+          });
+        }
+        if(pdf2&&!inFise(pdf2)){
+          const l2=getPdfLabel(pdf2,"Fișă Lucru (PDF)");
+          docs.push({
+            id:w.id+"-pdf2",
+            title:w.titlu+" — "+l2.replace(" (PDF)",""),
+            fileLabel:l2,
+            type:"pdf",
+            url:pdf2,
+            classCode:c.code,
+            className:c.name,
+            moduleId:m.id,
+            moduleCode:m.code,
+            moduleTitle:m.title,
+            workCode:w.cod,
+            workTitle:w.titlu,
+            searchIndex:normal([w.cod,w.titlu,l2,"pdf",m.code,m.title,c.name,...(m.topics||[])].join(" "))
+          });
+        }
+        fise.forEach((f,idx)=>{
+          const fp=safePath(f&&f.cale_pdf);
+          if(fp){
+            const raw=(f.titlu||"").trim();
+            const fl=raw?(raw.endsWith("(PDF)")?raw:raw+" (PDF)"):getPdfLabel(fp,"Fișă Lucru (PDF)");
+            docs.push({
+              id:w.id+"-fisa-"+idx,
+              title:w.titlu+" — "+(raw||fl.replace(" (PDF)","")),
+              fileLabel:fl,
+              type:"pdf",
+              url:fp,
+              classCode:c.code,
+              className:c.name,
+              moduleId:m.id,
+              moduleCode:m.code,
+              moduleTitle:m.title,
+              workCode:w.cod,
+              workTitle:w.titlu,
+              searchIndex:normal([w.cod,w.titlu,raw,fl,"pdf",m.code,m.title,c.name,...(m.topics||[])].join(" "))
+            });
+          }
+        });
+      });
+    });
+  });
+  return docs;
+}
+function updateSearchSuggestions(val){
+  const sugg=byId("searchSuggestions");
+  if(!sugg)return;
+  const q=(val||"").trim();
+  if(!q||q.length<2){
+    sugg.hidden=true;
+    sugg.replaceChildren();
+    return;
+  }
+  const normQ=normal(q);
+  const allDocs=getAllCatalogDocuments();
+  const matched=allDocs.filter(d=>d.searchIndex.includes(normQ));
+  if(matched.length===0){
+    sugg.hidden=true;
+    sugg.replaceChildren();
+    return;
+  }
+  sugg.replaceChildren();
+  matched.slice(0,5).forEach(d=>{
+    const li=el("li","search-sugg-item");
+    li.style.setProperty("--item-accent",colors[d.classCode]||"#38e1bc");
+    li.setAttribute("role","option");
+    const main=el("div","search-sugg-main");
+    const icon=el("span","search-sugg-icon");
+    icon.innerHTML=d.type==="simulator"?ICON_SIM:ICON_DOC;
+    const info=el("div","search-sugg-info");
+    info.append(el("span","search-sugg-title",d.title),el("span","search-sugg-meta",d.className+" · "+d.workCode));
+    main.append(icon,info);
+    const badge=el("span","search-sugg-badge"+(d.type==="simulator"?" badge-sim":""),d.type==="simulator"?"Simulator":"PDF");
+    li.append(main,badge);
+    li.addEventListener("click",()=>{
+      window.open(d.url,"_blank","noopener");
+      sugg.hidden=true;
+    });
+    sugg.append(li);
+  });
+  if(matched.length>5){
+    const all=el("li","search-sugg-all","Vezi toate cele "+matched.length+" documente mai jos ↓");
+    all.addEventListener("click",()=>{
+      sugg.hidden=true;
+      byId("module").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+    });
+    sugg.append(all);
+  }
+  sugg.hidden=false;
+}
 function renderNavMenu(){const menu=byId('navModuleMenu');if(!menu)return;menu.replaceChildren();const classes=Array.isArray(catalog.classes)?catalog.classes:[];classes.forEach(c=>{const accent=colors[c.code]||'#38e1bc';const li=el('li','nav-item');li.style.setProperty('--cls-accent',accent);const btn=el('button','nav-class-btn');btn.type='button';btn.setAttribute('aria-haspopup','true');const lbl=el('span','nav-class-label');const dot=el('span','nav-dot');dot.setAttribute('aria-hidden','true');lbl.append(dot,el('span','',c.name));const ch=el('span');ch.innerHTML=ICON_CHEVRON;btn.append(lbl,ch);btn.addEventListener('click',()=>{closeNavDropdown();selectClass(c.code);});const sub=el('ul','nav-submenu');sub.setAttribute('aria-label','Module '+c.name);sub.append(el('li','nav-submenu-head',c.name+' — Module'));(c.modules||[]).forEach(m=>{const mLi=el('li','nav-subitem');const mBtn=el('button','nav-mod-btn');mBtn.type='button';const info=el('span','nav-mod-info');info.append(el('span','nav-mod-code',m.code),el('span','nav-mod-title',m.title));mBtn.append(info);const wCount=getModuleWorks(m).filter(hasWorkResources).length;if(wCount>0){mBtn.append(el('span','nav-mod-badge',wCount===1?'1 lucrare':`${wCount} lucrări`));}mBtn.addEventListener('click',e=>{e.stopPropagation();closeNavDropdown();focusModule(c.code,m.id);});mLi.append(mBtn);sub.append(mLi);});li.append(btn,sub);menu.append(li);});const allLi=el('li','nav-item nav-item-all');const allBtn=el('button','nav-class-btn');allBtn.type='button';const allLbl=el('span','nav-class-label');const allDot=el('span','nav-dot');allDot.setAttribute('aria-hidden','true');allDot.style.setProperty('--cls-accent','#38e1bc');allLbl.append(allDot,el('span','','Toate clasele'));allBtn.append(allLbl);allBtn.addEventListener('click',()=>{closeNavDropdown();selectClass('ALL');});allLi.append(allBtn);menu.append(allLi);}
 function renderNews(){const list=byId('newsList');if(!list)return;list.replaceChildren();const classes=Array.isArray(catalog.classes)?catalog.classes:[];const items=[];classes.forEach(c=>(c.modules||[]).forEach(m=>{const works=getModuleWorks(m).filter(hasWorkResources);works.forEach(w=>{if(w.recent||w.nou)items.push({c,m,w});});}));if(items.length===0){const priorityIds=['m1-pn01','m2-lab05','caip-z2','m2-fl11'];classes.forEach(c=>(c.modules||[]).forEach(m=>{const works=getModuleWorks(m).filter(hasWorkResources);works.forEach(w=>{if(priorityIds.includes(w.id))items.push({c,m,w});});}));}items.slice(0,4).forEach(({c,m,w})=>{const accent=colors[c.code]||'#38e1bc';const li=el('li','portal-doc-item');li.style.setProperty('--item-accent',accent);const main=el('div','portal-doc-main');const iconWrap=el('span','portal-doc-icon');iconWrap.innerHTML=w.cale_simulator?ICON_SIM:ICON_FOLDER;const info=el('div','portal-doc-info');const title=el('h3','portal-doc-title',w.titlu);const meta=el('div','portal-doc-meta');const tag=el('span','portal-doc-tag',c.name+' · '+m.code);const badge=el('span','badge-new','NOU');const modLink=el('button','portal-doc-link');modLink.type='button';modLink.textContent=m.title+' →';modLink.addEventListener('click',()=>{focusModule(c.code,m.id);});meta.append(tag,badge,modLink);info.append(title,meta);main.append(iconWrap,info);const actions=el('div','portal-doc-actions');resourceLinks(actions,w);li.append(main,actions);list.append(li);});}
-function render(){const classes=Array.isArray(catalog.classes)?catalog.classes:[];const classCards=byId('classCards'),filters=byId('filters'),grid=byId('moduleGrid');classCards.replaceChildren();filters.replaceChildren();grid.replaceChildren();
-classes.forEach(c=>{const b=el('button','class-card');b.type='button';b.style.setProperty('--accent',colors[c.code]||'#36e0b6');b.setAttribute('aria-pressed',String(active===c.code));b.append(el('strong','',c.name),el('span','','Explorează modulele'),el('span','arrow','→'));b.addEventListener('click',()=>selectClass(c.code));classCards.append(b)});
-[{code:'ALL',name:'Toate'},...classes].forEach(c=>{const b=el('button','filter',c.code==='ALL'?c.name:c.code);b.type='button';b.setAttribute('aria-pressed',String(active===c.code));b.addEventListener('click',()=>{active=c.code;selectedModuleId=null;render()});filters.append(b)});
-if(selectedModuleId){let targetM=null,targetC=null;for(const c of classes){const found=(c.modules||[]).find(m=>m.id===selectedModuleId);if(found){targetM=found;targetC=c;break;}}if(targetM&&targetC){const c=targetC,m=targetM;const accent=colors[c.code]||'#38e1bc';const panel=el('article','module-detail-panel');panel.id='mod-'+m.id;panel.style.setProperty('--mod-accent',accent);const head=el('div','module-detail-head');const meta=el('div','module-detail-meta');const tag=el('div','tag',c.name+' · '+m.code+(m.type?' · '+m.type:''));tag.style.color=accent;const title=el('h3','module-detail-title',m.title);const desc=el('p','module-detail-summary',m.summary);meta.append(tag,title,desc);const backBtn=el('button','btn-back-modules');backBtn.type='button';backBtn.innerHTML='<span aria-hidden="true">←</span> <span>Toate modulele clasei</span>';backBtn.addEventListener('click',()=>{selectedModuleId=null;render();});head.append(meta,backBtn);panel.append(head);const switcher=el('div','module-switcher');switcher.append(el('span','module-switcher-label','Schimbă modulul:'));(c.modules||[]).forEach(otherM=>{const tab=el('button','mod-tab'+(otherM.id===m.id?' active':''));tab.type='button';tab.style.setProperty('--mod-accent',accent);tab.append(el('strong','',otherM.code),el('span','',otherM.title));const wCount=getModuleWorks(otherM).filter(hasWorkResources).length;if(wCount>0){tab.append(el('span','mod-tab-badge',`${wCount} `+(wCount===1?'lucrare':'lucrări')))}tab.addEventListener('click',()=>{focusModule(c.code,otherM.id);});switcher.append(tab);});panel.append(switcher);const mWorks=getModuleWorks(m);const works=mWorks.filter(hasWorkResources);if(works.length>0){const list=el('ul','portal-doc-list');list.setAttribute('role','list');works.forEach(w=>{const li=el('li','portal-doc-item');li.style.setProperty('--item-accent',accent);const main=el('div','portal-doc-main');const iconWrap=el('span','portal-doc-icon');iconWrap.innerHTML=w.cale_simulator?ICON_SIM:ICON_DOC;const info=el('div','portal-doc-info');const title=el('h4','portal-doc-title',w.titlu);const meta=el('div','portal-doc-meta');const tag=el('span','portal-doc-tag',w.cod);meta.append(tag);info.append(title,meta);main.append(iconWrap,info);const actions=el('div','portal-doc-actions');resourceLinks(actions,w);li.append(main,actions);list.append(li);});panel.append(list);}else{const empty=el('div','material-empty','Materialele practice și fișele de laborator pentru acest modul sunt în curs de pregătire.');panel.append(empty);}grid.append(panel);byId('resultStatus').textContent='';return;}selectedModuleId=null;}
-let count=0;classes.forEach(c=>(c.modules||[]).forEach(m=>{if(active!=='ALL'&&active!==c.code)return;const mWorks=getModuleWorks(m);const hay=[m.code,m.title,m.fullTitle,m.summary,...(m.topics||[]),...mWorks.flatMap(w=>[w.cod,w.titlu,...(Array.isArray(w.fise_lucru)?w.fise_lucru.map(f=>f&&f.titlu):[])])].join(' ');if(query&&!normal(hay).includes(normal(query)))return;count++;const card=el('article','module');card.id='mod-'+m.id;card.append(el('div','tag',c.name+' · '+m.code),el('h3','',m.title),el('p','',m.summary));const works=mWorks.filter(hasWorkResources);if(works.length>0){const details=el('details');const sumText=works.length===1?'Vezi 1 activitate practică':`Vezi ${works.length} activități practice`;details.append(el('summary','',sumText));works.forEach(w=>{const item=el('div','work-item');const title=el('h4','work-title',w.titlu);const actions=el('div','actions');resourceLinks(actions,w);item.append(title,actions);details.append(item);});card.append(details);}else{card.append(el('div','module-prep','Activități în pregătire'));}grid.append(card)}));byId('resultStatus').textContent=count?`${count} ${count===1?'modul găsit':'module găsite'}.`:'Nu am găsit module. Încearcă alt termen sau selectează toate clasele.';
+function render(){const classes=Array.isArray(catalog.classes)?catalog.classes:[];const classCards=byId("classCards"),filters=byId("filters"),grid=byId("moduleGrid");classCards.replaceChildren();filters.replaceChildren();grid.replaceChildren();
+classes.forEach(c=>{const b=el("button","class-card");b.type="button";b.style.setProperty("--accent",colors[c.code]||"#36e0b6");b.setAttribute("aria-pressed",String(active===c.code));b.append(el("strong","",c.name),el("span","","Explorează modulele"),el("span","arrow","→"));b.addEventListener("click",()=>selectClass(c.code));classCards.append(b)});
+[{code:"ALL",name:"Toate"},...classes].forEach(c=>{const b=el("button","filter",c.code==="ALL"?c.name:c.code);b.type="button";b.setAttribute("aria-pressed",String(active===c.code));b.addEventListener("click",()=>{active=c.code;selectedModuleId=null;render()});filters.append(b)});
+if(selectedModuleId){let targetM=null,targetC=null;for(const c of classes){const found=(c.modules||[]).find(m=>m.id===selectedModuleId);if(found){targetM=found;targetC=c;break;}}if(targetM&&targetC){const c=targetC,m=targetM;const accent=colors[c.code]||"#38e1bc";const panel=el("article","module-detail-panel");panel.id="mod-"+m.id;panel.style.setProperty("--mod-accent",accent);const head=el("div","module-detail-head");const meta=el("div","module-detail-meta");const tag=el("div","tag",c.name+" · "+m.code+(m.type?" · "+m.type:""));tag.style.color=accent;const title=el("h3","module-detail-title",m.title);const desc=el("p","module-detail-summary",m.summary);meta.append(tag,title,desc);const backBtn=el("button","btn-back-modules");backBtn.type="button";backBtn.innerHTML='<span aria-hidden="true">←</span> <span>Toate modulele clasei</span>';backBtn.addEventListener("click",()=>{selectedModuleId=null;render();});head.append(meta,backBtn);panel.append(head);const switcher=el("div","module-switcher");switcher.append(el("span","module-switcher-label","Schimbă modulul:"));(c.modules||[]).forEach(otherM=>{const tab=el("button","mod-tab"+(otherM.id===m.id?" active":""));tab.type="button";tab.style.setProperty("--mod-accent",accent);tab.append(el("strong","",otherM.code),el("span","",otherM.title));const wCount=getModuleWorks(otherM).filter(hasWorkResources).length;if(wCount>0){tab.append(el("span","mod-tab-badge",wCount+" "+(wCount===1?"lucrare":"lucrări")))}tab.addEventListener("click",()=>{focusModule(c.code,otherM.id);});switcher.append(tab);});panel.append(switcher);const mWorks=getModuleWorks(m);const works=mWorks.filter(hasWorkResources);if(works.length>0){const list=el("ul","portal-doc-list");list.setAttribute("role","list");works.forEach(w=>{const li=el("li","portal-doc-item");li.style.setProperty("--item-accent",accent);const main=el("div","portal-doc-main");const iconWrap=el("span","portal-doc-icon");iconWrap.innerHTML=w.cale_simulator?ICON_SIM:ICON_DOC;const info=el("div","portal-doc-info");const title=el("h4","portal-doc-title",w.titlu);const meta=el("div","portal-doc-meta");const tag=el("span","portal-doc-tag",w.cod);meta.append(tag);info.append(title,meta);main.append(iconWrap,info);const actions=el("div","portal-doc-actions");resourceLinks(actions,w);li.append(main,actions);list.append(li);});panel.append(list);}else{const empty=el("div","material-empty","Materialele practice și fișele de laborator pentru acest modul sunt în curs de pregătire.");panel.append(empty);}grid.append(panel);byId("resultStatus").textContent="";return;}selectedModuleId=null;}
+if(query){
+  const normQ=normal(query);
+  const allDocs=getAllCatalogDocuments();
+  const matchedDocs=allDocs.filter(d=>{
+    if(active!=="ALL"&&d.classCode!==active)return false;
+    return d.searchIndex.includes(normQ);
+  });
+  const matchedModules=[];
+  classes.forEach(c=>{
+    (c.modules||[]).forEach(m=>{
+      if(active!=="ALL"&&active!==c.code)return;
+      const mHay=normal([m.code,m.title,m.fullTitle,m.summary,...(m.topics||[])].join(" "));
+      if(mHay.includes(normQ)){
+        const hasDoc=matchedDocs.some(d=>d.moduleId===m.id);
+        if(!hasDoc)matchedModules.push({c,m});
+      }
+    });
+  });
+  const total=matchedDocs.length+matchedModules.length;
+  if(total>0){
+    byId("resultStatus").textContent=total+" "+(total===1?"document găsit":"documente și resurse găsite")+" pentru „"+query+"”.";
+    const list=el("ul","portal-doc-list");
+    list.setAttribute("role","list");
+    matchedDocs.forEach(d=>{
+      const accent=colors[d.classCode]||"#38e1bc";
+      const li=el("li","portal-doc-item");
+      li.style.setProperty("--item-accent",accent);
+      const main=el("div","portal-doc-main");
+      const iconWrap=el("span","portal-doc-icon");
+      iconWrap.innerHTML=d.type==="simulator"?ICON_SIM:ICON_DOC;
+      const info=el("div","portal-doc-info");
+      const title=el("h4","portal-doc-title",d.title);
+      const meta=el("div","portal-doc-meta");
+      const tag=el("span","portal-doc-tag",d.className+" · "+d.moduleCode);
+      const workCode=el("span","",d.workCode);
+      const modLink=el("button","portal-doc-link");
+      modLink.type="button";
+      modLink.textContent=d.moduleTitle+" →";
+      modLink.addEventListener("click",()=>{
+        const s=byId("search");if(s)s.value="";query="";
+        focusModule(d.classCode,d.moduleId);
+      });
+      meta.append(tag,workCode,modLink);
+      info.append(title,meta);
+      main.append(iconWrap,info);
+      const actions=el("div","portal-doc-actions");
+      const btn=makeBtn(
+        d.type==="simulator"?"button btn-sim":"button secondary btn-pdf",
+        d.fileLabel,
+        d.url,
+        d.title,
+        d.type==="simulator"?ICON_SIM:ICON_PDF
+      );
+      actions.append(btn);
+      li.append(main,actions);
+      list.append(li);
+    });
+    matchedModules.forEach(({c,m})=>{
+      const accent=colors[c.code]||"#38e1bc";
+      const li=el("li","portal-doc-item");
+      li.style.setProperty("--item-accent",accent);
+      const main=el("div","portal-doc-main");
+      const iconWrap=el("span","portal-doc-icon");
+      iconWrap.innerHTML=ICON_FOLDER;
+      const info=el("div","portal-doc-info");
+      const title=el("h4","portal-doc-title",m.code+" "+m.title);
+      const meta=el("div","portal-doc-meta");
+      meta.append(el("span","portal-doc-tag",c.name),el("span","",m.summary));
+      info.append(title,meta);
+      main.append(iconWrap,info);
+      const actions=el("div","portal-doc-actions");
+      const modBtn=el("button","button secondary btn-pdf","Deschide Modul");
+      modBtn.type="button";
+      modBtn.addEventListener("click",()=>{
+        const s=byId("search");if(s)s.value="";query="";
+        focusModule(c.code,m.id);
+      });
+      actions.append(modBtn);
+      li.append(main,actions);
+      list.append(li);
+    });
+    grid.append(list);
+    return;
+  }else{
+    byId("resultStatus").textContent="Nu am găsit documente pentru „"+query+"”.";
+    const empty=el("div","material-empty","Nu a fost găsit niciun document sau modul care să conțină termenul căutat. Încearcă alt termen (ex: Ohm, siliciu, măsurări) sau explorează clasele.");
+    grid.append(empty);
+    return;
+  }
+}
+let count=0;classes.forEach(c=>(c.modules||[]).forEach(m=>{if(active!=="ALL"&&active!==c.code)return;const mWorks=getModuleWorks(m);count++;const card=el("article","module");card.id="mod-"+m.id;card.append(el("div","tag",c.name+" · "+m.code),el("h3","",m.title),el("p","",m.summary));const works=mWorks.filter(hasWorkResources);if(works.length>0){const details=el("details");const sumText=works.length===1?"Vezi 1 activitate practică":"Vezi "+works.length+" activități practice";details.append(el("summary","",sumText));works.forEach(w=>{const item=el("div","work-item");const title=el("h4","work-title",w.titlu);const actions=el("div","actions");resourceLinks(actions,w);item.append(title,actions);details.append(item);});card.append(details);}else{card.append(el("div","module-prep","Activități în pregătire"));}grid.append(card)}));byId("resultStatus").textContent=count?(count+" "+(count===1?"modul găsit":"module găsite")+"." ):"Nu am găsit module. Încearcă alt termen sau selectează toate clasele.";
 }
 const QR_URL='https://stefipop2015-beep.github.io/portal-elevi/';
 function buildQrSvg(text){const bytes=Array.from(new TextEncoder().encode(text)),bits=[];const push=(v,n)=>{for(let i=n-1;i>=0;i--)bits.push((v>>i)&1)};push(4,4);push(bytes.length,8);bytes.forEach(b=>push(b,8));push(0,Math.min(4,440-bits.length));while(bits.length%8)bits.push(0);const cw=[];for(let i=0;i<bits.length;i+=8){let b=0;for(let j=0;j<8;j++)b=(b<<1)|bits[i+j];cw.push(b)}for(let i=0;cw.length<55;i++)cw.push(i&1?0x11:0xec);const exp=new Uint8Array(512),log=new Uint8Array(256);let x=1;for(let i=0;i<255;i++){exp[i]=x;log[x]=i;x<<=1;if(x&256)x^=0x11d}for(let i=255;i<512;i++)exp[i]=exp[i-255];const mul=(a,b)=>(a&&b)?exp[log[a]+log[b]]:0;let gen=[1];for(let i=0;i<15;i++){const nx=new Array(gen.length+1).fill(0);for(let j=0;j<gen.length;j++){nx[j]^=gen[j];nx[j+1]^=mul(gen[j],exp[i])}gen=nx}const ec=new Array(15).fill(0);for(const b of cw){const f=b^ec.shift();ec.push(0);for(let i=0;i<15;i++)ec[i]^=mul(gen[i+1],f)}const all=cw.concat(ec),N=29,g=Array.from({length:N},()=>new Array(N).fill(0)),res=Array.from({length:N},()=>new Array(N).fill(false));const finder=(r,c)=>{for(let dy=-1;dy<=7;dy++)for(let dx=-1;dx<=7;dx++){const y=r+dy,x=c+dx;if(y<0||y>=N||x<0||x>=N)continue;const out=dy>=0&&dy<=6&&dx>=0&&dx<=6&&(dy===0||dy===6||dx===0||dx===6),inn=dy>=2&&dy<=4&&dx>=2&&dx<=4;g[y][x]=(out||inn)?1:0;res[y][x]=true}};finder(0,0);finder(0,N-7);finder(N-7,0);for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){g[22+dy][22+dx]=(Math.max(Math.abs(dy),Math.abs(dx))===2||(dy===0&&dx===0))?1:0;res[22+dy][22+dx]=true}for(let i=8;i<N-8;i++){g[6][i]=g[i][6]=(i%2===0)?1:0;res[6][i]=res[i][6]=true}for(let i=0;i<9;i++){if(i!==6)res[8][i]=res[i][8]=true;if(i<8)res[8][N-1-i]=res[N-1-i][8]=true}g[N-8][8]=1;res[N-8][8]=true;let bi=0,up=true;for(let rt=N-1;rt>=1;rt-=2){if(rt===6)rt=5;for(let v=0;v<N;v++){const y=up?(N-1-v):v;for(let dx=0;dx<2;dx++){const c=rt-dx;if(!res[y][c]){const bit=bi<all.length*8?((all[bi>>3]>>(7-(bi&7)))&1):0;bi++;g[y][c]=bit^(((y+c)%2===0)?1:0)}}}up=!up}const fmt=0x77c4,p1=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]],p2=[[N-1,8],[N-2,8],[N-3,8],[N-4,8],[N-5,8],[N-6,8],[N-7,8],[8,N-8],[8,N-7],[8,N-6],[8,N-5],[8,N-4],[8,N-3],[8,N-2],[8,N-1]];for(let i=0;i<15;i++){const bit=(fmt>>(14-i))&1;g[p1[i][0]][p1[i][1]]=bit;g[p2[i][0]][p2[i][1]]=bit}let d='';for(let y=0;y<N;y++)for(let c=0;c<N;c++)if(g[y][c])d+=`M${c+2},${y+2}h1v1h-1z`;return `<svg viewBox="0 0 ${N+4} ${N+4}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Cod QR către ${text}"><rect width="100%" height="100%" fill="#fff"/><path d="${d}" fill="#041527"/></svg>`;}
 function initQr(){const svg=buildQrSvg(QR_URL),apiUrl='https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data='+encodeURIComponent(QR_URL);const mini=byId('qrMini'),stage=byId('qrStage'),modal=byId('qrModal'),btn=byId('qrBtn'),close=byId('qrClose');if(mini)mini.innerHTML=svg;if(stage){stage.innerHTML=svg;const img=el('img');img.src=apiUrl;img.alt='Cod QR pentru '+QR_URL;img.loading='lazy';img.addEventListener('load',()=>{stage.replaceChildren(img)});img.addEventListener('error',()=>{});}if(btn&&modal){const openModal=()=>{modal.hidden=false;if(close)close.focus()};const closeModal=()=>{modal.hidden=true;btn.focus()};btn.addEventListener('click',openModal);if(close)close.addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeModal()});}}
-byId('search').addEventListener('input',e=>{query=e.target.value.trim();if(query)selectedModuleId=null;render()});
-const navWrap=byId('navModuleWrap');if(navWrap){navWrap.addEventListener('mouseleave',()=>{if(navWrap.classList)navWrap.classList.remove('force-closed','is-open');else navWrap.className='nav-dropdown';});}document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNavDropdown()});
+const searchInput=byId("search");
+if(searchInput){
+  searchInput.addEventListener("input",e=>{
+    query=e.target.value.trim();
+    if(query)selectedModuleId=null;
+    updateSearchSuggestions(query);
+    render();
+  });
+  searchInput.addEventListener("focus",e=>{
+    if(query&&query.length>=2)updateSearchSuggestions(query);
+  });
+}
+document.addEventListener("click",e=>{
+  const wrap=byId("searchWrap");
+  if(wrap&&!wrap.contains(e.target)){
+    const s=byId("searchSuggestions");
+    if(s)s.hidden=true;
+  }
+});
+const navWrap=byId('navModuleWrap');if(navWrap){navWrap.addEventListener('mouseleave',()=>{if(navWrap.classList)navWrap.classList.remove('force-closed','is-open');else navWrap.className='nav-dropdown';});}document.addEventListener('keydown',e=>{if(e.key==="Escape"){closeNavDropdown();const s=byId("searchSuggestions");if(s)s.hidden=true;}});
 renderNavMenu();renderNews();render();initQr();fetch('./catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{if(!Array.isArray(data.classes)||!data.classes.every(c=>Array.isArray(c.modules)))throw Error();catalog=data;renderNavMenu();renderNews();render()}).catch(()=>{});
 </script></body></html>
