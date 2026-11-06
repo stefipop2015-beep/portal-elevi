@@ -45,6 +45,7 @@
             },
             {
               "id": "m2-lab05",
+              "recent": true,
               "cod": "M2-LAB05",
               "titlu": "Verificarea experimentală a Legii lui Ohm",
               "cale_simulator": "./clasa-IX/M2-Electrotehnica-si-masurari-tehnice/M2-LAB05/simulator.html",
@@ -78,6 +79,7 @@
             },
             {
               "id": "m2-fl11",
+              "recent": true,
               "cod": "M2-FL11",
               "titlu": "Capacitatea electrică și gruparea condensatoarelor",
               "fise_lucru": [
@@ -116,6 +118,7 @@
             },
             {
               "id": "caip-z2",
+              "recent": true,
               "cod": "CAIP-Z2",
               "titlu": "Studiul rezistorului și Legea lui Ohm",
               "cale_simulator": "./clasa-IX/M4-CAIP-Ochiul-electronistului/CAIP-Z2/simulator.html",
@@ -228,6 +231,7 @@
           "lucrari": [
             {
               "id": "m1-pn01",
+              "recent": true,
               "cod": "M1-PN01",
               "titlu": "Semiconductoare și joncțiunea PN (S13–S15)",
               "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/01-s13-fisa-de-documentare-materiale-semiconductoare.pdf",
