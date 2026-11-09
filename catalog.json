@@ -172,8 +172,7 @@
           "code": "M3",
           "title": "Instalații electrice",
           "fullTitle": "M3 Instalații electrice",
-          "path": "clasa-X/M3-Instalatii-electrice",
-          "sharedWith": "x-m3",
+          "path": "clasa-IX/M3-instalatii-electrice",
           "type": "Modul de specialitate",
           "summary": "Proiectarea, execuția, verificarea și întreținerea instalațiilor electrice de iluminat și forță de joasă tensiune, aparataj de protecție și scheme monofilare și multifilare.",
           "topics": [
@@ -189,13 +188,68 @@
             "worksheets": 9,
             "assessments": 4
           },
-          "lucrari": [],
+          "lucrari": [
+            {
+              "id": "m3-mas01",
+              "cod": "M3-MAS01",
+              "titlu": "Mașini electrice (L1–L6)",
+              "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/01-l1-fisa-de-documentare-introducere-in-masinile-electrice.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "L1: Introducere în mașinile electrice (Doc)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/01-l1-fisa-de-documentare-introducere-in-masinile-electrice.pdf"
+                },
+                {
+                  "titlu": "L1: Clasificare, simboluri și riscuri (Lab)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/02-l1-fisa-de-laborator-clasificare-simboluri-si-riscuri.pdf"
+                },
+                {
+                  "titlu": "L2: Transformatorul electric (Doc)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/04-l2-fisa-de-documentare-transformatorul-electric.pdf"
+                },
+                {
+                  "titlu": "L2: Componente și raport de transformare (Lab)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/05-l2-fisa-de-laborator-componente-si-raport-de-transformare.pdf"
+                },
+                {
+                  "titlu": "L3: Motorul de curent continuu (Doc)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/07-l3-fisa-de-documentare-motorul-de-curent-continuu.pdf"
+                },
+                {
+                  "titlu": "L3: Componentele și funcționarea motorului c.c. (Lab)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/08-l3-fisa-de-laborator-componentele-si-functionarea-motorului-de-curent-continuu.pdf"
+                },
+                {
+                  "titlu": "L4: Motorul asincron (Doc)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/10-l4-fisa-de-documentare-motorul-asincron.pdf"
+                },
+                {
+                  "titlu": "L4: Statorul, rotorul și câmpul învârtitor (Lab)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/11-l4-fisa-de-laborator-statorul-rotorul-si-campul-invartitor.pdf"
+                },
+                {
+                  "titlu": "L5: Specificații tehnice și comparare (Doc)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/13-l5-fisa-de-documentare-specificatii-tehnice-si-comparare.pdf"
+                },
+                {
+                  "titlu": "L5: Plăcuțe indicatoare și comparare (Lab)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/14-l5-fisa-de-laborator-placute-indicatoare-si-comparare.pdf"
+                },
+                {
+                  "titlu": "L6: Verificarea funcționării mașinilor electrice (Doc)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/16-l6-fisa-de-documentare-verificarea-functionarii-masinilor-electrice.pdf"
+                },
+                {
+                  "titlu": "L6: Studii de caz de verificare (Lab)",
+                  "cale_pdf": "./clasa-IX/M3-instalatii-electrice/M3-MAS01-masini-electrice/17-l6-fisa-de-laborator-studii-de-caz-de-verificare.pdf"
+                }
+              ]
+            }
+          ],
           "admin": {
             "schoolYear": "2026-2027",
-            "sharedSourceId": "x-m3",
-            "sharedPath": "clasa-X/M3-Instalatii-electrice",
             "officialCodeConfirmed": false,
-            "note": "Partajează același conținut și aceleași fișiere de materiale cu intrarea x-m3 (clasa-X/M3-Instalatii-electrice) în anul școlar 2026–2027. Codul oficial al modulului pentru clasa a IX-a nu a putut fi confirmat din documentele proiectului (păstrat M3 fără a inventa alt cod)."
+            "note": "Modulul M3 Instalații electrice pentru clasa a IX-a conține tema M3-MAS01 (Mașini electrice L1–L6)."
           }
         }
       ]
