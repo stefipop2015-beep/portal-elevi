@@ -338,7 +338,45 @@
             "labs": 9,
             "worksheets": 12,
             "assessments": 4
-          }
+          },
+          "lucrari": [
+            {
+              "id": "m2x-log01",
+              "cod": "M2X-LOG01",
+              "titlu": "Moduri de exprimare a funcțiilor logice",
+              "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-LOG01-moduri-de-exprimare-functii-logice/01-fisa-documentare-notiuni-si-tabel-de-adevar.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "Fișă de documentare: Noțiuni și tabel de adevăr (Doc)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-LOG01-moduri-de-exprimare-functii-logice/01-fisa-documentare-notiuni-si-tabel-de-adevar.pdf"
+                },
+                {
+                  "titlu": "Fișă de lucru: Noțiuni și tabel de adevăr (Lucru)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-LOG01-moduri-de-exprimare-functii-logice/02-fisa-lucru-notiuni-si-tabel-de-adevar.pdf"
+                }
+              ]
+            },
+            {
+              "id": "m2x-por-s07",
+              "cod": "M2X-POR-S07",
+              "titlu": "Familii de circuite integrate logice și catalog (S07)",
+              "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S07-familii-ci-logice-si-catalog/01-fisa-documentare-familii-ci-logice-capsule-catalog.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "Fișă de documentare: Familii CI logice, capsule, catalog (Doc)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S07-familii-ci-logice-si-catalog/01-fisa-documentare-familii-ci-logice-capsule-catalog.pdf"
+                },
+                {
+                  "titlu": "Fișă de lucru: Familii CI logice, capsule, catalog (Lucru)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S07-familii-ci-logice-si-catalog/02-fisa-lucru-familii-ci-logice-capsule-catalog.pdf"
+                },
+                {
+                  "titlu": "Fișă de laborator: Identificarea pinilor din fișa de catalog (Lab)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S07-familii-ci-logice-si-catalog/03-fisa-laborator-identificarea-pinilor-din-fisa-de-catalog.pdf"
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "x-m3",
