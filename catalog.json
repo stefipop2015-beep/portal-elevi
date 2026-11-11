@@ -375,6 +375,27 @@
                   "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S07-familii-ci-logice-si-catalog/03-fisa-laborator-identificarea-pinilor-din-fisa-de-catalog.pdf"
                 }
               ]
+            },
+            {
+              "id": "m2x-por-s08",
+              "cod": "M2X-POR-S08",
+              "titlu": "Porți logice: NU, ȘI, SAU (S08)",
+              "cale_simulator": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S08-porti-nu-si-sau/simulator-porti.html",
+              "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S08-porti-nu-si-sau/01-fisa-documentare-porti-nu-si-sau.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "Fișă de documentare: Porți NU, ȘI, SAU (Doc)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S08-porti-nu-si-sau/01-fisa-documentare-porti-nu-si-sau.pdf"
+                },
+                {
+                  "titlu": "Fișă de lucru: Porți NU, ȘI, SAU (Lucru)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S08-porti-nu-si-sau/02-fisa-lucru-porti-nu-si-sau.pdf"
+                },
+                {
+                  "titlu": "Fișă de laborator: Verificarea tabelelor în simulator (Lab)",
+                  "cale_pdf": "./clasa-X/M2-Bazele-electronicii-digitale/M2X-POR-S08-porti-nu-si-sau/03-fisa-laborator-verificarea-tabelelor-in-simulator.pdf"
+                }
+              ]
             }
           ]
         },

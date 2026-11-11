@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porțile NU, ȘI și SAU: simulator</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 16px; background: #fafafa; color: #111; }
+  h1 { font-size: 20px; margin: 0 0 4px 0; }
+  p.ajutor { margin: 0 0 6px 0; font-size: 15px; color: #333; }
+  p.legenda { margin: 0 0 14px 0; font-size: 15px; color: #333; }
+  .cul0 { color: #2f6fb5; font-weight: bold; }
+  .cul1 { color: #e0620b; font-weight: bold; }
+  .panouri { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 410px), 1fr)); gap: 14px; align-items: start; }
+  .circuit { background: #fff; border: 1px solid #999; border-radius: 6px; padding: 8px 12px 12px 12px; margin: 0; }
+  .circuit h2 { font-size: 17px; margin: 0 0 6px 0; }
+  .corp { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+  .corp svg { flex: 1 1 240px; min-width: 220px; max-width: 360px; height: auto; display: block; }
+  .corp .tab { flex: 0 1 150px; min-width: 130px; }
+  table.tt { border-collapse: collapse; width: 100%; text-align: center; font-size: 17px; }
+  table.tt caption { font-size: 14px; color: #333; text-align: left; padding: 0 0 4px 0; }
+  table.tt th, table.tt td { border: 1px solid #777; padding: 5px 8px; min-width: 2em; height: 1.6em; }
+  table.tt th { background: #eee; }
+  table.tt tr.activ td { background: #fff0a8; font-weight: bold; }
+  table.tt tr.activ td:first-child { box-shadow: inset 5px 0 0 #0050c8; }
+  .comutator { cursor: pointer; }
+  .comutator:focus { outline: none; }
+  .comutator:focus rect { stroke: #0050c8; stroke-width: 3; }
+  .fir { fill: none; }
+  button { font-size: 15px; padding: 6px 14px; cursor: pointer; }
+  pre#autotest { display: none; }
+  body.test pre#autotest { display: block; background: #fff; border: 1px solid #999; padding: 8px; font-size: 14px; }
+</style>
+</head>
+<body>
+<h1>Porțile NU, ȘI și SAU</h1>
+<p class="ajutor">Apasă pe caseta A sau B ca să schimbi intrarea (0 sau 1). Cercul Y arată ieșirea: gri pentru 0, galben pentru 1. În tabel, rândul evidențiat este combinația curentă; Y apare după ce ai încercat combinația.</p>
+<p class="legenda">Firele: <span class="cul0">albastru subțire = 0</span>, <span class="cul1">portocaliu gros = 1</span>.</p>
+
+<div class="panouri">
+
+<div class="circuit" id="c-nu">
+  <h2>Circuitul 1: poarta NU</h2>
+  <div class="corp">
+  <svg viewBox="0 0 300 140" role="img" aria-label="Poarta NU cu intrarea A și ieșirea Y">
+    <g transform="translate(120,40)">
+      <line class="fir" data-fir="nu-A" x1="-26" y1="30" x2="0" y2="30"/>
+      <path d="M0,0 L0,60 L52,30 Z" fill="#fff" stroke="#000" stroke-width="2.5"/>
+      <circle cx="58" cy="30" r="6" fill="#fff" stroke="#000" stroke-width="2.5"/>
+      <line class="fir" data-fir="nu-Y" x1="64" y1="30" x2="90" y2="30"/>
+    </g>
+    <line class="fir" data-fir="nu-A" x1="74" y1="70" x2="94" y2="70"/>
+    <g class="comutator" id="sw-nu-A" tabindex="0" role="button" aria-label="Comutatorul A">
+      <rect x="14" y="54" width="60" height="32" rx="6" fill="#e8e8e8" stroke="#000" stroke-width="2"/>
+      <text x="44" y="76" text-anchor="middle" font-size="17" font-weight="bold">A = 0</text>
+    </g>
+    <circle id="lamp-nu" cx="229" cy="70" r="19" fill="#ddd" stroke="#000" stroke-width="2.5"/>
+    <text id="y-nu" x="229" y="77" text-anchor="middle" font-size="19" font-weight="bold">0</text>
+    <text x="229" y="110" text-anchor="middle" font-size="17" font-weight="bold">Y</text>
+  </svg>
+  <div class="tab" id="tab-nu"></div>
+  </div>
+</div>
+
+<div class="circuit" id="c-si">
+  <h2>Circuitul 2: poarta ȘI</h2>
+  <div class="corp">
+  <svg viewBox="0 0 300 140" role="img" aria-label="Poarta ȘI cu intrările A și B și ieșirea Y">
+    <g transform="translate(120,40)">
+      <line class="fir" data-fir="si-A" x1="-26" y1="15" x2="0" y2="15"/>
+      <line class="fir" data-fir="si-B" x1="-26" y1="45" x2="0" y2="45"/>
+      <path d="M0,0 L30,0 C46.57,0 60,13.43 60,30 C60,46.57 46.57,60 30,60 L0,60 Z" fill="#fff" stroke="#000" stroke-width="2.5"/>
+      <line class="fir" data-fir="si-Y" x1="60" y1="30" x2="86" y2="30"/>
+    </g>
+    <line class="fir" data-fir="si-A" x1="74" y1="55" x2="94" y2="55"/>
+    <line class="fir" data-fir="si-B" x1="74" y1="85" x2="94" y2="85"/>
+    <g class="comutator" id="sw-si-A" tabindex="0" role="button" aria-label="Comutatorul A">
+      <rect x="14" y="41" width="60" height="28" rx="6" fill="#e8e8e8" stroke="#000" stroke-width="2"/>
+      <text x="44" y="61" text-anchor="middle" font-size="17" font-weight="bold">A = 0</text>
+    </g>
+    <g class="comutator" id="sw-si-B" tabindex="0" role="button" aria-label="Comutatorul B">
+      <rect x="14" y="71" width="60" height="28" rx="6" fill="#e8e8e8" stroke="#000" stroke-width="2"/>
+      <text x="44" y="91" text-anchor="middle" font-size="17" font-weight="bold">B = 0</text>
+    </g>
+    <circle id="lamp-si" cx="225" cy="70" r="19" fill="#ddd" stroke="#000" stroke-width="2.5"/>
+    <text id="y-si" x="225" y="77" text-anchor="middle" font-size="19" font-weight="bold">0</text>
+    <text x="225" y="110" text-anchor="middle" font-size="17" font-weight="bold">Y</text>
+  </svg>
+  <div class="tab" id="tab-si"></div>
+  </div>
+</div>
+
+<div class="circuit" id="c-sau">
+  <h2>Circuitul 3: poarta SAU</h2>
+  <div class="corp">
+  <svg viewBox="0 0 300 140" role="img" aria-label="Poarta SAU cu intrările A și B și ieșirea Y">
+    <g transform="translate(120,40)">
+      <line class="fir" data-fir="sau-A" x1="-19" y1="15" x2="7" y2="15"/>
+      <line class="fir" data-fir="sau-B" x1="-19" y1="45" x2="7" y2="45"/>
+      <path d="M0,0 C26,0 46,10 62,30 C46,50 26,60 0,60 C12,44 12,16 0,0 Z" fill="#fff" stroke="#000" stroke-width="2.5"/>
+      <line class="fir" data-fir="sau-Y" x1="62" y1="30" x2="88" y2="30"/>
+    </g>
+    <line class="fir" data-fir="sau-A" x1="74" y1="55" x2="101" y2="55"/>
+    <line class="fir" data-fir="sau-B" x1="74" y1="85" x2="101" y2="85"/>
+    <g class="comutator" id="sw-sau-A" tabindex="0" role="button" aria-label="Comutatorul A">
+      <rect x="14" y="41" width="60" height="28" rx="6" fill="#e8e8e8" stroke="#000" stroke-width="2"/>
+      <text x="44" y="61" text-anchor="middle" font-size="17" font-weight="bold">A = 0</text>
+    </g>
+    <g class="comutator" id="sw-sau-B" tabindex="0" role="button" aria-label="Comutatorul B">
+      <rect x="14" y="71" width="60" height="28" rx="6" fill="#e8e8e8" stroke="#000" stroke-width="2"/>
+      <text x="44" y="91" text-anchor="middle" font-size="17" font-weight="bold">B = 0</text>
+    </g>
+    <circle id="lamp-sau" cx="227" cy="70" r="19" fill="#ddd" stroke="#000" stroke-width="2.5"/>
+    <text id="y-sau" x="227" y="77" text-anchor="middle" font-size="19" font-weight="bold">0</text>
+    <text x="227" y="110" text-anchor="middle" font-size="17" font-weight="bold">Y</text>
+  </svg>
+  <div class="tab" id="tab-sau"></div>
+  </div>
+</div>
+
+</div>
+
+<p><button type="button" id="reset">Resetare: intrările pe 0, tabelele goale</button></p>
+<pre id="autotest"></pre>
+
+<script>
+(function () {
+  "use strict";
+  var CULOARE = { 0: "#2f6fb5", 1: "#e0620b" };
+  var GROSIME = { 0: "2.5", 1: "4.5" };
+  var NUME = { nu: "NU", si: "ȘI", sau: "SAU" };
+  // Starea intrărilor fiecărui circuit (0 sau 1)
+  var stare = { nu: { A: 0 }, si: { A: 0, B: 0 }, sau: { A: 0, B: 0 } };
+  // Combinațiile din tabelele fișei de laborator, în ordinea lor
+  var combinatii = {
+    nu: [[0], [1]],
+    si: [[0, 0], [0, 1], [1, 0], [1, 1]],
+    sau: [[0, 0], [0, 1], [1, 0], [1, 1]]
+  };
+  // Funcția fiecărei porți
+  var poarta = {
+    nu: function (s) { return s.A === 1 ? 0 : 1; },
+    si: function (s) { return (s.A === 1 && s.B === 1) ? 1 : 0; },
+    sau: function (s) { return (s.A === 1 || s.B === 1) ? 1 : 0; }
+  };
+  // Valorile observate (cheie = combinația de intrare, ex. "01"); celulele neîncercate rămân goale
+  var observat = { nu: {}, si: {}, sau: {} };
+
+  function cheie(c) {
+    return Object.keys(stare[c]).map(function (n) { return stare[c][n]; }).join("");
+  }
+
+  // Construiește tabelul de adevăr al unui circuit (combinațiile sunt scrise de la început)
+  function construiesteTabel(c) {
+    var nume = Object.keys(stare[c]);
+    var t = document.createElement("table");
+    t.className = "tt";
+    t.id = "tt-" + c;
+    var cap = document.createElement("caption");
+    cap.textContent = "Tabelul porții " + NUME[c];
+    t.appendChild(cap);
+    var cap2 = document.createElement("thead"), r0 = document.createElement("tr");
+    nume.concat(["Y"]).forEach(function (h) {
+      var th = document.createElement("th"); th.scope = "col"; th.textContent = h; r0.appendChild(th);
+    });
+    cap2.appendChild(r0); t.appendChild(cap2);
+    var tb = document.createElement("tbody");
+    combinatii[c].forEach(function (comb) {
+      var tr = document.createElement("tr");
+      tr.setAttribute("data-cheie", comb.join(""));
+      comb.forEach(function (v) {
+        var td = document.createElement("td"); td.textContent = String(v); tr.appendChild(td);
+      });
+      var ty = document.createElement("td"); ty.className = "y"; tr.appendChild(ty);
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    document.getElementById("tab-" + c).appendChild(t);
+  }
+
+  function coloreazaFire(c, y) {
+    var s = stare[c];
+    Array.prototype.forEach.call(document.querySelectorAll('[data-fir^="' + c + '-"]'), function (f) {
+      var nume = f.getAttribute("data-fir").split("-")[1];
+      var v = nume === "Y" ? y : s[nume];
+      f.setAttribute("stroke", CULOARE[v]);
+      f.setAttribute("stroke-width", GROSIME[v]);
+    });
+  }
+
+  function afiseaza(c) {
+    var s = stare[c];
+    var y = poarta[c](s);
+    var k = cheie(c);
+    observat[c][k] = y;  // combinația curentă devine observată
+    Object.keys(s).forEach(function (n) {
+      var g = document.getElementById("sw-" + c + "-" + n);
+      g.querySelector("text").textContent = n + " = " + s[n];
+      g.querySelector("rect").setAttribute("fill", s[n] === 1 ? "#cfe6ff" : "#e8e8e8");
+    });
+    document.getElementById("y-" + c).textContent = String(y);
+    document.getElementById("lamp-" + c).setAttribute("fill", y === 1 ? "#ffd400" : "#ddd");
+    coloreazaFire(c, y);
+    // tabelul: valorile observate rămân, rândul activ e evidențiat
+    Array.prototype.forEach.call(document.querySelectorAll("#tt-" + c + " tbody tr"), function (tr) {
+      var kk = tr.getAttribute("data-cheie");
+      tr.querySelector("td.y").textContent = (observat[c][kk] === undefined) ? "" : String(observat[c][kk]);
+      if (kk === k) { tr.className = "activ"; tr.setAttribute("aria-current", "true"); }
+      else { tr.className = ""; tr.removeAttribute("aria-current"); }
+    });
+  }
+
+  function comuta(c, n) {
+    stare[c][n] = stare[c][n] === 1 ? 0 : 1;
+    afiseaza(c);
+  }
+
+  Object.keys(stare).forEach(function (c) {
+    construiesteTabel(c);
+    Object.keys(stare[c]).forEach(function (n) {
+      var g = document.getElementById("sw-" + c + "-" + n);
+      g.addEventListener("click", function () { comuta(c, n); });
+      g.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); comuta(c, n); }
+      });
+    });
+    afiseaza(c);
+  });
+
+  document.getElementById("reset").addEventListener("click", function () {
+    Object.keys(stare).forEach(function (c) {
+      Object.keys(stare[c]).forEach(function (n) { stare[c][n] = 0; });
+      observat[c] = {};
+      afiseaza(c);
+    });
+  });
+
+  // Autoverificare: adaugă #test la adresa paginii. Apasă comutatoarele, compară ieșirea cu valorile
+  // așteptate, verifică tabelele (rând activ, valori păstrate) și resetarea.
+  function autotest() {
+    document.body.className = "test";
+    var asteptat = {
+      nu: [[[0], 1], [[1], 0]],
+      si: [[[0, 0], 0], [[0, 1], 0], [[1, 0], 0], [[1, 1], 1]],
+      sau: [[[0, 0], 0], [[0, 1], 1], [[1, 0], 1], [[1, 1], 1]]
+    };
+    var linii = [], ok = true;
+    function verifica(bun, text) { ok = ok && bun; linii.push(text + (bun ? " OK" : " EROARE")); }
+    function celule(c) {
+      return Array.prototype.map.call(document.querySelectorAll("#tt-" + c + " tbody tr"), function (tr) {
+        return { cheie: tr.getAttribute("data-cheie"), y: tr.querySelector("td.y").textContent, activ: tr.className === "activ" };
+      });
+    }
+    // Starea inițială: intrările pe 0, combinația 0..0 observată, restul goale
+    Object.keys(asteptat).forEach(function (c) {
+      var cl = celule(c);
+      var primaOk = cl[0].activ && cl[0].y === String(asteptat[c][0][1]);
+      var restGol = cl.slice(1).every(function (x) { return x.y === "" && !x.activ; });
+      verifica(primaOk && restGol, "STARE INITIALA " + NUME[c] + ": prima combinatie observata, restul goale");
+    });
+    Object.keys(asteptat).forEach(function (c) {
+      var nume = Object.keys(stare[c]);
+      asteptat[c].forEach(function (rand, idx) {
+        nume.forEach(function (n, i) {
+          var g = document.getElementById("sw-" + c + "-" + n);
+          if (stare[c][n] !== rand[0][i]) { g.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+        });
+        var citit = document.getElementById("y-" + c).textContent;
+        var cl = celule(c);
+        var activOk = cl.filter(function (x) { return x.activ; }).length === 1 && cl[idx].activ;
+        var celulaOk = cl[idx].y === String(rand[1]);
+        var firY = document.querySelector('[data-fir="' + c + '-Y"]').getAttribute("stroke") === CULOARE[rand[1]];
+        verifica(citit === String(rand[1]) && activOk && celulaOk && firY,
+          NUME[c] + " " + rand[0].join("") + " -> " + citit + " (rand activ, celula Y, fir Y)");
+      });
+      // valorile observate se păstrează după ce s-au parcurs toate combinațiile
+      var tot = celule(c).every(function (x, i) { return x.y === String(asteptat[c][i][1]); });
+      verifica(tot, "VALORI PASTRATE " + NUME[c] + ": toate celulele Y completate");
+    });
+    // Revenirea la o combinație anterioară nu șterge celelalte valori
+    (function () {
+      var g = document.getElementById("sw-si-A");
+      g.dispatchEvent(new MouseEvent("click", { bubbles: true })); // A: 1 -> 0, combinația devine 01
+      var cl = celule("si");
+      verifica(cl[1].activ && cl.every(function (x, i) { return x.y === String(asteptat.si[i][1]); }),
+        "REVENIRE ȘI: rand 01 activ, celelalte valori pastrate");
+    })();
+    // Resetarea
+    document.getElementById("reset").dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    Object.keys(asteptat).forEach(function (c) {
+      var cl = celule(c);
+      var intrari = Object.keys(stare[c]).every(function (n) { return stare[c][n] === 0; });
+      var primaOk = cl[0].activ && cl[0].y === String(asteptat[c][0][1]);
+      var restGol = cl.slice(1).every(function (x) { return x.y === "" && !x.activ; });
+      verifica(intrari && primaOk && restGol, "RESETARE " + NUME[c] + ": intrari pe 0, tabel readus la starea initiala");
+    });
+    linii.push(ok ? "REZULTAT: cele 10 combinatii, randul activ, valorile pastrate si resetarea sunt corecte" : "REZULTAT: EXISTA ERORI");
+    document.getElementById("autotest").textContent = linii.join("\n");
+  }
+  if (location.hash === "#test") { autotest(); }
+})();
+</script>
+</body>
+</html>
