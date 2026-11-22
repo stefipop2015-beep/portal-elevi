@@ -315,6 +315,38 @@
                   "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/M1-PN01-semiconductoare-si-jonctiunea-pn/06-s15-fisa-de-lucru-calculul-curentului-si-trecerea-in-blocare.pdf"
                 }
               ]
+            },
+            {
+              "id": "m1-dio01",
+              "cod": "M1-DIO01",
+              "titlu": "Diode semiconductoare",
+              "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/01-fisa-de-documentare-identificarea-diodelor-si-parametri-de-catalog.pdf",
+              "fise_lucru": [
+                {
+                  "titlu": "Identificarea diodelor și parametri de catalog (Doc)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/01-fisa-de-documentare-identificarea-diodelor-si-parametri-de-catalog.pdf"
+                },
+                {
+                  "titlu": "Identificarea diodelor și parametri de catalog (Lucru)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/02-fisa-de-lucru-identificarea-diodelor-si-parametri-de-catalog.pdf"
+                },
+                {
+                  "titlu": "Polarizarea și caracteristica statică (Doc)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/03-fisa-de-documentare-polarizarea-si-caracteristica-statica.pdf"
+                },
+                {
+                  "titlu": "Polarizarea și caracteristica statică (Lucru)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/04-fisa-de-lucru-polarizarea-si-caracteristica-statica.pdf"
+                },
+                {
+                  "titlu": "Verificarea diodelor și identificarea defectelor (Doc)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/05-fisa-de-documentare-verificarea-diodelor-si-identificarea-defectelor.pdf"
+                },
+                {
+                  "titlu": "Verificarea diodelor și identificarea defectelor (Lucru)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/06-fisa-de-lucru-verificarea-diodelor-si-identificarea-defectelor.pdf"
+                }
+              ]
             }
           ]
         },
