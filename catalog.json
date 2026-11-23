@@ -346,7 +346,8 @@
                   "titlu": "Verificarea diodelor și identificarea defectelor (Lucru)",
                   "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/06-fisa-de-lucru-verificarea-diodelor-si-identificarea-defectelor.pdf"
                 }
-              ]
+              ],
+              "cale_simulator": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/studiul-diodei.html"
             }
           ]
         },
