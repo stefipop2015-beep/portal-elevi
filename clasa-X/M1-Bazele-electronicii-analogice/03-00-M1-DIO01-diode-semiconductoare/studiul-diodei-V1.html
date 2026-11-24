@@ -1,0 +1,1826 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studiul diodei</title>
+<!-- Prototip «Simulatorul 1 – Studiul diodei», fila Lecția 2 (FL2, problemele 3 și 5). Un singur fișier, fără internet.
+     Reutilizează din simulari/simulator.html: modelul diodei și funcția circuit() (verificate prin autotestul acelui fișier), fmt(). -->
+<style>
+:root{
+  --text:#111; --fundal:#f3f5f7; --panou:#fff; --linie:#c9d0d7;
+  --anod:#c62828; --catod:#1f5fbf; --curent:#c62828; --tens:#1f5fbf;
+  --r1:#fde7d4; --r2:#dbe8f7; --r3:#ead9f2;
+  --bun:#1b6e2f; --bunf:#e3f4e6; --rau:#9a2a00; --rauf:#fdebe1; --info:#33485b; --infof:#eaf0f6;
+  --baza:18px;
+}
+*{box-sizing:border-box}
+html{font-size:var(--baza)}
+body{margin:0;background:var(--fundal);color:var(--text);font-family:"Segoe UI",Roboto,Arial,sans-serif;line-height:1.35}
+header{background:#1f2d3a;color:#fff;padding:.5rem 1rem}
+header h1{margin:0;font-size:1.25rem}
+.taburi{display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap}
+.taburi button{font:inherit;font-size:.9rem;padding:.45rem .8rem;border-radius:8px 8px 0 0;border:0;background:#3b4b5a;color:#dfe6ec}
+.taburi button[aria-selected=true]{background:var(--fundal);color:#111;font-weight:700}
+.taburi button:disabled{opacity:.6}
+main{max-width:1500px;margin:0 auto;padding:.6rem}
+.alege{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.alege button{flex:1 1 12rem}
+button{font:inherit;min-height:48px;padding:.4rem .9rem;border-radius:10px;border:2px solid #44515e;background:#fff;color:#111;cursor:pointer}
+button.prim{background:#1f4e79;color:#fff;border-color:#1f4e79;font-weight:700}
+button[aria-pressed=true]{background:#1f2d3a;color:#fff}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid #e0a800;outline-offset:2px}
+.panou{background:var(--panou);border:1px solid var(--linie);border-radius:12px;padding:.7rem;margin-bottom:.6rem}
+.panou h2{font-size:1rem;margin:0 0 .4rem}
+.sarcina{font-size:1.05rem}
+.sarcina b{white-space:nowrap}
+/* banda de citiri */
+.banda{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem}
+.cit{background:#e9f0e6;border:2px solid #4c6b46;border-radius:8px;padding:.25rem .4rem;text-align:center}
+.cit .et{display:block;font-size:.8rem;font-weight:700}
+.cit .v{display:block;font-family:Consolas,"Courier New",monospace;font-weight:700;font-size:1.5rem;white-space:nowrap}
+.cit.ascuns .v{color:#8a948a}
+.sursa-val{font-size:.8rem;color:var(--info);margin-top:.25rem}
+/* bara */
+.bara{display:flex;height:42px;border:2px solid #333;border-radius:6px;overflow:hidden;background:#fafafa}
+.bara div{display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;font-size:.9rem;transition:width .4s}
+.seg-r{background:#6b7f91}.seg-d{background:#1f5fbf}
+.bara-leg{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem;font-size:.9rem;margin-top:.25rem}
+.bara-gol{color:#777;font-style:italic;padding:.6rem 0}
+/* raspuns */
+.rand{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.camp{display:flex;align-items:center;gap:.4rem}
+.camp input{font:inherit;font-size:1.4rem;width:7.5rem;min-height:48px;padding:.2rem .5rem;border:2px solid #44515e;border-radius:8px;text-align:right}
+.camp .un{font-size:1.3rem;font-weight:700}
+.optiuni{display:grid;gap:.45rem}
+.optiuni button{text-align:left}
+.mesaj{margin-top:.5rem;padding:.5rem .7rem;border-radius:8px;border-left:6px solid transparent}
+.mesaj:empty{display:none}
+.mesaj.bun{background:var(--bunf);border-color:var(--bun)}
+.mesaj.rau{background:var(--rauf);border-color:var(--rau)}
+.mesaj.info{background:var(--infof);border-color:var(--info)}
+table.cmp{border-collapse:collapse;width:100%;margin-top:.5rem;font-size:1rem}
+table.cmp th,table.cmp td{border:1px solid #888;padding:.3rem .4rem;text-align:center}
+table.cmp th{background:#eef1f4}
+svg{display:block;width:100%;height:auto}
+.schema text{font-family:"Segoe UI",Arial,sans-serif}
+.subt{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem}
+.subt button{min-height:44px;font-size:.9rem;padding:.3rem .6rem}
+.regiuni{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.regiuni button{flex:1 1 9rem;font-size:.85rem;min-height:44px}
+.regiuni button.r1{background:var(--r1)}.regiuni button.r2{background:var(--r2)}.regiuni button.r3{background:var(--r3)}
+.regiuni button[aria-pressed=true]{outline:3px solid #111;color:#111;font-weight:700}
+.nota{font-size:.85rem;color:#33485b;margin:.35rem 0 0}
+.comut{display:flex;align-items:center;gap:.5rem;margin-top:.3rem}
+.comut label{display:flex;align-items:center;gap:.4rem;min-height:44px;font-size:.95rem}
+.comut input{width:24px;height:24px}
+/* laboratorul virtual */
+.lab{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr);grid-template-areas:"banda" "comenzi" "schema" "graf" "tabel"}
+.lab[hidden],.grila[hidden]{display:none}
+.banda{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cit{min-width:0}
+#lTab{font-size:.85rem}#lTab th,#lTab td{padding:.12rem .3rem}
+.rand.fix{flex-wrap:nowrap}.rand.fix button{min-width:3.2rem;padding:.3rem .4rem}
+.lab>.panou{margin-bottom:0}
+.l-banda{grid-area:banda}.l-comenzi{grid-area:comenzi}.l-schema{grid-area:schema}.l-graf{grid-area:graf}.l-tabel{grid-area:tabel}
+.grupc{margin-bottom:.45rem}
+.etc{display:block;font-weight:700;margin-bottom:.2rem}
+.seg2 button,.seg3 button{flex:1 1 0}
+.rand input[type=range]{flex:1 1 8rem;min-width:6rem;height:40px}
+.rapid{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}
+.rapid button{min-height:40px;padding:.15rem .5rem;font-size:.85rem}
+.derul{max-height:15rem;overflow:auto}
+.leg{display:flex;flex-wrap:wrap;gap:.3rem .9rem;font-size:.82rem;margin-top:.3rem}
+.mk{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:4px}
+.mk.mc{border:3px solid #e0a800;border-radius:50%;background:#111;box-shadow:inset 0 0 0 3px #ffe680}
+.mk.ma{background:#111;border-radius:50%}
+.mk.mb{background:#e8590c;transform:rotate(45deg) scale(.85)}
+.mk.mcurba{height:4px;background:#5a7cb0;vertical-align:3px}
+@media (min-width:900px){
+  .lab{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"banda graf" "comenzi graf" "schema tabel";align-items:start}
+}
+@media (min-width:1300px){
+  .lab{grid-template-columns:minmax(0,.9fr) minmax(0,.9fr) minmax(0,1.2fr);grid-template-areas:"banda banda graf" "comenzi tabel graf" "comenzi schema graf"}
+  .derul{max-height:19vh}
+  #lGraf{max-height:42vh}
+  .l-schema .schema{max-height:27vh}
+  .lab{align-items:start}
+}
+#lTab thead th{position:sticky;top:0;z-index:1}
+#lTab tbody tr{cursor:pointer}
+#lTab tbody tr.sel td{background:#fff1bf;font-weight:700}
+#lTab tbody tr:focus-visible{outline:3px solid #e0a800}
+.colR{white-space:nowrap}
+.mkr{display:inline-block;width:16px;height:16px;vertical-align:-3px}
+.randc{margin:.25rem 0 .35rem;padding:.3rem .55rem;border:2px solid #b35c00;border-radius:8px;background:#fffaf0;font-size:1rem;display:flex;flex-wrap:wrap;gap:.2rem .8rem;align-items:center}
+.randc[hidden]{display:none}
+.cval{font-family:Consolas,"Courier New",monospace;font-weight:700;padding:0 .15rem;border-radius:4px}
+.hlv{background:#ffe680 !important;outline:3px solid #b35c00;outline-offset:-1px}
+.zbor{position:fixed;z-index:100;pointer-events:none;background:#ffe680;border:2px solid #b35c00;border-radius:8px;padding:.1rem .45rem;font:700 1.05rem Consolas,"Courier New",monospace;color:#111;transition-property:left,top;transition-timing-function:ease-in-out;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.cit .u{font-size:.75em}
+.randc{flex-direction:column;align-items:stretch}
+.randc .rc1{display:flex;flex-wrap:wrap;gap:.2rem .8rem;align-items:center}
+.randc .rc2{font-size:1rem;line-height:1.35;padding:.25rem .1rem;border-top:1px dashed #d9a566;margin-top:.25rem}
+.randc .rc3{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.randc .rc3 button{min-height:44px;padding:.2rem .7rem}
+.randc .auto{display:flex;align-items:center;gap:.35rem;min-height:44px;font-size:.95rem}
+.randc .auto input{width:22px;height:22px}
+#autotest{white-space:pre-wrap;font-size:13px;background:#fff;padding:8px}
+/* asezarea pe ecran lat (tabla): doua coloane */
+.grila{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr);grid-template-areas:"banda" "enunt" "schema" "rasp" "graf"}
+.grila>.panou{margin-bottom:0}
+.a-banda{grid-area:banda}.a-enunt{grid-area:enunt}.a-schema{grid-area:schema}.a-rasp{grid-area:rasp}.a-graf{grid-area:graf}
+.a-enunt .sarcina{margin:0}
+@media (min-width:900px){
+  .grila{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"banda graf" "enunt graf" "schema graf" "rasp graf";align-items:start}
+  .schema{max-height:40vh}
+}
+/* tabla (ecran lat): banda si enuntul sus; schema si raspunsul alaturate; caracteristica in dreapta; fara derulare la 1920 x 1080 */
+@media (min-width:1300px){
+  :root{--baza:21px}
+  main{max-width:none;padding:.5rem 1rem}
+  .grila{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr);grid-template-areas:"banda banda graf" "enunt enunt graf" "schema rasp graf"}
+  .cit .v{font-size:2rem}
+  .schema{max-height:44vh}
+  #graf{max-height:52vh}
+  .alege button{min-height:44px;padding:.25rem .8rem}
+  header{padding:.35rem 1rem}
+  .panou{padding:.55rem .7rem}
+}
+/* telefon: banda de citiri fixa sus */
+@media (max-width:899px){
+  .banda-wrap{position:sticky;top:0;z-index:5;background:var(--fundal);padding:.3rem 0;margin:0 -.6rem;padding-left:.6rem;padding-right:.6rem;border-bottom:1px solid var(--linie)}
+  .cit .v{font-size:.86rem;font-family:inherit;letter-spacing:-.02em}
+  .l-banda .banda{grid-template-columns:minmax(0,.7fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.25fr)}
+  #lTab{font-size:.7rem}#lTab th,#lTab td{padding:.1rem .15rem}
+  .derul{overflow-x:hidden}
+  .cit .et{font-size:.72rem}
+  .lung{display:none}
+  .banda{gap:.25rem}
+  .cit{padding:.15rem .2rem}
+  header h1{font-size:1.05rem}
+  .taburi{flex-wrap:nowrap}
+  .taburi button{font-size:.72rem;padding:.3rem .45rem;min-height:36px}
+  .alege button{flex:1 1 0;font-size:.85rem}
+  main{padding:.6rem}
+}
+
+/* ===== Macheta varianta A: tabla = măsurare și trasare simultan; telefon = «Măsoară» / «Trasează» ===== */
+.lab{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr);grid-template-areas:none;align-items:start}
+.l-mas,.l-tra{display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.lab .l-banda,.lab .l-schema,.lab .l-comenzi,.lab .l-citiri,.lab .l-tabel,.lab .l-graf{grid-area:auto}
+.lab .l-tabel,.lab .l-graf{min-width:0}
+.randc.demo ~ #lTrasare{display:none}
+.l-mas>.panou,.l-tra>.panou{margin:0}
+.l-banda{display:none}
+.tel-tab{display:grid;grid-template-columns:1fr 1fr;gap:.35rem}
+.tel-tab button{min-height:46px;font-weight:700}
+.tel-tab button[aria-selected=true]{background:#1f2d3a;color:#fff}
+.mari{display:grid;grid-template-columns:1fr 1fr 8.3rem;gap:.5rem;align-items:stretch}
+.mare{background:#e9f0e6;border:2px solid #4c6b46;border-radius:10px;padding:.2rem .5rem;text-align:center;min-width:0}
+.mare .et{display:block;font-weight:700;font-size:.9rem}
+.mare .v{display:block;font-family:Consolas,"Courier New",monospace;font-weight:700;font-size:1.65rem;white-space:nowrap;letter-spacing:-.02em}
+.mare .v .u{display:none}
+button.salv{min-height:64px;font-size:1.05rem}
+.confirm{min-height:1.6em;margin-top:.35rem;font-weight:700;color:#1b6e2f}
+details.fin,details.explica{margin-top:.35rem}
+details summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-weight:700;color:#1f4e79}
+.graf-cap{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .6rem;margin-bottom:.3rem}
+.graf-cap h2{margin:0 .4rem 0 0}
+.graf-cap .subt{margin:0}
+.vsel{display:none;align-items:center;gap:.4rem;font-weight:700}
+.vsel select{font:inherit;min-height:44px;padding:.2rem .4rem;border:2px solid #44515e;border-radius:8px;background:#fff}
+#lTrasare{margin:.2rem 0 .35rem}
+.leg.compact{font-size:.95rem;gap:.2rem .6rem}
+.leg.compact .sep{color:#777}
+.l-schema .schema{max-height:30vh}
+@media (min-width:900px){
+  .lab{grid-template-columns:minmax(0,520px) minmax(0,1fr)}
+  .l-tra{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:.5rem;align-items:start}
+  .l-mas .l-schema{order:1}.l-mas .l-comenzi{order:2}.l-mas .l-citiri{order:3}
+  .derul{max-height:calc(100vh - 330px)}
+  #lGraf{max-height:calc(100vh - 490px)}
+  .l-schema .schema{max-height:19vh}
+  .l-comenzi .grupc{margin-bottom:.3rem}
+}
+@media (min-width:1300px){
+  .lab{grid-template-columns:minmax(0,560px) minmax(0,1fr)}
+  .l-tra{grid-template-columns:minmax(0,440px) minmax(0,1fr)}
+  .lab{grid-template-columns:minmax(0,540px) minmax(0,1fr)}
+}
+@media (max-width:899px){
+  .l-banda{display:block;position:sticky;top:0;z-index:6;background:var(--fundal);padding:.3rem 0;border-bottom:1px solid var(--linie)}
+  .lab[data-tel=masoara] .l-tra{display:none}
+  .lab[data-tel=traseaza] .l-mas{display:none}
+  .l-mas .l-citiri{order:1}.l-mas .l-comenzi{order:2}.l-mas .l-schema{order:3}
+  .mare .v{font-size:1.45rem}
+  .mari{grid-template-columns:1fr 1fr}
+  button.salv{grid-column:1 / span 2;min-height:52px}
+  .graf-cap .subt{display:none}
+  .vsel{display:flex}
+  .graf-cap h2{font-size:.95rem;width:100%}
+  .derul{max-height:9.5rem}
+  .l-comenzi .grupc{margin-bottom:.3rem}
+  .randc .rc3{flex-wrap:nowrap;gap:.25rem}
+  .randc .rc3 button{min-height:42px;padding:.15rem .45rem;font-size:.85rem}
+  .randc .auto{font-size:.8rem;gap:.2rem}
+  .randc .rc2{font-size:.92rem}
+}
+
+/* ===== Integrare (2026-11-24): bara compactă a graficului, comenzile demonstrației sub grafic ===== */
+.graf-cap h2{font-size:1rem}
+.graf-cap .subt button,.graf-cap>#lCurba{min-height:38px;padding:.15rem .6rem;font-size:.85rem}
+.randc .cap-s,.randc .sep-s{display:none}
+.randc .schimba{min-height:38px;padding:.1rem .6rem;font-size:.85rem;margin-left:auto}
+.demo-cmd{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.3rem}
+.demo-cmd[hidden]{display:none}
+.demo-cmd button{min-height:44px;padding:.2rem .7rem}
+.demo-cmd .urm{white-space:nowrap;font-weight:700}
+.demo-cmd .auto{display:flex;align-items:center;gap:.35rem;min-height:44px;font-size:.95rem}
+.demo-cmd .auto input{width:22px;height:22px}
+.randc .rc2{margin-top:.15rem}
+@media (min-width:900px){
+  .graf-cap{flex-wrap:nowrap}
+  .graf-cap h2{white-space:nowrap}
+  .lab.in-demo #lNotaGraf{display:none}
+}
+@media (max-width:899px){
+  .lab.in-demo .l-tabel,.lab.in-demo .graf-cap{display:none}
+  .lab.in-demo .randc .cap-l{display:none}
+  .lab.in-demo .randc .cap-s,.lab.in-demo .randc .sep-s{display:inline}
+  .lab.in-demo .randc .rc1{flex-wrap:wrap;gap:.1rem .35rem;font-size:.92rem}
+  .demo-cmd{display:grid;grid-template-columns:auto 1fr auto auto;gap:.3rem}
+  .demo-cmd .urm{grid-column:1 / -1;min-height:48px;font-size:1.05rem}
+  .demo-cmd button{min-height:42px;padding:.15rem .5rem;font-size:.9rem}
+  .demo-cmd .auto{font-size:.85rem}
+}
+
+/* ===== Lecția 3: Verificarea cu multimetrul ===== */
+.lec3{display:none}
+main.l3 .lec3{display:block}
+main.l3>.alege,main.l3>#lab,main.l3>#exercitii{display:none !important}
+.l3-piese{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
+.l3-piese button{flex:1 1 4.5rem;font-weight:700}
+.l3-grila{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr)}
+.l3-desc{margin:0 0 .3rem;font-size:.95rem}
+#l3Schema{max-height:46vh}
+#l3Schema .l3-tgt{cursor:pointer}
+.l3-instr{font-weight:700;font-size:1.05rem;margin:.3rem 0;min-height:1.4em}
+.l3-instr.atentie{background:#fff1bf;border-left:6px solid #b35c00;padding:.35rem .6rem;border-radius:6px}
+.l3-term{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.l3-term button{min-height:52px;font-weight:700;font-size:1.05rem}
+.l3-term button[aria-pressed=true]{background:#c62828;color:#fff;border-color:#c62828}
+.l3-cmd{margin-top:.4rem}
+.l3-despr{margin-top:.4rem;background:#fff1bf;border-left:6px solid #b35c00;border-radius:6px;padding:.4rem .6rem;display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .8rem}
+.l3-despr[hidden]{display:none}
+.l3-despr p{margin:0;font-weight:700;flex:1 1 16rem}
+.l3-despr button{min-height:48px}
+.l3-grup{font-weight:800;margin:.4rem 0 .2rem;color:#33485b}
+.l3-cit{display:grid;grid-template-columns:auto 1fr auto;gap:.5rem;align-items:center;border:2px solid #4c6b46;background:#e9f0e6;border-radius:10px;padding:.35rem .6rem;margin-bottom:.35rem}
+.l3-cit.gol{background:#f3f5f7;border-color:#c9d0d7;color:#6b7680}
+.l3-cit.evid{outline:4px solid #b35c00;background:#fff1bf}
+.l3-nr{font-weight:700}
+.l3-poz{font-size:1rem}
+.l3-poz b.r{color:#c62828}
+.l3-val{font-family:Consolas,"Courier New",monospace;font-weight:700;font-size:1.8rem;white-space:nowrap}
+.l3-stari{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin:.3rem 0}
+.l3-stari button{min-height:50px;font-weight:700}
+.l3-anod{font-weight:700;color:#9a2a00;margin:.3rem 0}
+.l3-anod-b{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.3rem}
+.l3-anod-b button{min-height:48px;font-weight:700;color:#111}
+.l3-anod-b button[aria-pressed=true]{background:#c62828;color:#fff;border-color:#c62828}
+@media (min-width:900px){
+  .l3-grila{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+  .l3-anod-b{display:none}
+}
+@media (min-width:1300px){
+  .l3-val{font-size:2.4rem}
+  .l3-poz{font-size:1.15rem}
+  #l3Schema{max-height:52vh}
+}
+@media (max-width:899px){
+  .l3-val{font-size:1.35rem}
+  .l3-poz{font-size:.9rem}
+  .l3-cit{gap:.3rem;padding:.25rem .4rem}
+  .l3-stari button{font-size:.9rem;padding:.2rem .3rem}
+  #l3Schema{max-height:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Studiul diodei</h1>
+  <div class="taburi" role="tablist">
+    <button type="button" role="tab" id="tabL2" aria-selected="true">Lecția 2: Polarizarea și caracteristica</button>
+    <button type="button" role="tab" id="tabL3" aria-selected="false">Lecția 3: Verificarea cu multimetrul</button>
+  </div>
+</header>
+<main>
+  <div class="alege" role="group" aria-label="Exercițiul">
+    <button type="button" id="bP3" aria-pressed="true">FL2, problema 3: polarizare directă</button>
+    <button type="button" id="bP5" aria-pressed="false">FL2, problema 5: polarizare inversă</button>
+    <button type="button" id="bLab" aria-pressed="false">Laborator virtual</button>
+  </div>
+
+  <div class="lab" id="lab" data-tel="masoara" hidden>
+    <div class="l-banda">
+      <div class="tel-tab" role="tablist" aria-label="Lucrul pe telefon">
+        <button type="button" role="tab" id="tMas" aria-selected="true">Măsoară</button>
+        <button type="button" role="tab" id="tTra" aria-selected="false">Trasează</button>
+      </div>
+    </div>
+    <div class="l-mas">
+      <div class="l-schema panou"><svg id="lSchema" class="schema" viewBox="0 0 440 270" role="img" aria-label="Schema laboratorului"></svg></div>
+      <div class="l-comenzi panou">
+        <div class="grupc"><span class="etc">Polarizarea</span>
+          <div class="rand seg2"><button type="button" id="lDir" aria-pressed="true">Directă</button><button type="button" id="lInv" aria-pressed="false">Inversă</button></div></div>
+        <div class="grupc"><span class="etc">Sursa E: <b id="lEval"></b></span>
+          <div class="rapid" id="lRapid" role="group" aria-label="Reglaje rapide pentru E"></div>
+          <details class="fin"><summary>Reglaj fin</summary>
+            <div class="rand fix"><button type="button" id="lMinus" aria-label="E minus 0,1 V">−0,1</button><input type="range" id="lSlide" min="0" max="15" step="0.1" value="5" aria-label="Sursa E"><button type="button" id="lPlus" aria-label="E plus 0,1 V">+0,1</button></div>
+          </details></div>
+        <div class="grupc"><span class="etc">Rezistorul R</span>
+          <div class="rand seg3"><button type="button" data-r="470">470 Ω</button><button type="button" data-r="1000" aria-pressed="true">1 kΩ</button><button type="button" data-r="2200">2,2 kΩ</button></div></div>
+      </div>
+      <div class="l-citiri panou">
+        <div class="mari" role="group" aria-label="Valorile de scris în fișă">
+          <div class="mare"><span class="et">U<sub>D</sub> (V)</span><span class="v" id="lD"></span></div>
+          <div class="mare"><span class="et">I<sub>D</sub> (mA)</span><span class="v" id="lI"></span></div>
+          <button type="button" class="prim salv" id="lSalv">Salvează punctul</button>
+        </div>
+        <div id="lMsg" class="confirm" aria-live="polite"></div>
+        <details class="explica"><summary>Explică tensiunile</summary>
+          <p class="nota">Diodă generică, model didactic. U<sub>D</sub> = V<sub>A</sub> − V<sub>C</sub>; I<sub>D</sub> > 0 de la anod spre catod; U<sub>R</sub> = R · I<sub>D</sub>. În polarizare inversă, U<sub>D</sub>, U<sub>R</sub> și I<sub>D</sub> sunt negative.</p>
+          <p class="nota" id="lSuma"></p>
+        </details>
+        <span hidden><span id="lE"></span><span id="lR"></span></span>
+      </div>
+    </div>
+    <div class="l-tra">
+      <div class="l-tabel panou">
+        <div class="rand" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">Punctele salvate</h2><button type="button" id="lSterge">Șterge ultimul</button></div>
+        <p class="nota" id="lIndRand" style="margin:.1rem 0 .3rem">Atinge un rând ca să-l alegi.</p>
+        <div class="derul"><table class="cmp" id="lTab"><thead><tr><th>Nr.</th><th>R</th><th>Polariz.</th><th>E (V)</th><th>U<sub>D</sub> (V)</th><th>I<sub>D</sub> (mA)</th></tr></thead><tbody></tbody></table></div>
+      </div>
+      <div class="l-graf panou">
+        <div class="graf-cap">
+          <h2>Caracteristica I<sub>D</sub> = f(U<sub>D</sub>)</h2>
+          <div class="subt" role="group" aria-label="Vederea graficului">
+            <button type="button" data-v="ans" aria-pressed="true">Ansamblu</button>
+            <button type="button" data-v="dir" aria-pressed="false">Mărit: directă</button>
+            <button type="button" data-v="cot" aria-pressed="false">Mărit: cot</button>
+          </div>
+          <label class="vsel">Vedere <select id="lVedereSel"><option value="ans">Ansamblu</option><option value="dir">Conducția directă</option><option value="cot">Cotul străpungerii</option></select></label>
+          <button type="button" id="lCurba" aria-pressed="false">Arată curba</button>
+        </div>
+        <div id="lRandC" class="randc" hidden aria-live="polite"></div>
+        <button type="button" class="prim" id="lTrasare" hidden>Arată cum se trasează</button>
+        <svg id="lGraf" viewBox="0 0 460 330" role="img" aria-label="Caracteristica diodei generice cu punctele salvate"></svg>
+        <div id="lDemoCmd" class="demo-cmd" hidden></div>
+        <div class="leg" id="lLeg"></div>
+        <p class="nota" id="lNotaGraf"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grila" id="exercitii">
+    <div class="a-banda banda-wrap">
+      <div class="banda" role="group" aria-label="Citirile circuitului">
+        <div class="cit" id="cE"><span class="et">E</span><span class="v" id="vE">5 V</span></div>
+        <div class="cit ascuns" id="cD"><span class="et">U<sub>D</sub><span class="lung"> = V<sub>A</sub> − V<sub>C</sub></span></span><span class="v" id="vD">?</span></div>
+        <div class="cit ascuns" id="cR"><span class="et">U<sub>R</sub></span><span class="v" id="vR">?</span></div>
+        <div class="cit ascuns" id="cI"><span class="et">I</span><span class="v" id="vI">?</span></div>
+      </div>
+      <div class="sursa-val" id="sursaVal">Citirile apar după verificare.</div>
+    </div>
+
+    <div class="a-enunt panou"><p class="sarcina" id="enunt"></p></div>
+    <div class="a-schema panou">
+      <svg id="schema" class="schema" viewBox="0 0 440 270" role="img" aria-label="Schema circuitului"></svg>
+      <div class="comut"><label><input type="checkbox" id="arataAC"> Arată anodul (A) și catodul (C)</label></div>
+    </div>
+    <div class="a-rasp panou">
+      <div id="intrebare"></div>
+      <div id="msg" class="mesaj" aria-live="polite"></div>
+      <div id="rezultat" hidden>
+        <div id="cmp"></div>
+        <h2 style="margin-top:.4rem">Cum se împarte tensiunea sursei</h2>
+        <div id="bara"></div>
+        <div id="explSemn" class="mesaj info"></div>
+      </div>
+      <div class="rand" style="margin-top:.5rem"><button type="button" id="compara" hidden>Compară cu modelul</button><button type="button" id="reia">Reia exercițiul</button></div>
+    </div>
+
+    <div class="a-graf">
+      <div class="panou">
+        <h2>Caracteristica statică I<sub>D</sub> = f(U<sub>D</sub>)</h2>
+        <div class="subt" role="group" aria-label="Vederea graficului">
+          <button type="button" id="gAns" aria-pressed="true">Ansamblu (schematic)</button>
+          <button type="button" id="gDir" aria-pressed="false">Detaliu direct (cu scări)</button>
+        </div>
+        <svg id="graf" viewBox="0 0 440 300" role="img" aria-label="Caracteristica statică a diodei"></svg>
+        <div class="regiuni" id="regiuni" role="group" aria-label="Regiunile caracteristicii">
+          <button type="button" class="r1" data-r="1" aria-pressed="false">1. Conducție directă</button>
+          <button type="button" class="r2" data-r="2" aria-pressed="false">2. Blocare inversă</button>
+          <button type="button" class="r3" data-r="3" aria-pressed="false">3. Străpungere</button>
+        </div>
+        <div id="notaGraf" class="mesaj info"></div>
+      </div>
+    </div>
+  </div>
+  <section id="lec3" class="lec3" aria-label="Lecția 3: Verificarea cu multimetrul">
+    <div class="l3-piese" role="group" aria-label="Piesa verificată">
+      <button type="button" data-p="P1" aria-pressed="true">P1</button><button type="button" data-p="P2" aria-pressed="false">P2</button><button type="button" data-p="P3" aria-pressed="false">P3</button><button type="button" data-p="P4" aria-pressed="false">P4</button><button type="button" data-p="P5" aria-pressed="false">P5 (pe placă)</button>
+    </div>
+    <div class="l3-grila">
+      <div class="l3-st panou">
+        <p class="l3-desc" id="l3Desc"></p>
+        <svg id="l3Schema" viewBox="0 0 460 330" role="img" aria-label="Multimetrul în funcția de testare a diodei și piesa verificată"></svg>
+        <p class="l3-instr" id="l3Instr" aria-live="polite"></p>
+        <div class="l3-term" role="group" aria-label="Terminalele piesei">
+          <button type="button" id="l3T1" data-t="1">Terminalul 1</button><button type="button" id="l3T2" data-t="2">Terminalul 2</button>
+        </div>
+        <div class="l3-despr" id="l3Despr" hidden><p id="l3DesprMsg"></p><button type="button" class="prim" id="l3Desprinde">Desprinde un terminal</button></div>
+        <div class="rand l3-cmd"><button type="button" id="l3Inv" disabled>Inversează sondele</button><button type="button" id="l3Reia">Reia piesa</button></div>
+      </div>
+      <div class="l3-dr">
+        <div class="panou">
+          <h2>Citirile</h2>
+          <div id="l3Citiri"></div>
+        </div>
+        <div class="panou" id="l3Interp">
+          <h2>Interpretarea</h2>
+          <p class="nota" id="l3InterpNota">Fă întâi cele două citiri.</p>
+          <div class="l3-stari" role="group" aria-label="Starea piesei">
+            <button type="button" data-s="functionala">Funcțională</button><button type="button" data-s="intrerupta">Întreruptă</button><button type="button" data-s="scurt">În scurtcircuit</button>
+          </div>
+          <p class="l3-anod" id="l3Anod" hidden></p>
+          <div class="rand"><button type="button" class="prim" id="l3Confirma" disabled>Confirmă</button></div>
+          <div id="l3Msg" class="mesaj" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <pre id="autotest" hidden></pre>
+</main>
+
+<script>
+(function () {
+"use strict";
+/* ===== Model (preluat din simulari/simulator.html) ===== */
+var IS = 1e-13, UT = 0.025865, R = 1000;
+function circuit(E, s) {
+  var lo = -E / R - 1e-3, hi = E / R + 1e-3;
+  function g(i) { var arg = Math.min(s * (E - R * i) / UT, 700); return IS * (Math.exp(arg) - 1) - s * i; }
+  var glo = g(lo);
+  for (var k = 0; k < 200; k++) { var mid = (lo + hi) / 2, gm = g(mid); if ((gm > 0) === (glo > 0)) { lo = mid; glo = gm; } else { hi = mid; } }
+  var i = (lo + hi) / 2;
+  if (E === 0) { return { Ud: 0, Ur: 0, I: 0 }; }
+  return { Ud: s * (E - R * i), Ur: s * R * i, I: s * i * 1000 };
+}
+function fmt(x, zec) { var s = Math.abs(x) < Math.pow(10, -zec) / 2 ? 0 : x; return s.toFixed(zec).replace(".", ",").replace("-", "−"); }
+var SVGNS = "http://www.w3.org/2000/svg";
+function $(id) { return document.getElementById(id); }
+function el(tag, at, txt, par) { var e = document.createElementNS(SVGNS, tag); for (var k in at) { e.setAttribute(k, at[k]); } if (txt) { e.textContent = txt; } if (par) { par.appendChild(e); } return e; }
+function gol(n) { while (n.firstChild) { n.removeChild(n.firstChild); } }
+function sub(svg, x, y, b, i, rest, at) { var t = el("text", Object.assign({ x: x, y: y }, at), b, svg); var ts = document.createElementNS(SVGNS, "tspan"); ts.setAttribute("dy", "5"); ts.setAttribute("font-size", Math.round((at["font-size"] || 16) * 0.7)); ts.textContent = i; t.appendChild(ts); if (rest) { var tr = document.createElementNS(SVGNS, "tspan"); tr.setAttribute("dy", "-5"); tr.textContent = rest; t.appendChild(tr); } return t; }
+
+/* ===== Exercițiile ===== */
+var EX = {
+  p3: { E: 5, s: 1, enunt: "<b>FL2, problema 3.</b> Circuitul din Figura 1a: <b>E = 5 V</b>, <b>R = 1 kΩ</b>. Calculează în fișă curentul I<sub>D</sub> cu aproximația <b>0,7 V</b> pe diodă, apoi scrie rezultatul aici." },
+  p5: { E: 6, s: -1, enunt: "<b>FL2, problema 5.</b> Circuitul din Figura 1b: <b>E = 6 V</b>, <b>R = 1 kΩ</b>; nu se atinge străpungerea. Privește orientarea diodei și răspunde la întrebare." }
+};
+// verificat = soluția e afișată (citiri, potențiale, bară, punct)
+var st = { ex: "p3", verificat: false, rezolvat: false, comparat: false, alegere: null, gresite: 0, regiune: 0, vedere: "ans" };
+function model() { var e = EX[st.ex]; return circuit(e.E, e.s); }
+
+/* ===== Schema ===== */
+function deseneazaSchema() {
+  var svg = $("schema"); gol(svg);
+  var e = EX[st.ex], dir = e.s > 0, ac = $("arataAC").checked, rev = st.verificat;
+  var L = { stroke: "#111", "stroke-width": 3, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" };
+  var YT = 50, YB = 235, XS = 80, XD = 350;
+  el("polyline", Object.assign({ points: XS + ",122 " + XS + "," + YT + " 180," + YT }, L), "", svg);
+  el("polyline", Object.assign({ points: "260," + YT + " " + XD + "," + YT + " " + XD + ",112" }, L), "", svg);
+  el("polyline", Object.assign({ points: XD + ",168 " + XD + "," + YB + " " + XS + "," + YB + " " + XS + ",138" }, L), "", svg);
+  // sursa: placa lunga (+) sus
+  el("line", { x1: XS - 26, y1: 122, x2: XS + 26, y2: 122, stroke: "#111", "stroke-width": 4 }, "", svg);
+  el("line", { x1: XS - 13, y1: 138, x2: XS + 13, y2: 138, stroke: "#111", "stroke-width": 6 }, "", svg);
+  el("text", { x: XS - 34, y: 116, "font-size": 24, "font-weight": 700, "text-anchor": "end" }, "+", svg);
+  el("text", { x: XS - 34, y: 156, "font-size": 24, "font-weight": 700, "text-anchor": "end" }, "−", svg);
+  el("text", { x: XS + 34, y: 137, "font-size": 20, "font-weight": 700 }, "E = " + e.E + " V", svg);
+  // rezistorul
+  el("rect", { x: 180, y: YT - 13, width: 80, height: 26, fill: "#fff", stroke: "#111", "stroke-width": 3 }, "", svg);
+  el("text", { x: 220, y: YT - 22, "font-size": 19, "font-weight": 700, "text-anchor": "middle" }, "R = 1 kΩ", svg);
+  // dioda: directa = anod sus; inversa = anod jos
+  var yA = dir ? 112 : 168, yC = dir ? 168 : 112, yBar = dir ? 160 : 120;
+  el("line", { x1: XD, y1: 112, x2: XD, y2: 168, stroke: "#111", "stroke-width": 3 }, "", svg);
+  var tri = dir ? (XD - 20) + ",120 " + (XD + 20) + ",120 " + XD + ",160" : (XD - 20) + ",160 " + (XD + 20) + ",160 " + XD + ",120";
+  el("polygon", { points: tri, fill: "#fff", stroke: "#111", "stroke-width": 3, "stroke-linejoin": "round" }, "", svg);
+  el("line", { x1: XD - 21, y1: yBar, x2: XD + 21, y2: yBar, stroke: "#111", "stroke-width": 4 }, "", svg);
+  el("text", { x: XD + 30, y: 146, "font-size": 20, "font-weight": 700 }, "D", svg);
+  if (ac) {
+    el("text", { x: XD + 30, y: dir ? 118 : 182, "font-size": 20, "font-weight": 800, fill: "#c62828" }, "A", svg);
+    el("text", { x: XD + 30, y: dir ? 182 : 118, "font-size": 20, "font-weight": 800, fill: "#1f5fbf" }, "C", svg);
+    el("circle", { cx: XD, cy: yA, r: 5, fill: "#c62828" }, "", svg);
+    el("circle", { cx: XD, cy: yC, r: 5, fill: "#1f5fbf" }, "", svg);
+  }
+  if (dir) {
+    // Figura 1a: sagetile albastre U_R si U_D, de la + spre −; curentul I_D dupa verificare
+    sageata(svg, 186, YT + 32, 254, YT + 32, "#1f5fbf", 2.6);
+    sub(svg, 205, YT + 58, "U", "R", "", { "font-size": 19, "font-weight": 700, fill: "#1f5fbf" });
+    sageata(svg, XD - 38, 116, XD - 38, 164, "#1f5fbf", 2.6);
+    sub(svg, XD - 92, 146, "U", "D", "", { "font-size": 19, "font-weight": 700, fill: "#1f5fbf" });
+    if (rev) {
+      sageata(svg, 278, YT, 330, YT, "#c62828", 4);
+      sub(svg, 292, YT - 12, "I", "D", "", { "font-size": 19, "font-weight": 700, fill: "#c62828" });
+    }
+  } else {
+    // Figura 1b: fara sageti de tensiune; sageata rosie a curentului invers
+    sageata(svg, 278, YT, 330, YT, "#c62828", 3);
+    sub(svg, 286, YT - 12, "I", "inv", rev ? " ≈ 0" : "", { "font-size": 19, "font-weight": 700, fill: "#c62828" });
+    if (rev) {
+      // reperul 0 V la borna − a sursei; potentialele anodului si catodului
+      var xm = 200;
+      el("line", { x1: xm, y1: YB, x2: xm, y2: YB + 10, stroke: "#111", "stroke-width": 3 }, "", svg);
+      el("line", { x1: xm - 14, y1: YB + 10, x2: xm + 14, y2: YB + 10, stroke: "#111", "stroke-width": 3 }, "", svg);
+      el("line", { x1: xm - 9, y1: YB + 15, x2: xm + 9, y2: YB + 15, stroke: "#111", "stroke-width": 3 }, "", svg);
+      el("line", { x1: xm - 4, y1: YB + 20, x2: xm + 4, y2: YB + 20, stroke: "#111", "stroke-width": 3 }, "", svg);
+      el("text", { x: xm + 22, y: YB + 22, "font-size": 17, "font-weight": 700, fill: "#5a3d00" }, "0 V (reper)", svg);
+      eticheta(svg, XD - 14, 200, "V", "A", " = 0 V", "#c62828", "end");
+      eticheta(svg, XD - 14, 92, "V", "C", " ≈ +6 V", "#1f5fbf", "end");
+    }
+  }
+}
+function eticheta(svg, x, y, b, i, rest, c, anc) {
+  var t = sub(svg, x, y, b, i, rest, { "font-size": 18, "font-weight": 800, fill: c, "text-anchor": anc, stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" });
+  return t;
+}
+function sageata(svg, x1, y1, x2, y2, c, w) {
+  el("line", { x1: x1, y1: y1, x2: x2, y2: y2, stroke: c, "stroke-width": w }, "", svg);
+  var a = Math.atan2(y2 - y1, x2 - x1), L = 13, B = 6;
+  var p = [x2, y2, x2 - L * Math.cos(a) + B * Math.sin(a), y2 - L * Math.sin(a) - B * Math.cos(a), x2 - L * Math.cos(a) - B * Math.sin(a), y2 - L * Math.sin(a) + B * Math.cos(a)];
+  el("polygon", { points: p[0] + "," + p[1] + " " + p[2] + "," + p[3] + " " + p[4] + "," + p[5], fill: c }, "", svg);
+}
+
+/* ===== Citiri și bară ===== */
+function citiri() {
+  var e = EX[st.ex], r = model(), arata = st.verificat;
+  ["cD", "cR", "cI"].forEach(function (id) { $(id).classList.toggle("ascuns", !arata); });
+  $("vE").textContent = e.E + " V";
+  if (!arata) { $("vD").textContent = "?"; $("vR").textContent = "?"; $("vI").textContent = "?"; $("sursaVal").textContent = "Citirile apar după răspunsul corect" + (st.ex === "p5" ? " sau după a doua încercare." : "."); return; }
+  if (st.ex === "p3") {
+    if (st.comparat) { $("vD").textContent = fmt(r.Ud, 2) + " V"; $("vR").textContent = fmt(r.Ur, 2) + " V"; $("vI").textContent = fmt(r.I, 2) + " mA"; $("sursaVal").textContent = "Valorile modelului simulatorului."; }
+    else { $("vD").textContent = "0,70 V"; $("vR").textContent = "4,30 V"; $("vI").textContent = "4,30 mA"; $("sursaVal").textContent = "Calculul din fișă, cu aproximația 0,7 V."; }
+  } else {
+    $("vD").textContent = "≈ −6 V"; $("vR").textContent = "≈ 0 V"; $("vI").textContent = "≈ 0 mA";
+    $("sursaVal").textContent = "Curentul invers, foarte mic, se consideră 0 (ca în fișă).";
+  }
+}
+function bara() {
+  var b = $("bara"), e = EX[st.ex];
+  if (!st.verificat) { b.innerHTML = ""; return; }
+  var ur, ud, r = model();
+  if (st.ex === "p3") { if (st.comparat) { ur = Math.abs(r.Ur); ud = Math.abs(r.Ud); } else { ur = 4.3; ud = 0.7; } }
+  else { ur = 0; ud = 6; }
+  var pr = ur / e.E * 100, pd = ud / e.E * 100;
+  var urTxt = st.ex === "p5" ? "≈ 0" : fmt(ur, 2) + " V", udTxt = st.ex === "p5" ? "≈ 6 V" : fmt(ud, 2) + " V";
+  b.innerHTML = '<div class="bara" role="img" aria-label="|U_R| ' + urTxt + ', |U_D| ' + udTxt + '">' +
+    '<div class="seg-r" style="width:' + Math.max(pr, 0.8) + '%">' + (pr > 25 ? "|U<sub>R</sub>|" : "") + '</div>' +
+    '<div class="seg-d" style="width:' + pd + '%">' + (pd > 25 ? "|U<sub>D</sub>|" : "") + '</div></div>' +
+    '<div class="bara-leg"><span><b>|U<sub>R</sub>|</b> ' + (st.ex === "p5" ? "" : "= ") + urTxt + '</span><span><b>|U<sub>D</sub>|</b> ' + (st.ex === "p5" ? "" : "= ") + udTxt + '</span><span>E = ' + e.E + ' V</span></div>';
+}
+
+/* ===== Panoul de răspuns ===== */
+function panouRasp() {
+  var p = $("intrebare");
+  $("enunt").innerHTML = EX[st.ex].enunt;
+  $("msg").className = "mesaj"; $("msg").innerHTML = "";
+  $("cmp").innerHTML = ""; $("compara").hidden = true; $("compara").disabled = false;
+  if (st.ex === "p3") {
+    p.innerHTML = '<label for="rasp" style="display:block;margin-bottom:.3rem;font-weight:700">Curentul I<sub>D</sub> calculat cu 0,7 V:</label>' +
+      '<div class="rand"><span class="camp"><input id="rasp" inputmode="decimal" autocomplete="off" enterkeyhint="done" aria-describedby="msg"><span class="un">mA</span></span>' +
+      '<button type="button" class="prim" id="verif">Verifică</button></div>';
+    $("verif").addEventListener("click", verificaP3);
+    $("rasp").addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); verificaP3(); } });
+    $("rasp").addEventListener("focus", function () { var x = this; setTimeout(function () { x.scrollIntoView({ block: "center", behavior: "smooth" }); }, 300); });
+  } else {
+    p.innerHTML = '<p style="margin:0 0 .4rem;font-weight:700">Pe ce element cade aproape toată tensiunea sursei?</p>' +
+      '<div class="optiuni" role="radiogroup" aria-label="Variante">' +
+      '<button type="button" role="radio" aria-checked="false" data-o="rez">Pe rezistor</button>' +
+      '<button type="button" role="radio" aria-checked="false" data-o="dioda">Pe diodă</button>' +
+      '<button type="button" role="radio" aria-checked="false" data-o="07">0,7 V pe diodă, restul pe rezistor</button></div>' +
+      '<div class="rand" style="margin-top:.5rem"><button type="button" class="prim" id="confirm" disabled>Confirmă</button></div>';
+    Array.prototype.forEach.call(p.querySelectorAll("[data-o]"), function (b) {
+      b.addEventListener("click", function () {
+        if (st.verificat) { return; }
+        st.alegere = b.getAttribute("data-o");
+        Array.prototype.forEach.call(p.querySelectorAll("[data-o]"), function (x) { var s = x === b; x.setAttribute("aria-checked", s); x.setAttribute("aria-pressed", s); });
+        $("confirm").disabled = false;
+      });
+    });
+    $("confirm").addEventListener("click", confirmaP5);
+  }
+}
+// dupa solutie, intrebarea face loc barei si explicatiei, in acelasi spatiu
+function arataSolutia() { st.verificat = true; $("intrebare").hidden = true; $("rezultat").hidden = false; actualizeaza(); }
+function citesteNumar(t) {
+  t = String(t).trim().replace(/\s+/g, "").replace(/ma$/i, "").replace(",", ".");
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(t)) { return NaN; }
+  return parseFloat(t);
+}
+function mesaj(cls, html) { var m = $("msg"); m.className = "mesaj " + cls; m.innerHTML = html; }
+function verificaP3() {
+  if (st.rezolvat) { return; }
+  var v = citesteNumar($("rasp").value);
+  if (isNaN(v)) { mesaj("rau", "Scrie un număr, de exemplu 2,15 (cu virgulă sau cu punct). Unitatea mA este deja trecută."); return; }
+  if (Math.abs(v - 4.3) <= 0.005) {
+    st.rezolvat = true;
+    mesaj("bun", "<b>Corect: I<sub>D</sub> = 4,30 mA.</b> U<sub>R</sub> = 5 V − 0,7 V = 4,3 V; I<sub>D</sub> = 4,3 V : 1 kΩ = 4,30 mA.");
+    $("compara").hidden = false; arataSolutia(); return;
+  }
+  st.gresite++;
+  if (Math.abs(v - 5) <= 0.005) { mesaj("rau", "Ai împărțit toată tensiunea sursei la R. O parte din E cade pe diodă. Află întâi tensiunea pe rezistor: U<sub>R</sub> = E − 0,7 V. Apoi împarte U<sub>R</sub> la R. Încearcă din nou."); }
+  else if (Math.abs(v - 5.7) <= 0.005) { mesaj("rau", "Ai adunat 0,7 V. Tensiunea pe diodă se scade din E: U<sub>R</sub> = E − 0,7 V. Încearcă din nou."); }
+  else if (Math.abs(v - 4300) <= 0.5 || Math.abs(v - 0.0043) <= 0.00001) { mesaj("rau", "Valoarea e bună, dar unitatea nu: câmpul cere curentul în mA (V : kΩ = mA). Încearcă din nou."); }
+  else { mesaj("rau", "Rezultatul nu se potrivește. Refă pașii: U<sub>R</sub> = E − 0,7 V, apoi I<sub>D</sub> = U<sub>R</sub> : R, cu U<sub>R</sub> în V și R în kΩ. Încearcă din nou."); }
+}
+function compara() {
+  var r = model(); st.comparat = true; $("compara").disabled = true;
+  $("msg").className = "mesaj"; $("msg").innerHTML = "";
+  $("cmp").innerHTML = '<table class="cmp"><tr><th></th><th>U<sub>D</sub></th><th>U<sub>R</sub></th><th>I<sub>D</sub></th></tr>' +
+    '<tr><th>Fișa (0,7 V)</th><td>0,70 V</td><td>4,30 V</td><td><b>4,30 mA</b></td></tr>' +
+    '<tr><th>Modelul</th><td>≈ ' + fmt(r.Ud, 2) + ' V</td><td>≈ ' + fmt(r.Ur, 2) + ' V</td><td>≈ ' + fmt(r.I, 2) + ' mA</td></tr></table>' +
+    '<div class="mesaj info">Fișa cere aproximația de 0,7 V, deci răspunsul tău, 4,30 mA, este corect; modelul calculează tensiunea pe diodă la acest curent (≈ ' + fmt(r.Ud, 2) + ' V), de aceea curentul lui iese puțin mai mare, cu doar ' + fmt(r.I - 4.3, 2) + ' mA.</div>';
+  actualizeaza();
+}
+var INDICIU = {
+  rez: "Dacă prin rezistor trece un curent aproape nul, ce poți spune despre U<sub>R</sub> = R · I? Poți alege din nou.",
+  "07": "Aproximația de 0,7 V se folosește pentru dioda în conducție. Privește unde e legat anodul: spre borna + sau spre borna −? Poți alege din nou."
+};
+function confirmaP5() {
+  if (!st.alegere || st.verificat) { return; }
+  var baza = " Anodul e spre borna −: dioda e polarizată invers și blocată, deci I ≈ 0 și U<sub>R</sub> = R · I ≈ 0. Aproape toată tensiunea sursei rămâne pe diodă.";
+  if (st.alegere === "dioda") { mesaj("bun", "<b>Corect: pe diodă.</b>" + baza); arataSolutia(); return; }
+  st.gresite++;
+  if (st.gresite === 1) {
+    mesaj("rau", "<b>Nu încă.</b> " + INDICIU[st.alegere]);
+    st.alegere = null; $("confirm").disabled = true;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-o]"), function (x) { x.setAttribute("aria-checked", "false"); x.setAttribute("aria-pressed", "false"); });
+    return;
+  }
+  mesaj("rau", "<b>Răspunsul corect: pe diodă.</b>" + (st.alegere === "07" ? " Aproximația de 0,7 V nu se aplică: dioda nu conduce." : "") + baza);
+  arataSolutia();
+}
+
+/* ===== Caracteristica ===== */
+var NOTE_R = {
+  0: "Alege o regiune ca să o evidențiezi.",
+  1: "<b>1. Conducție directă</b> (U<sub>D</sub> > 0). Sub aproximativ 0,6 V ... 0,7 V curentul e foarte mic; peste, crește foarte repede, iar tensiunea pe diodă crește doar puțin. Valoarea curentului o stabilește circuitul, prin R.",
+  2: "<b>2. Blocare inversă</b> (U<sub>D</sub> < 0, înainte de străpungere). Curentul invers este foarte mic și aproape nu depinde de tensiune; dioda practic nu conduce.",
+  3: "<b>3. Străpungere.</b> Curentul invers crește mult în modul pentru o variație mică a tensiunii inverse. Tensiunea de străpungere V<sub>BR</sub> depinde de tipul diodei; dioda redresoare nu se folosește aici. Regiunea nu se simulează: în problema 5 punctul circuitului rămâne în blocare inversă."
+};
+function grafAns(svg) {
+  var O = { x: 270, y: 150 };
+  var Z = [{ r: 1, x: 270, w: 160, c: "#fde7d4" }, { r: 2, x: 110, w: 160, c: "#dbe8f7" }, { r: 3, x: 15, w: 95, c: "#ead9f2" }];
+  Z.forEach(function (z) { el("rect", { x: z.x, y: 10, width: z.w, height: 270, fill: z.c, opacity: st.regiune && st.regiune !== z.r ? 0.35 : 1 }, "", svg); });
+  // axe
+  sageata(svg, 15, O.y, 432, O.y, "#222", 2); sageata(svg, O.x, 285, O.x, 12, "#222", 2);
+  sub(svg, 395, O.y + 24, "U", "D", "", { "font-size": 17, "font-weight": 700 });
+  sub(svg, O.x + 8, 28, "I", "D", "", { "font-size": 17, "font-weight": 700 });
+  el("text", { x: O.x - 6, y: O.y + 20, "font-size": 15, "text-anchor": "end" }, "0", svg);
+  // ramurile (schematic, fara scara)
+  var w = function (r) { return st.regiune === r ? 6 : 3.5; };
+  el("path", { d: "M270,150 L318,148 C330,146 338,120 345,20", fill: "none", stroke: "#c62828", "stroke-width": w(1), "stroke-linecap": "round" }, "", svg);
+  el("path", { d: "M270,150 L112,154", fill: "none", stroke: "#c62828", "stroke-width": w(2), "stroke-linecap": "round" }, "", svg);
+  el("path", { d: "M112,154 C100,156 96,190 92,280", fill: "none", stroke: "#c62828", "stroke-width": w(3), "stroke-linecap": "round" }, "", svg);
+  // reperul 0,6 ... 0,7 V si −V_BR (fara valoare)
+  el("line", { x1: 330, y1: 145, x2: 330, y2: 158, stroke: "#222", "stroke-width": 2 }, "", svg);
+  el("text", { x: 333, y: 176, "font-size": 13, "text-anchor": "middle" }, "≈ 0,6 ... 0,7 V", svg);
+  el("line", { x1: 108, y1: 144, x2: 108, y2: 158, stroke: "#222", "stroke-width": 2 }, "", svg);
+  sub(svg, 92, 138, "−V", "BR", "", { "font-size": 15, "text-anchor": "middle" });
+  // numerele regiunilor
+  [[395, 260, "1"], [190, 260, "2"], [55, 260, "3"]].forEach(function (q) { el("circle", { cx: q[0], cy: q[1], r: 14, fill: "#fff", stroke: "#222", "stroke-width": 2 }, "", svg); el("text", { x: q[0], y: q[1] + 6, "font-size": 17, "font-weight": 700, "text-anchor": "middle" }, q[2], svg); });
+  el("text", { x: 222, y: 296, "font-size": 12, "text-anchor": "middle", fill: "#33485b" }, "Reprezentare schematică, fără scară: nu se citesc valori.", svg);
+  // punctul circuitului
+  if (st.verificat) {
+    var p = st.ex === "p3" ? { x: 339, y: 70, t: "punctul circuitului (problema 3)", ax: 300, ay: 50, anc: "end" } : { x: 190, y: 152, t: "punctul circuitului (problema 5)", ax: 190, ay: 118, anc: "middle" };
+    el("circle", { cx: p.x, cy: p.y, r: 14, fill: "#ffe680", "fill-opacity": 0.7, stroke: "#e0a800", "stroke-width": 3 }, "", svg);
+    el("circle", { cx: p.x, cy: p.y, r: 7, fill: "#111" }, "", svg);
+    el("text", { x: p.ax, y: p.ay, "font-size": 14, "font-weight": 700, "text-anchor": p.anc, stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" }, p.t, svg);
+  }
+}
+function grafDir(svg) {
+  var ml = 62, mt = 14, pw = 360, ph = 220, xmax = 0.8, ymax = 8;
+  function px(u) { return ml + u / xmax * pw; } function py(i) { return mt + ph - i / ymax * ph; }
+  el("rect", { x: ml, y: mt, width: pw, height: ph, fill: "#fcfdfe", stroke: "#444", "stroke-width": 1.5 }, "", svg);
+  for (var u = 0; u <= 0.8001; u += 0.1) { el("line", { x1: px(u), y1: mt, x2: px(u), y2: mt + ph, stroke: "#d3d9df" }, "", svg); el("text", { x: px(u), y: mt + ph + 20, "font-size": 15, "text-anchor": "middle" }, fmt(u, 1), svg); }
+  for (var i = 0; i <= ymax; i += 2) { el("line", { x1: ml, y1: py(i), x2: ml + pw, y2: py(i), stroke: "#d3d9df" }, "", svg); el("text", { x: ml - 8, y: py(i) + 5, "font-size": 15, "text-anchor": "end" }, String(i), svg); }
+  sub(svg, ml + pw / 2 - 30, 290, "U", "D", " (V)", { "font-size": 16, "font-weight": 700 });
+  el("text", { x: 16, y: mt + ph / 2, "font-size": 16, "font-weight": 700, "text-anchor": "middle", transform: "rotate(-90 16 " + (mt + ph / 2) + ")" }, "I (mA)", svg);
+  var pts = [];
+  for (var v = 0; v <= 0.8; v += 0.002) { var I = IS * (Math.exp(v / UT) - 1) * 1000; if (I <= ymax) { pts.push(px(v).toFixed(1) + "," + py(I).toFixed(1)); } }
+  el("polyline", { points: pts.join(" "), fill: "none", stroke: "#c62828", "stroke-width": 3 }, "", svg);
+  el("text", { x: px(0.12), y: py(6.6), "font-size": 13, fill: "#33485b" }, "curba modelului", svg);
+  if (st.ex === "p5") { el("text", { x: ml + pw / 2, y: py(5), "font-size": 15, "text-anchor": "middle", fill: "#33485b" }, "În problema 5 dioda e polarizată invers:", svg); el("text", { x: ml + pw / 2, y: py(4.2), "font-size": 15, "text-anchor": "middle", fill: "#33485b" }, "punctul e în ansamblu, regiunea 2.", svg); return; }
+  if (!st.verificat) { return; }
+  el("line", { x1: px(0.7), y1: mt, x2: px(0.7), y2: mt + ph, stroke: "#1f5fbf", "stroke-width": 2, "stroke-dasharray": "6 4" }, "", svg);
+  el("text", { x: px(0.7) - 4, y: mt + 14, "font-size": 13, "text-anchor": "end", fill: "#1f5fbf" }, "0,7 V (fișa)", svg);
+  // calculul din fisa: (0,7 V; 4,30 mA), marcaj gol
+  el("rect", { x: px(0.7) - 8, y: py(4.3) - 8, width: 16, height: 16, fill: "#fff", stroke: "#1f5fbf", "stroke-width": 3 }, "", svg);
+  el("text", { x: px(0.7) + 12, y: py(4.3) + 22, "font-size": 13, fill: "#1f5fbf", stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" }, "fișa: 4,30 mA", svg);
+  if (st.comparat) {
+    var r = model();
+    el("circle", { cx: px(r.Ud), cy: py(r.I), r: 8, fill: "#111" }, "", svg);
+    el("text", { x: px(r.Ud) - 12, y: py(r.I) - 10, "font-size": 13, "text-anchor": "end", stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" }, "model: " + fmt(r.Ud, 2) + " V; " + fmt(r.I, 2) + " mA", svg);
+  }
+}
+function deseneazaGraf() {
+  var svg = $("graf"); gol(svg);
+  $("regiuni").style.display = st.vedere === "ans" ? "" : "none";
+  if (st.vedere === "ans") { grafAns(svg); $("notaGraf").innerHTML = st.verificat ? NOTE_R[st.regiune] : "Punctul circuitului apare după verificare. " + NOTE_R[st.regiune]; }
+  else { grafDir(svg); $("notaGraf").innerHTML = "Detaliu direct, cu scări: U<sub>D</sub> în V, I în mA. Curba este a modelului simulatorului." + (st.ex === "p3" && st.verificat && !st.comparat ? " Pătratul albastru este calculul din fișă; apasă „Compară cu modelul” pentru punctul modelului." : ""); }
+}
+
+/* ===== Explicația semnului ===== */
+function explSemn() {
+  var d = $("explSemn");
+  if (st.ex === "p5" && st.verificat) { d.innerHTML = "Reperul 0 V este borna − a sursei. Anodul e legat la ea: <b>V<sub>A</sub> = 0 V</b>. Prin R curentul e ≈ 0, deci U<sub>R</sub> ≈ 0, iar catodul are potențialul bornei +: <b>V<sub>C</sub> ≈ +6 V</b>. <b>U<sub>D</sub> = V<sub>A</sub> − V<sub>C</sub> ≈ 0 − 6 = −6 V.</b> Bara arată mărimile, fără semn."; }
+  else if (st.ex === "p3" && st.verificat) { d.innerHTML = st.comparat ? "Bara arată acum valorile modelului." : "E = U<sub>R</sub> + U<sub>D</sub> = 4,30 V + 0,70 V = 5 V. U<sub>D</sub> = V<sub>A</sub> − V<sub>C</sub> > 0: dioda e polarizată direct și conduce."; }
+  else { d.innerHTML = ""; }
+}
+
+function actualizeaza() { deseneazaSchema(); citiri(); bara(); explSemn(); deseneazaGraf(); }
+function alegeEx(id) {
+  st = { ex: id, verificat: false, rezolvat: false, comparat: false, alegere: null, gresite: 0, regiune: 0, vedere: st.vedere };
+  $("bP3").setAttribute("aria-pressed", id === "p3"); $("bP5").setAttribute("aria-pressed", id === "p5");
+  Array.prototype.forEach.call(document.querySelectorAll("#regiuni button"), function (b) { b.setAttribute("aria-pressed", "false"); });
+  $("intrebare").hidden = false; $("rezultat").hidden = true;
+  $("exercitii").hidden = false; $("lab").hidden = true; $("bLab").setAttribute("aria-pressed", "false");
+  panouRasp(); actualizeaza();
+}
+$("bP3").addEventListener("click", function () { alegeEx("p3"); });
+$("bP5").addEventListener("click", function () { alegeEx("p5"); });
+$("reia").addEventListener("click", function () { alegeEx(st.ex); });
+$("compara").addEventListener("click", compara);
+$("arataAC").addEventListener("change", deseneazaSchema);
+$("gAns").addEventListener("click", function () { st.vedere = "ans"; $("gAns").setAttribute("aria-pressed", true); $("gDir").setAttribute("aria-pressed", false); deseneazaGraf(); });
+$("gDir").addEventListener("click", function () { st.vedere = "dir"; $("gDir").setAttribute("aria-pressed", true); $("gAns").setAttribute("aria-pressed", false); deseneazaGraf(); });
+Array.prototype.forEach.call(document.querySelectorAll("#regiuni button"), function (b) {
+  b.addEventListener("click", function () {
+    var r = +b.getAttribute("data-r"); st.regiune = st.regiune === r ? 0 : r;
+    Array.prototype.forEach.call(document.querySelectorAll("#regiuni button"), function (x) { x.setAttribute("aria-pressed", +x.getAttribute("data-r") === st.regiune); });
+    deseneazaGraf();
+  });
+});
+alegeEx("p3");
+
+/* ===== Laborator virtual: dioda generică, model didactic =====
+   I_D(U_D) = I_S(e^(U_D/U_T) − 1) − I_B·e^(−(U_D + V_BR)/V_K)
+   I_S = 1e-13 A, U_T = 25,865 mV (ca în exerciții); I_B = 1 mA, V_BR = 10 V, V_K = 0,1 V:
+   |U_D| = 10 V la |I_D| = 1 mA în polarizare inversă.
+   Conducția directă (aprobată 2026-11-24): aceeași joncțiune plus o rezistență serie internă r_s = 40 Ω,
+   numai pentru I_D > 0: U_D = U_T·ln(I_D/I_S + 1) + r_s·I_D (model_direct.py din _documentare/macheta-laborator).
+   Blocarea inversă și străpungerea rămân neschimbate. Exercițiile FL2 folosesc în continuare circuit(), fără r_s. */
+var LB = { IB: 1e-3, VBR: 10, VK: 0.1, RS: 40 };
+function idGen(u) {
+  if (u <= 0) { return IS * Math.expm1(u / UT) - LB.IB * Math.exp(Math.min(-(u + LB.VBR) / LB.VK, 700)); }
+  // ramura directă: I_D din U_D = U_T·ln(I/I_S + 1) + r_s·I (funcție crescătoare în I; bisecție)
+  var lo = 0, hi = u / LB.RS, k, m;
+  for (k = 0; k < 90; k++) { m = (lo + hi) / 2; if (UT * Math.log1p(m / IS) + LB.RS * m > u) { hi = m; } else { lo = m; } }
+  return (lo + hi) / 2;
+}
+// circuitul serie: s = +1 directă, −1 inversă; s·E = U_D + R·I_D
+function circuitLab(E, R, s) {
+  if (E === 0) { return { Ud: 0, Ur: 0, I: 0 }; }
+  var lo = -20, hi = 2.5, k, m;
+  for (k = 0; k < 200; k++) { m = (lo + hi) / 2; if (idGen(m) - (s * E - m) / R > 0) { hi = m; } else { lo = m; } }
+  var u = (lo + hi) / 2, i = idGen(u);
+  return { Ud: u, Ur: R * i, I: i * 1000 };
+}
+var lab = { s: 1, E: 5, R: 1000, puncte: [], curba: false, vedere: "ans" };
+var REZ = { 470: "470 Ω", 1000: "1 kΩ", 2200: "2,2 kΩ" };
+function fI(ImA) { return Math.abs(ImA) < 0.005 ? "≈ 0" : fmt(ImA, 2); }
+function fU(U) { return Math.abs(U) < 0.005 ? "≈ 0" : fmt(U, 2); }
+function labActual() { return circuitLab(lab.E, lab.R, lab.s); }
+
+function labSchema(r) {
+  var svg = $("lSchema"); gol(svg);
+  var dir = lab.s > 0, L = { stroke: "#111", "stroke-width": 3, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" };
+  var YT = 50, YB = 235, XS = 80, XD = 350;
+  el("polyline", Object.assign({ points: XS + ",122 " + XS + "," + YT + " 180," + YT }, L), "", svg);
+  el("polyline", Object.assign({ points: "260," + YT + " " + XD + "," + YT + " " + XD + ",112" }, L), "", svg);
+  el("polyline", Object.assign({ points: XD + ",168 " + XD + "," + YB + " " + XS + "," + YB + " " + XS + ",138" }, L), "", svg);
+  el("line", { x1: XS - 26, y1: 122, x2: XS + 26, y2: 122, stroke: "#111", "stroke-width": 4 }, "", svg);
+  el("line", { x1: XS - 13, y1: 138, x2: XS + 13, y2: 138, stroke: "#111", "stroke-width": 6 }, "", svg);
+  el("text", { x: XS - 34, y: 116, "font-size": 24, "font-weight": 700, "text-anchor": "end" }, "+", svg);
+  el("text", { x: XS - 34, y: 156, "font-size": 24, "font-weight": 700, "text-anchor": "end" }, "−", svg);
+  el("text", { x: XS + 14, y: 192, "font-size": 19, "font-weight": 700, "text-anchor": "start", stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" }, "E = " + fmt(lab.E, 1) + " V", svg);
+  el("rect", { x: 180, y: YT - 13, width: 80, height: 26, fill: "#fff", stroke: "#111", "stroke-width": 3 }, "", svg);
+  el("text", { x: 220, y: YT - 22, "font-size": 19, "font-weight": 700, "text-anchor": "middle" }, "R = " + REZ[lab.R], svg);
+  var yBar = dir ? 160 : 120;
+  el("line", { x1: XD, y1: 112, x2: XD, y2: 168, stroke: "#111", "stroke-width": 3 }, "", svg);
+  el("polygon", { points: dir ? (XD - 20) + ",120 " + (XD + 20) + ",120 " + XD + ",160" : (XD - 20) + ",160 " + (XD + 20) + ",160 " + XD + ",120", fill: "#fff", stroke: "#111", "stroke-width": 3, "stroke-linejoin": "round" }, "", svg);
+  el("line", { x1: XD - 21, y1: yBar, x2: XD + 21, y2: yBar, stroke: "#111", "stroke-width": 4 }, "", svg);
+  el("text", { x: XD + 30, y: dir ? 118 : 182, "font-size": 18, "font-weight": 800, fill: "#c62828" }, "A", svg);
+  el("text", { x: XD + 30, y: dir ? 182 : 118, "font-size": 18, "font-weight": 800, fill: "#1f5fbf" }, "C", svg);
+  var H = { stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" };
+  // curentul real: in ambele cazuri de la borna + prin R spre dioda (sens orar)
+  sageata(svg, 278, YT, 330, YT, "#c62828", 4);
+  if (dir) { sub(svg, 268, YT - 12, "I", "D", " = " + fI(r.I) + " mA", Object.assign({ "font-size": 16, "font-weight": 700, fill: "#c62828" }, H)); }
+  else { sub(svg, 268, YT - 12, "I", "inv", " = " + fI(-r.I) + " mA", Object.assign({ "font-size": 16, "font-weight": 700, fill: "#c62828" }, H)); }
+  sub(svg, 170, YT + 42, "U", "R", " = " + fU(r.Ur) + " V", Object.assign({ "font-size": 17, "font-weight": 700, fill: "#1f5fbf" }, H));
+  sub(svg, XD - 40, 146, "U", "D", " = " + fU(r.Ud) + " V", Object.assign({ "font-size": 17, "font-weight": 700, fill: "#1f5fbf", "text-anchor": "end" }, H));
+  el("text", { x: 220, y: YB + 26, "font-size": 14, "text-anchor": "middle", fill: "#33485b" }, "dioda generică, model didactic", svg);
+}
+
+var VED_L = {
+  ans: { xs: 1, ys: 1, xmin: -12, xmax: 2, xt: [-12, -10, -8, -6, -4, -2, 0, 2], xd: 0, ymin: -12, ymax: 32, yt: [-12, -8, -4, 0, 4, 8, 12, 16, 20, 24, 28, 32] },
+  dir: { xs: 0.1, ys: 1, xmin: 0, xmax: 2, xt: [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2], xd: 1, ymin: 0, ymax: 32, yt: [0, 4, 8, 12, 16, 20, 24, 28, 32] },
+  cot: { xs: 0.1, ys: 1, xmin: -10.5, xmax: -9.5, xt: [-10.5, -10.3, -10.1, -9.9, -9.7, -9.5], xd: 1, ymin: -12, ymax: 0, yt: [-12, -10, -8, -6, -4, -2, 0] }
+};
+var NOTA_L = {
+  ans: "Ansamblu: gradațiile numerotate din 2 în 2 V și din 4 în 4 mA; <b>1 pătrățel = 1 V</b> pe orizontală și <b>1 mA</b> pe verticală. Regiunile: 1 conducție directă, 2 blocare inversă, 3 străpungere (în acest model, de la aproximativ −10 V).",
+  dir: "Mărit, conducția directă: gradațiile numerotate din 0,2 în 0,2 V și din 4 în 4 mA; <b>1 pătrățel = 0,1 V</b> pe orizontală și <b>1 mA</b> pe verticală.",
+  cot: "Mărit, cotul străpungerii: gradațiile numerotate din 0,2 în 0,2 V și din 2 în 2 mA; <b>1 pătrățel = 0,1 V</b> pe orizontală și <b>1 mA</b> pe verticală. Curentul invers crește mult în modul pentru o variație mică a tensiunii inverse."
+};
+/* ===== Marcajele după rezistor (aceleași în tabel, pe grafic și în animație) ===== */
+var MK = { 470: { c: "#1c6fd1", f: "triunghi" }, 1000: { c: "#2f9e44", f: "cerc" }, 2200: { c: "#d6336c", f: "romb" } };
+MK[2200].c = "#e03131";
+function formaPuncte(R, x, y, s) {
+  if (R === 470) { return { tag: "polygon", at: { points: x + "," + (y - s * 1.15) + " " + (x + s) + "," + (y + s * 0.75) + " " + (x - s) + "," + (y + s * 0.75) } }; }
+  if (R === 2200) { return { tag: "polygon", at: { points: x + "," + (y - s * 1.15) + " " + (x + s * 1.15) + "," + y + " " + x + "," + (y + s * 1.15) + " " + (x - s * 1.15) + "," + y } }; }
+  return { tag: "circle", at: { cx: x, cy: y, r: s * 0.9 } };
+}
+function marcaj(svg, R, x, y, s, cls) {
+  var f = formaPuncte(R, x, y, s);
+  return el(f.tag, Object.assign({ fill: MK[R].c, stroke: "#111", "stroke-width": 1.4, "class": cls || "" }, f.at), "", svg);
+}
+function marcajHTML(R) {
+  var f = formaPuncte(R, 8, 8, 6), at = Object.keys(f.at).map(function (k) { return k + '="' + f.at[k] + '"'; }).join(" ");
+  return '<svg class="mkr" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><' + f.tag + " " + at + ' fill="' + MK[R].c + '" stroke="#111" stroke-width="1.2"/></svg>';
+}
+
+/* ===== Demonstrația «Arată cum se trasează», în trei pași =====
+   lab.an = { idx, pas (1..3), gata (animația pasului s-a încheiat), prU, prI (0..1: segmentele de pe axe),
+              fv, fh (0..1: ghidajele), final (marcajul a apărut), auto, sursa } */
+lab.sel = -1; lab.an = null; lab.vit = 1; var TOK = 0, PTOK = 0, TIMERE = [];
+var CITIRE = 4000; // timpul de citire al unui pas, la redarea automată (ms)
+function timer(fn, ms) { TIMERE.push(setTimeout(fn, ms)); }
+function curataZbor() { Array.prototype.forEach.call(document.querySelectorAll(".zbor"), function (z) { z.remove(); }); Array.prototype.forEach.call(document.querySelectorAll(".hlv"), function (c) { c.classList.remove("hlv"); }); }
+function opresteAnim() { TOK++; PTOK++; TIMERE.forEach(clearTimeout); TIMERE = []; curataZbor(); lab.an = null; }
+function ecranGraf(u, i) { var svg = $("lGraf"), m = lab.harta, p = svg.createSVGPoint(); p.x = m.px(u); p.y = m.py(i); var q = p.matrixTransform(svg.getScreenCTM()); return { x: q.x, y: q.y }; }
+function bandaH() { var b = document.querySelector(".l-banda"); return getComputedStyle(b).position === "sticky" ? b.getBoundingClientRect().height : 0; }
+function bandaSus() { var b = document.querySelector(".l-banda"); return getComputedStyle(b).position === "sticky" ? b.getBoundingClientRect().bottom : 0; }
+function vizibil(e) {
+  var r = e.getBoundingClientRect(), d = e.closest && e.closest(".derul");
+  if (d) { var q = d.getBoundingClientRect(), th = d.querySelector("thead").getBoundingClientRect().height; if (r.top < q.top + th - 1 || r.bottom > q.bottom + 1) { return false; } }
+  return r.top >= bandaSus() - 1 && r.bottom <= window.innerHeight + 1 && r.height > 0;
+}
+
+/* --- textele pașilor, calculate pentru rândul ales și pentru scara vederii active --- */
+function nrRomana(n) { return n === 1 ? "un pătrățel" : n === 2 ? "două pătrățele" : n + (n % 100 >= 20 || n % 100 === 0 ? " de" : "") + " pătrățele"; }
+function fRep(v) { var s = fmt(v, 2).replace(/,?0+$/, ""); return s === "−0" ? "0" : s; }
+// valoarea afișată (2 zecimale) raportată la subdiviziunea s: { exact, n, jos, sus }
+function reper(v, s) {
+  var v2 = Math.round(v * 100) / 100, q = v2 / s, n = Math.round(q);
+  if (Math.abs(q - n) < 1e-6) { return { exact: true, n: Math.abs(n), v: v2 }; }
+  var a = Math.floor(q) * s, b = Math.ceil(q) * s;
+  return { exact: false, jos: Math.round(Math.min(Math.abs(a), Math.abs(b)) / s) * s * Math.sign(v2), sus: Math.round(Math.max(Math.abs(a), Math.abs(b)) / s) * s * Math.sign(v2), v: v2 };
+}
+function textPas(k, idx) {
+  var p = lab.puncte[idx], c = VED_L[lab.vedere];
+  if (k === 1) {
+    var su = "U<sub>D</sub> = " + fmt(p.Ud, 2) + " V. ";
+    if (Math.abs(p.Ud) < 0.005) { return "U<sub>D</sub> ≈ 0 V. Punctul rămâne practic pe axa verticală."; }
+    var dr = p.Ud > 0 ? "dreapta" : "stânga", ru = reper(p.Ud, c.xs);
+    if (ru.exact) { return su + "Pornește de la 0 și mergi spre " + dr + " până la " + fRep(ru.v) + " V."; }
+    return su + "Pornește de la 0 și mergi spre " + dr + ": punctul cade între " + fRep(ru.jos) + " V și " + fRep(ru.sus) + " V.";
+  }
+  if (k === 2) {
+    if (Math.abs(p.I) < 0.005) { return "I<sub>D</sub> ≈ 0 mA. La scara acestui grafic, punctul se marchează practic pe axa orizontală."; }
+    var si = "I<sub>D</sub> = " + fmt(p.I, 2) + " mA. ", vb = p.I > 0 ? "urcă" : "coboară", ri = reper(p.I, c.ys);
+    if (ri.exact) { return si + "De la 0, " + vb + " " + nrRomana(ri.n) + "."; }
+    return si + "De la 0, " + vb + ": punctul cade între " + fRep(ri.jos) + " mA și " + fRep(ri.sus) + " mA.";
+  }
+  return "Aici este punctul " + (idx + 1) + ". Marchează-l și pe fișă.";
+}
+
+/* --- desfășurarea --- */
+function zboara(sursa, tinta, text, gata) {
+  var r = sursa.getBoundingClientRect(), z = document.createElement("div");
+  z.className = "zbor"; z.textContent = text; document.body.appendChild(z);
+  var w = z.offsetWidth, h = z.offsetHeight;
+  z.style.left = (r.left + r.width / 2 - w / 2) + "px"; z.style.top = (r.top + r.height / 2 - h / 2) + "px";
+  z.style.transitionDuration = (1300 * lab.vit) + "ms"; void z.offsetWidth;
+  z.style.left = (tinta.x - w / 2) + "px"; z.style.top = (tinta.y - h / 2) + "px";
+  timer(function () { z.remove(); gata(); }, 1350 * lab.vit);
+}
+function creste(cheie, ms, gata) {
+  var n = 20, k = 0, t = PTOK;
+  (function pas() { if (t !== PTOK) { return; } k++; lab.an[cheie] = k / n; labGraf(labActual()); if (k < n) { timer(pas, ms * lab.vit / n); } else { gata(); } })();
+}
+function sursaValori(k) {
+  var rand = $("lTab").tBodies[0].rows[lab.an.idx];
+  if (lab.an.sursa === "tabel" && rand) { return rand.cells[k === 1 ? 4 : 5]; }
+  return $(k === 1 ? "lcU" : "lcI");
+}
+function completeazaPas(k) { var a = lab.an; if (k >= 1) { a.prU = 1; } if (k >= 2) { a.prI = 1; } if (k >= 3) { a.fv = 1; a.fh = 1; a.final = true; } }
+function pornestePas(k) {
+  var a = lab.an; PTOK++; var t = PTOK;
+  TIMERE.forEach(clearTimeout); TIMERE = []; curataZbor();
+  completeazaPas(k - 1); a.pas = k; a.gata = false;
+  var p = lab.puncte[a.idx];
+  labRandC(); labGraf(labActual());
+  function incheie() { if (t !== PTOK) { return; } a.gata = true; labRandC(); labGraf(labActual()); if (a.auto && k < 3) { timer(function () { if (t === PTOK && lab.an) { pornestePas(k + 1); } }, CITIRE * lab.vit); } }
+  if (k === 1 || k === 2) {
+    var s = sursaValori(k); s.classList.add("hlv"); var sc = $(k === 1 ? "lcU" : "lcI"); if (sc) { sc.classList.add("hlv"); }
+    var tinta = k === 1 ? ecranGraf(p.Ud, 0) : ecranGraf(0, p.I);
+    timer(function () { zboara(s, tinta, s.textContent.trim(), function () { if (t !== PTOK) { return; } creste(k === 1 ? "prU" : "prI", 1000, incheie); }); }, 500 * lab.vit);
+  } else {
+    creste("fv", 1100, function () { creste("fh", 1100, function () { a.final = true; incheie(); }); });
+  }
+}
+function arataTrasarea(auto) {
+  var idx = lab.sel; if (idx < 0 || !lab.puncte[idx]) { return; }
+  if (window.innerWidth < 900 && $("lab").getAttribute("data-tel") !== "traseaza") { vederTel("traseaza"); }  // pe telefon, demonstrația se vede în «Trasează»
+  opresteAnim(); var tok = TOK, p = lab.puncte[idx], c = VED_L[lab.vedere];
+  // cotul nu are axa U_D = 0; o vedere care nu cuprinde punctul nu permite construcția: se trece la ansamblu
+  if (lab.vedere === "cot" || p.Ud < c.xmin || p.Ud > c.xmax || p.I < c.ymin || p.I > c.ymax) { lab.vedere = "ans"; labActualizeaza(true); }
+  var rand = $("lTab").tBodies[0].rows[idx];
+  lab.an = { idx: idx, pas: 0, gata: false, prU: 0, prI: 0, fv: 0, fh: 0, final: false, auto: auto === true };
+  labRandC(); labGraf(labActual());
+  var cuTabel = vizibil(rand) && vizibil($("lGraf")) && vizibil($("lRandC"));
+  lab.an.sursa = cuTabel ? "tabel" : "compact";
+  if (cuTabel) { pornestePas(1); return; }
+  // telefon: rândul compact (cu explicația și comenzile) chiar sub banda fixă, graficul sub el
+  var y = $("lRandC").getBoundingClientRect().top + window.pageYOffset - bandaH() - 6;
+  window.scrollTo(0, Math.max(0, y));
+  var dif0 = bandaSus() + 4 - $("lRandC").getBoundingClientRect().top; if (dif0 > 0) { window.scrollBy(0, dif0); }
+  timer(function () { if (tok !== TOK) { return; } if (Math.abs(window.pageYOffset - Math.max(0, y)) > 2) { window.scrollTo(0, Math.max(0, y)); } var dif = bandaSus() + 4 - $("lRandC").getBoundingClientRect().top; if (dif > 0) { window.scrollBy(0, dif); } timer(function () { if (tok === TOK) { pornestePas(1); } }, 120); }, 850);
+}
+function maiDeparte() { var a = lab.an; if (!a || a.pas >= 3) { return; } pornestePas(a.pas + 1); }
+function comutaAuto(v) { var a = lab.an; if (!a) { return; } a.auto = v; if (v && a.gata && a.pas < 3) { var t = PTOK, k = a.pas; timer(function () { if (t === PTOK && lab.an) { pornestePas(k + 1); } }, CITIRE * lab.vit); } }
+function inchideDemo() { opresteAnim(); labActualizeaza(true); }
+
+
+// lupa pasului 2: când un pătrățel are sub 14 px pe ecran, axa verticală din jurul originii se arată mărită
+function lupaNecesara(py) { var c = VED_L[lab.vedere], sc = ($("lGraf").clientWidth || 460) / 460; return Math.abs(py(0) - py(c.ys)) * sc < 14; }
+function deseneazaLupa(g, px, py, p, fs) {
+  var c = VED_L[lab.vedere], O = "#b35c00", X = lab.vedere === "ans" ? px(-8.6) : 62 + 22, Y = 12 + 6, L = 172, Hl = 162, T = 40, B = 12;
+  var nmax = 4, semn = p.I < 0 ? -1 : 1, nI = Math.abs(p.I) / c.ys;
+  var lo = semn < 0 ? -nmax * c.ys : -1 * c.ys, hi = semn < 0 ? 1 * c.ys : nmax * c.ys;
+  var ax = X + L * 0.55;
+  function yl(i) { return Y + Hl - B - (i - lo) / (hi - lo) * (Hl - T - B); }
+  el("rect", { x: X, y: Y, width: L, height: Hl, fill: "#fffdf6", stroke: O, "stroke-width": 2.5, rx: 6, "class": "lupa" }, "", g);
+  for (var k = Math.round(lo / c.ys); k <= Math.round(hi / c.ys); k++) {
+    var v = k * c.ys, y = yl(v);
+    el("line", { x1: X + 4, y1: y, x2: X + L - 4, y2: y, stroke: k === 0 ? "#111" : "#cfd6dd", "stroke-width": k === 0 ? 2 : 1 }, "", g);
+    el("line", { x1: ax - 7, y1: y, x2: ax + 7, y2: y, stroke: "#111", "stroke-width": 2 }, "", g);
+    el("text", { x: ax - 11, y: y + fs * 0.35, "font-size": fs, "text-anchor": "end", "class": "lupaEt" }, k === 0 ? "0" : fmt(v, 0) + " mA", g);
+  }
+  el("line", { x1: ax, y1: Y + T - 4, x2: ax, y2: Y + Hl - 4, stroke: "#111", "stroke-width": 2.5 }, "", g);
+  var capat = semn * Math.min(nI, nmax) * c.ys, prI = Math.min(lab.an.prI, 1);
+  if (nI > 0.005) { el("line", { x1: ax, y1: yl(0), x2: ax, y2: yl(0) + (yl(capat) - yl(0)) * prI, stroke: O, "stroke-width": 8, "stroke-opacity": 0.9, "stroke-linecap": "butt", "class": "lupaSeg", "data-pas": (Hl - T - B) / (hi - lo) * c.ys }, "", g); }
+  if (nI > nmax && prI >= 1) { el("text", { x: ax + 8, y: yl(capat) + (semn < 0 ? -4 : 16), "font-size": fs - 3, fill: O, "font-weight": 700 }, "continuă…", g); }
+  el("text", { x: X + 6, y: Y + 16, "font-size": fs - 3, fill: O, "font-weight": 700 }, "lupă: axa verticală", g);
+  el("line", { x1: X + L, y1: yl(0), x2: px(0), y2: py(0), stroke: O, "stroke-width": 1.5, "stroke-dasharray": "4 4" }, "", g);
+}
+/* --- stratul demonstrației, desenat de labGraf --- */
+function deseneazaAnim(svg, px, py) {
+  var a = lab.an; if (!a || !lab.puncte[a.idx] || a.pas < 1) { return; }
+  var p = lab.puncte[a.idx], c = VED_L[lab.vedere], x = px(p.Ud), y = py(p.I), x0 = px(0), y0 = py(0), O = "#b35c00", H = { stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" };
+  var g = el("g", { "class": "anim" }, "", svg), fs = lab.fs || 14;
+  if (a.pas <= 2) { el("circle", { cx: x0, cy: y0, r: 9, fill: "none", stroke: O, "stroke-width": 3, "class": "origine" }, "", g); }
+  // pasul 1: drumul pe axa orizontală, de la 0 la U_D
+  if (a.prU > 0) {
+    var xu = x0 + (x - x0) * a.prU, act1 = a.pas === 1;
+    el("line", { x1: x0, y1: y0, x2: xu, y2: y0, stroke: O, "stroke-width": act1 ? 7 : 4, "stroke-opacity": act1 ? 0.9 : 0.55, "stroke-linecap": "round", "class": "segU" }, "", g);
+    if (a.prU >= 1) {
+      el("line", { x1: x, y1: y0 - 8, x2: x, y2: y0 + 8, stroke: O, "stroke-width": 4, "class": "repU" }, "", g);
+      sub(g, x, y0 + (p.I < 0 ? -13 : 26), "U", "D", " = " + fmt(p.Ud, 2) + " V", Object.assign({ "font-size": fs, "font-weight": 800, "text-anchor": x > 300 ? "end" : x < 110 ? "start" : "middle", fill: O }, H));
+    }
+  }
+  // pasul 2: drumul pe axa verticală, de la 0 la I_D, cu subdiviziunile parcurse marcate
+  if (a.pas === 2 && lupaNecesara(py)) { deseneazaLupa(g, px, py, p, fs); }
+  if (a.pas >= 2 && a.prI > 0) {
+    var yi = y0 + (y - y0) * a.prI, act2 = a.pas === 2;
+    el("line", { x1: x0, y1: y0, x2: x0, y2: yi, stroke: O, "stroke-width": act2 ? 7 : 4, "stroke-opacity": act2 ? 0.9 : 0.55, "stroke-linecap": "round", "class": "segI" }, "", g);
+    if (act2) {
+      var nI = Math.floor(Math.abs(p.I) / c.ys + 1e-6);
+      for (var k = 1; k <= nI && k <= 40; k++) { var yk = py(Math.sign(p.I) * k * c.ys); if (Math.abs(yk - y0) <= Math.abs(yi - y0) + 0.5) { el("line", { x1: x0 - 9, y1: yk, x2: x0 + 9, y2: yk, stroke: "#111", "stroke-width": 2, "class": "pasI" }, "", g); } }
+    }
+    if (a.prI >= 1) {
+      el("line", { x1: x0 - 8, y1: y, x2: x0 + 8, y2: y, stroke: O, "stroke-width": 4, "class": "repI" }, "", g);
+      var stg = x0 > 230;
+      sub(g, x0 + (stg ? -12 : 12), y + (p.I < 0 ? 20 : -8), "I", "D", " = " + fI(p.I) + " mA", Object.assign({ "font-size": fs, "font-weight": 800, "text-anchor": stg ? "end" : "start", fill: O }, H));
+    }
+  }
+  // pasul 3: verticala din U_D, apoi orizontala din I_D; marcajul la intersecție
+  if (a.pas >= 3) {
+    if (a.fv > 0) { el("line", { x1: x, y1: y0, x2: x, y2: y0 + (y - y0) * a.fv, stroke: O, "stroke-width": 2.5, "stroke-dasharray": "6 5", "class": "ghidV" }, "", g); }
+    if (a.fh > 0) { el("line", { x1: x0, y1: y, x2: x0 + (x - x0) * a.fh, y2: y, stroke: O, "stroke-width": 2.5, "stroke-dasharray": "6 5", "class": "ghidH" }, "", g); }
+    if (a.final) {
+      el("circle", { cx: x, cy: y, r: 14, fill: "none", stroke: O, "stroke-width": 3 }, "", g);
+      marcaj(g, p.R, x, y, 8, "pFinal");
+      el("text", Object.assign({ x: x + 12, y: y - 12, "font-size": fs + 2, "font-weight": 800, "class": "nrFinal" }, H), String(a.idx + 1), g);
+    }
+  }
+}
+/* --- banda de deasupra graficului: punctul ales, explicația pasului și comenzile --- */
+function labRandC() {
+  var d = $("lRandC"), c = $("lDemoCmd"), i = lab.sel, a = lab.an;
+  $("lab").classList.toggle("in-demo", !!a);
+  if (i < 0 || !lab.puncte[i]) { d.hidden = true; d.innerHTML = ""; c.hidden = true; c.innerHTML = ""; return; }
+  var p = lab.puncte[i];
+  d.hidden = false; d.classList.toggle("demo", !!a);
+  var cap = a ? '<b class="cap-l">Trasezi punctul ' + (i + 1) + ' din tabel:</b><b class="cap-s">Punctul ' + (i + 1) + '</b>' : '<b>Punctul ' + (i + 1) + ':</b>';
+  var h = '<div class="rc1">' + marcajHTML(p.R) + ' ' + cap + ' <span class="sep-s">·</span> <span>U<sub>D</sub> = <span id="lcU" class="cval">' + fmt(p.Ud, 2) + ' V</span></span> <span class="sep-s">·</span> <span>I<sub>D</sub> = <span id="lcI" class="cval">' + fI(p.I) + ' mA</span></span>' +
+    (a ? ' <button type="button" id="lSchimba" class="schimba">Schimbă punctul</button>' : '') + '</div>';
+  if (a && a.pas >= 1) { h += '<div class="rc2" id="lPasTxt"><b>Pasul ' + a.pas + ' din 3.</b> ' + textPas(a.pas, a.idx) + '</div>'; }
+  else if (a) { h += '<div class="rc2" id="lPasTxt">Pregătesc graficul…</div>'; }
+  d.innerHTML = h;
+  if (a && a.pas >= 1) {
+    c.hidden = false;
+    c.innerHTML = '<button type="button" class="prim urm" id="lUrm"' + (a.pas >= 3 ? " disabled" : "") + '>' + (a.pas >= 3 ? "Gata" : "Mai departe") + '</button>' +
+      '<label class="auto"><input type="checkbox" id="lAuto"' + (a.auto ? " checked" : "") + '> Redă automat</label>' +
+      '<button type="button" id="lReia">Reia</button><button type="button" id="lInchide">Închide</button>';
+  } else { c.hidden = true; c.innerHTML = ""; }
+  if (a && a.pas === 1) { $("lcU").classList.add("hlv"); }
+  if (a && a.pas === 2) { $("lcI").classList.add("hlv"); }
+}
+function comandaDemo(ev) {
+  var id = ev.target.id;
+  if (id === "lUrm") { maiDeparte(); } else if (id === "lReia") { var au = lab.an && lab.an.auto; arataTrasarea(au); }
+  else if (id === "lInchide") { inchideDemo(); } else if (id === "lSchimba") { schimbaPunctul(); }
+}
+// «Schimbă punctul»: oprește demonstrația și redeschide tabelul (selecția rămâne)
+function schimbaPunctul() { opresteAnim(); labActualizeaza(true); var t = $("lTab"); if (window.innerWidth < 900) { window.scrollTo(0, t.getBoundingClientRect().top + window.pageYOffset - bandaH() - 60); } }
+$("lRandC").addEventListener("click", comandaDemo);
+$("lDemoCmd").addEventListener("click", comandaDemo);
+$("lDemoCmd").addEventListener("change", function (ev) { if (ev.target.id === "lAuto") { comutaAuto(ev.target.checked); } });
+function selecteaza(i) { if (lab.an) { opresteAnim(); } lab.sel = i; labActualizeaza(true); }
+
+function labGraf(r) {
+  var svg = $("lGraf"); gol(svg);
+  var c = VED_L[lab.vedere], W = 460, Hh = 330, ml = 62, mr = 12, mt = 12, mb = 52, pw = W - ml - mr, ph = Hh - mt - mb;
+  function px(u) { return ml + (u - c.xmin) / (c.xmax - c.xmin) * pw; }
+  function py(i) { return mt + ph - (i - c.ymin) / (c.ymax - c.ymin) * ph; }
+  function inView(u, i) { return u >= c.xmin - 1e-9 && u <= c.xmax + 1e-9 && i >= c.ymin - 1e-9 && i <= c.ymax + 1e-9; }
+  lab.harta = { px: px, py: py };
+  // regiunile (granite aproximative, pentru orientare)
+  [[1, 0, c.xmax, "#fde7d4"], [2, -9.8, 0, "#dbe8f7"], [3, c.xmin, -9.8, "#ead9f2"]].forEach(function (z) {
+    var a = Math.max(z[1], c.xmin), b = Math.min(z[2], c.xmax);
+    if (b > a) { el("rect", { x: px(a), y: mt, width: px(b) - px(a), height: ph, fill: z[3] }, "", svg); if (px(b) - px(a) > 26) { el("text", { x: (px(a) + px(b)) / 2, y: mt + 22, "font-size": 16, "font-weight": 700, "text-anchor": "middle", fill: "#33485b" }, String(z[0]), svg); } }
+  });
+  el("rect", { x: ml, y: mt, width: pw, height: ph, fill: "none", stroke: "#444", "stroke-width": 1.5 }, "", svg);
+  // pe ecran îngust, cifrele axelor se măresc (graficul se micșorează la afișare)
+  var lw = svg.clientWidth || 460, fs = lw < 420 ? 19 : 14; lab.fs = fs;
+  function esteMajor(v, arr) { return arr.some(function (q) { return Math.abs(q - v) < 1e-6; }); }
+  var k, v;
+  for (k = Math.ceil(c.xmin / c.xs - 1e-6); k * c.xs <= c.xmax + 1e-9; k++) { v = k * c.xs; if (!esteMajor(v, c.xt)) { el("line", { x1: px(v), y1: mt, x2: px(v), y2: mt + ph, stroke: "#d5dbe1", "stroke-width": 0.7, "class": "gsub" }, "", svg); } }
+  for (k = Math.ceil(c.ymin / c.ys - 1e-6); k * c.ys <= c.ymax + 1e-9; k++) { v = k * c.ys; if (!esteMajor(v, c.yt)) { el("line", { x1: ml, y1: py(v), x2: ml + pw, y2: py(v), stroke: "#d5dbe1", "stroke-width": 0.7, "class": "gsub" }, "", svg); } }
+  c.xt.forEach(function (v) { el("line", { x1: px(v), y1: mt, x2: px(v), y2: mt + ph, stroke: "#9aa6b2", "stroke-width": 1.2, "class": "gmaj" }, "", svg); el("text", { x: px(v), y: mt + ph + fs + 4, "font-size": fs, "text-anchor": "middle" }, fmt(v, c.xd), svg); });
+  c.yt.forEach(function (v) { el("line", { x1: ml, y1: py(v), x2: ml + pw, y2: py(v), stroke: "#9aa6b2", "stroke-width": 1.2, "class": "gmaj" }, "", svg); el("text", { x: ml - 6, y: py(v) + fs * 0.35, "font-size": fs, "text-anchor": "end" }, fmt(v, 0), svg); });
+  if (c.xmin < 0 && c.xmax > 0) { el("line", { x1: px(0), y1: mt, x2: px(0), y2: mt + ph, stroke: "#111", "stroke-width": 2.6, "class": "axa" }, "", svg); }
+  else if (c.xmin === 0) { el("line", { x1: px(0), y1: mt, x2: px(0), y2: mt + ph, stroke: "#111", "stroke-width": 2.6, "class": "axa" }, "", svg); }
+  if (c.ymin < 0 && c.ymax > 0) { el("line", { x1: ml, y1: py(0), x2: ml + pw, y2: py(0), stroke: "#111", "stroke-width": 2.6, "class": "axa" }, "", svg); }
+  else if (c.ymin === 0) { el("line", { x1: ml, y1: py(0), x2: ml + pw, y2: py(0), stroke: "#111", "stroke-width": 2.6, "class": "axa" }, "", svg); }
+  sub(svg, ml + pw / 2 - 30, Hh - 6, "U", "D", " (V)", { "font-size": fs + 2, "font-weight": 700 });
+  var yc = mt + ph / 2, ty = el("text", { x: 15, y: yc, "font-size": 16, "font-weight": 700, "text-anchor": "middle", transform: "rotate(-90 15 " + yc + ")" }, "I", svg);
+  var t1 = document.createElementNS(SVGNS, "tspan"); t1.setAttribute("font-size", "11"); t1.setAttribute("dy", "4"); t1.textContent = "D"; ty.appendChild(t1);
+  var t2 = document.createElementNS(SVGNS, "tspan"); t2.setAttribute("dy", "-4"); t2.textContent = " (mA)"; ty.appendChild(t2);
+  if (lab.curba) {
+    var pts = [], seg = [], n = 6000, k, u, i;
+    for (k = 0; k <= n; k++) {
+      u = c.xmin + (c.xmax - c.xmin) * k / n; i = idGen(u) * 1000;
+      if (inView(u, i)) { seg.push(px(u).toFixed(1) + "," + py(i).toFixed(1)); } else if (seg.length) { pts.push(seg); seg = []; }
+    }
+    if (seg.length) { pts.push(seg); }
+    pts.forEach(function (s) { if (s.length > 1) { el("polyline", { points: s.join(" "), fill: "none", stroke: "#5a7cb0", "stroke-width": 3, "class": "curba" }, "", svg); } });
+  }
+  var afara = 0, ascuns = lab.an && !lab.an.final ? lab.an.idx : -1;
+  lab.puncte.forEach(function (p, idx) {
+    if (!inView(p.Ud, p.I)) { afara++; return; }
+    if (idx === ascuns) { return; } // ascuns temporar în timpul construcției
+    var x = px(p.Ud), y = py(p.I);
+    if (idx === lab.sel) { el("circle", { cx: x, cy: y, r: 13, fill: "#ffe680", "fill-opacity": 0.75, stroke: "#b35c00", "stroke-width": 2.5 }, "", svg); }
+    marcaj(svg, p.R, x, y, 6.5, "pS p" + p.R);
+    if (idx === lab.sel) { el("text", { x: x + 11, y: y - 10, "font-size": 15, "font-weight": 800, stroke: "#fff", "stroke-width": 4, "paint-order": "stroke", "class": "nrPct" }, String(idx + 1), svg); }
+  });
+  if (inView(r.Ud, r.I)) {
+    var op = lab.an ? 0.2 : 1;
+    el("circle", { cx: px(r.Ud), cy: py(r.I), r: 13, fill: "none", stroke: "#e0a800", "stroke-width": 4, "class": "curent", opacity: op }, "", svg);
+    el("circle", { cx: px(r.Ud), cy: py(r.I), r: 9, fill: "none", stroke: "#111", "stroke-width": 1.5, opacity: op }, "", svg);
+  }
+  deseneazaAnim(svg, px, py);
+  $("lNotaGraf").hidden = !!lab.an;
+  $("lNotaGraf").innerHTML = NOTA_L[lab.vedere] + (inView(r.Ud, r.I) ? "" : " <b>Punctul curent nu încape în această vedere.</b>") + (afara ? " " + afara + (afara === 1 ? " punct salvat este" : " puncte salvate sunt") + " în afara acestei vederi." : "");
+}
+function labTabel() {
+  var tb = $("lTab").tBodies[0]; tb.innerHTML = "";
+  lab.puncte.forEach(function (p, k) {
+    var tr = document.createElement("tr");
+    [String(k + 1), null, p.s > 0 ? "directă" : "inversă", fmt(p.E, 1), fmt(p.Ud, 2), fI(p.I)].forEach(function (t) { var td = document.createElement("td"); if (t === null) { td.innerHTML = marcajHTML(p.R) + " " + REZ[p.R]; td.className = "colR"; } else { td.textContent = t; } tr.appendChild(td); });
+    tr.tabIndex = 0; tr.setAttribute("aria-selected", k === lab.sel ? "true" : "false"); if (k === lab.sel) { tr.className = "sel"; }
+    tr.addEventListener("click", function () { selecteaza(k); });
+    tr.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); selecteaza(k); } });
+    tb.appendChild(tr);
+  });
+  $("lSterge").disabled = !lab.puncte.length;
+  $("lTrasare").disabled = lab.sel < 0; $("lTrasare").hidden = lab.sel < 0; $("lIndRand").hidden = lab.sel >= 0;
+  if (lab.sel >= 0 && tb.rows[lab.sel]) { var d = tb.closest(".derul"), row = tb.rows[lab.sel], dr = d.getBoundingClientRect(), rr = row.getBoundingClientRect(), th = d.querySelector("thead").getBoundingClientRect().height; if (rr.top < dr.top + th) { d.scrollTop -= (dr.top + th - rr.top); } else if (rr.bottom > dr.bottom) { d.scrollTop += rr.bottom - dr.bottom; } }
+}
+function labActualizeaza(pastreazaAnim) {
+  if (!pastreazaAnim) { opresteAnim(); }
+  var r = labActual();
+  $("lE").textContent = fmt(lab.E, 1) + " V"; $("lEval").textContent = fmt(lab.E, 1) + " V";
+  $("lD").innerHTML = fU(r.Ud) + ' <span class="u">V</span>'; $("lR").textContent = fU(r.Ur) + " V"; $("lI").innerHTML = fI(r.I) + ' <span class="u">mA</span>';
+  $("lSlide").value = lab.E;
+  $("lDir").setAttribute("aria-pressed", lab.s > 0); $("lInv").setAttribute("aria-pressed", lab.s < 0);
+  Array.prototype.forEach.call(document.querySelectorAll(".seg3 button"), function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-r") === lab.R); });
+  construiesteRapid();
+  Array.prototype.forEach.call(document.querySelectorAll("#lRapid button"), function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-e") === lab.E); });
+  $("lVedereSel").value = lab.vedere;
+  $("lSuma").innerHTML = "|U<sub>D</sub>| + |U<sub>R</sub>| = " + fmt(Math.abs(r.Ud), 2) + " V + " + fmt(Math.abs(r.Ur), 2) + " V = " + fmt(Math.abs(r.Ud) + Math.abs(r.Ur), 1) + " V = E. Pe axa orizontală se trece U<sub>D</sub>, tensiunea pe diodă, nu E.";
+  $("lCurba").setAttribute("aria-pressed", lab.curba); $("lCurba").textContent = lab.curba ? "Ascunde curba" : "Arată curba";
+  Array.prototype.forEach.call(document.querySelectorAll(".l-graf .subt button"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === lab.vedere); });
+  labSchema(r); labTabel(); labRandC(); labGraf(r);
+}
+function labSeteazaE(v) { lab.E = Math.round(Math.min(15, Math.max(0, v)) * 10) / 10; $("lMsg").textContent = ""; labActualizeaza(); }
+function labSalveaza() {
+  var r = labActual(), ex = -1;
+  lab.puncte.forEach(function (p, k) { if (p.s === lab.s && p.E === lab.E && p.R === lab.R) { ex = k; } });
+  if (ex >= 0) { $("lMsg").textContent = "Punctul există deja în tabel, cu numărul " + (ex + 1) + "."; return; }
+  if (lab.puncte.length >= 30) { $("lMsg").textContent = "Tabelul e plin (30 de puncte). Șterge puncte ca să adaugi altele."; return; }
+  lab.puncte.push({ s: lab.s, E: lab.E, R: lab.R, Ud: r.Ud, Ur: r.Ur, I: r.I });
+  $("lMsg").textContent = "Punctul " + lab.puncte.length + " salvat.";
+  labActualizeaza();
+}
+var rapidS = 0;
+function construiesteRapid() {   // directă: 1, 3, 6, 10 V; inversă: 6, 10, 11, 15 V (reglajele fișei)
+  if (rapidS === lab.s) { return; }
+  rapidS = lab.s; var c = $("lRapid"); c.innerHTML = "";
+  (lab.s > 0 ? [1, 3, 6, 10] : [6, 10, 11, 15]).forEach(function (v) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = v + " V"; b.setAttribute("data-e", v);
+    b.addEventListener("click", function () { labSeteazaE(v); }); c.appendChild(b);
+  });
+}
+$("lSlide").addEventListener("input", function () { labSeteazaE(parseFloat(this.value)); });
+$("lMinus").addEventListener("click", function () { labSeteazaE(lab.E - 0.1); });
+$("lPlus").addEventListener("click", function () { labSeteazaE(lab.E + 0.1); });
+$("lDir").addEventListener("click", function () { lab.s = 1; labActualizeaza(); });
+$("lInv").addEventListener("click", function () { lab.s = -1; labActualizeaza(); });
+Array.prototype.forEach.call(document.querySelectorAll(".seg3 button"), function (b) { b.addEventListener("click", function () { lab.R = +b.getAttribute("data-r"); labActualizeaza(); }); });
+Array.prototype.forEach.call(document.querySelectorAll(".l-graf .subt button"), function (b) { b.addEventListener("click", function () { lab.vedere = b.getAttribute("data-v"); labActualizeaza(); }); });
+$("lSalv").addEventListener("click", labSalveaza);
+$("lCurba").addEventListener("click", function () { lab.curba = !lab.curba; labActualizeaza(); });
+$("lSterge").addEventListener("click", function () { lab.puncte.pop(); if (lab.sel >= lab.puncte.length) { lab.sel = -1; } $("lMsg").textContent = ""; labActualizeaza(); });
+$("lTrasare").addEventListener("click", function () { arataTrasarea(false); });
+$("lVedereSel").addEventListener("change", function () { lab.vedere = this.value; labActualizeaza(); });
+function vederTel(v) {   // păstrează reglajele, punctele salvate și selecția
+  $("lab").setAttribute("data-tel", v);
+  $("tMas").setAttribute("aria-selected", v === "masoara"); $("tTra").setAttribute("aria-selected", v === "traseaza");
+  if (lab.an && v === "masoara") { opresteAnim(); }
+  labActualizeaza(true);
+}
+$("tMas").addEventListener("click", function () { vederTel("masoara"); });
+$("tTra").addEventListener("click", function () { vederTel("traseaza"); });
+$("lLeg").className = "leg compact";
+$("lLeg").innerHTML = '<span><span class="mk mc"></span>punctul curent</span><span class="sep">·</span>' + [470, 1000, 2200].map(function (R) { return "<span>" + marcajHTML(R) + " " + REZ[R] + "</span>"; }).join('<span class="sep">·</span>') + '<span class="sep">·</span><span><span class="mk mcurba"></span>curba</span>';
+function alegeLab() {
+  $("exercitii").hidden = true; $("lab").hidden = false;
+  ["bP3", "bP5"].forEach(function (id) { $(id).setAttribute("aria-pressed", "false"); }); $("bLab").setAttribute("aria-pressed", "true");
+  labActualizeaza();
+}
+$("bLab").addEventListener("click", alegeLab);
+
+function testLab(ver) {
+  function apasa(sel) { document.querySelector(sel).click(); }
+  function eRapid(v) { apasa('#lRapid [data-e="' + v + '"]'); }
+  function t(id) { return $(id).textContent; }
+  function n(sel) { return document.querySelectorAll(sel).length; }
+  function dorm(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+  function rand(i) { return $("lTab").tBodies[0].rows[i]; }
+  function cand(f) { var k = 0; return (function b() { if (f() || k++ > 600) { return Promise.resolve(); } return dorm(20).then(b); })(); }
+  function pasGata(k) { return cand(function () { return lab.an && lab.an.pas === k && lab.an.gata; }); }
+  function txtPas() { return $("lPasTxt") ? $("lPasTxt").textContent.replace(/^Pasul \d din 3\.\s*/, "") : ""; }
+  function inel() { var e = document.querySelector("#lGraf .curent"); return e ? +(e.getAttribute("opacity") || 1) : -1; }
+  var lat = window.innerWidth >= 1300, m = function () { return lab.harta; };
+  alegeLab();
+  ver("LAB: deschidere: exercițiile ascunse, laboratorul vizibil", $("exercitii").hidden && !$("lab").hidden);
+  ver("LAB: la deschidere: punctul curent, fără curbă și fără puncte salvate", n("#lGraf .curent") === 1 && !document.querySelector("#lGraf .curba") && !n("#lGraf .pS"));
+  ver("LAB: eticheta «diodă generică, model didactic»", /model didactic/.test(t("lSchema")));
+  ver("LAB: legenda are cele trei rezistoare", /470 Ω/.test(t("lLeg")) && /1 kΩ/.test(t("lLeg")) && /2,2 kΩ/.test(t("lLeg")) && n("#lLeg svg") >= 3);
+  // scara: subdiviziuni în fiecare vedere
+  ver("SCARĂ ansamblu: U_D de la −12 V la +2 V, 40 de subdiviziuni (1 V și 1 mA)", VED_L.ans.xmax === 2 && n("#lGraf .gsub") === 40 && n("#lGraf .gmaj") === 20 && n("#lGraf .axa") === 2 && /1 pătrățel = 1 V/.test(t("lNotaGraf")) && /1 mA/.test(t("lNotaGraf")));
+  apasa('.l-graf [data-v="dir"]'); ver("SCARĂ conducție directă: U_D de la 0 la +2 V, 34 de subdiviziuni (0,1 V și 1 mA)", VED_L.dir.xmax === 2 && n("#lGraf .gsub") === 34 && /1 pătrățel = 0,1 V/.test(t("lNotaGraf")));
+  apasa('.l-graf [data-v="cot"]'); ver("SCARĂ cot: 11 subdiviziuni (0,1 V și 1 mA)", n("#lGraf .gsub") === 11 && /0,1 V/.test(t("lNotaGraf")));
+  apasa('.l-graf [data-v="ans"]');
+  ver("LAB: «Arată cum se trasează» dezactivat fără selecție", $("lTrasare").disabled);
+  apasa('.seg3 [data-r="1000"]');
+  var A = [[1, 1, "0,59", "0,41"], [1, 3, "0,71", "2,29"], [1, 6, "0,84", "5,16"], [1, 10, "1,01", "8,99"], [-1, 6, "−6,00", "≈ 0"], [-1, 10, "−9,83", "−0,17"], [-1, 11, "−10,00", "−1,00"], [-1, 15, "−10,16", "−4,84"]];
+  A.forEach(function (q) {
+    apasa(q[0] > 0 ? "#lDir" : "#lInv"); eRapid(q[1]);
+    var rr = labActual();
+    ver("LAB A: " + (q[0] > 0 ? "directă" : "inversă") + " E = " + q[1] + " V: U_D = " + q[2] + " V, I_D = " + q[3] + " mA; E = U_D + R·I_D", t("lD") === q[2] + " V" && t("lI") === q[3] + " mA" && Math.abs(q[0] * q[1] - rr.Ud - rr.Ur) < 1e-9);
+    apasa("#lSalv");
+  });
+  apasa("#lInv"); eRapid(11);
+  ver("LAB: la 11 V invers: U_D = −10,00 V, U_R = −1,00 V, I_D = −1,00 mA simultan", t("lD") === "−10,00 V" && t("lR") === "−1,00 V" && t("lI") === "−1,00 mA" && /10,00 V \+ 1,00 V = 11,0 V = E/.test(t("lSuma")));
+  ver("LAB: 8 puncte în tabel; 8 cercuri verzi (1 kΩ)", $("lTab").tBodies[0].rows.length === 8 && n("#lGraf circle.p1000") === 8);
+  apasa("#lInv"); eRapid(15); apasa("#lSalv");
+  ver("LAB B: punctul comun nu se dublează (numărul 8)", $("lTab").tBodies[0].rows.length === 8 && /numărul 8/.test(t("lMsg")));
+  apasa('.seg3 [data-r="2200"]'); ver("LAB B: 2,2 kΩ: −2,24 mA", t("lI") === "−2,24 mA"); apasa("#lSalv");
+  apasa('.seg3 [data-r="470"]'); ver("LAB B: 470 Ω: −10,15 mA", t("lI") === "−10,15 mA"); apasa("#lSalv");
+  apasa("#lDir"); $("lSlide").value = 15; $("lSlide").dispatchEvent(new Event("input"));
+  var r15 = labActual();
+  ver("LAB: 15 V direct, 470 Ω: U_D = 1,80 V, I_D = 28,07 mA; încape în «Ansamblu» și în vederea directă", t("lD") === "1,80 V" && t("lI") === "28,07 mA" && n("#lGraf .curent") === 1 && (apasa('.l-graf [data-v="dir"]'), n("#lGraf .curent") === 1) && (apasa('.l-graf [data-v="ans"]'), true) && Math.abs(15 - r15.Ud - r15.Ur) < 1e-9);
+  ver("LAB: rezistența serie de 40 Ω numai pe ramura directă (inversa neschimbată)", Math.abs(idGen(-11 + 1e-12) - (IS * Math.expm1(-11 / UT) - LB.IB * Math.exp((11 - 10) / 0.1))) < 1e-9 && Math.abs(UT * Math.log1p(idGen(0.84) / IS) + 40 * idGen(0.84) - 0.84) < 1e-9);
+  apasa("#lInv");
+  ver("LAB: o singură caracteristică; marcaje după R (triunghi 470 Ω, cerc 1 kΩ, romb 2,2 kΩ)", n("#lGraf polygon.p470") === 1 && n("#lGraf polygon.p2200") === 1 && n("#lGraf circle.p1000") === 8 && !n("#lGraf .curba"));
+  var cv = $("lI"), rg = document.createRange(); rg.selectNodeContents(cv);
+  ver("LAB: «−10,15 mA» încape în casetă (" + Math.round(rg.getBoundingClientRect().width) + " / " + Math.round(cv.getBoundingClientRect().width) + " px)", rg.getBoundingClientRect().width <= cv.getBoundingClientRect().width - 8);
+  rand(6).click();
+  ver("LAB: selecție: un singur număr pe grafic, banda «Punctul 7»", n("#lGraf .nrPct") === 1 && /Punctul 7:/.test(t("lRandC")));
+  lab.vit = 0.03;
+  // 1) 11 V invers, pas cu pas, pornit din vederea cotului
+  apasa('.l-graf [data-v="cot"]'); rand(6).click(); apasa("#lTrasare");
+  ver("DEMO 11 V: din vederea «cot» se trece la «Ansamblu»; curba rămâne ascunsă", lab.vedere === "ans" && !n("#lGraf .curba"));
+  return cand(function () { return lab.an && lab.an.pas === 1; }).then(function () {
+    ver("DEMO 11 V: banda «Trasezi punctul 7 din tabel» cu U_D și I_D", /Trasezi punctul 7 din tabel:/.test(t("lRandC")) && /−10,00 V/.test(t("lRandC")) && /−1,00 mA/.test(t("lRandC")));
+    ver("DEMO: sursa valorilor = " + lab.an.sursa + (lat ? " (tabla: tabel)" : " (ecran îngust: banda compactă)"), lab.an.sursa === (lat ? "tabel" : "compact"));
+    if (lat) { ver("DEMO tabla: fără derulare a paginii (H " + document.documentElement.scrollHeight + " / " + window.innerHeight + ")", window.pageYOffset === 0 && document.documentElement.scrollHeight <= window.innerHeight + 1); }
+    ver("DEMO pas 1: text exact", txtPas() === "UD = −10,00 V. Pornește de la 0 și mergi spre stânga până la −10 V.");
+    ver("DEMO pas 1: U_D evidențiat, originea marcată, punctul salvat ascuns, inelul curent estompat", $("lcU").classList.contains("hlv") && !$("lcI").classList.contains("hlv") && n("#lGraf .origine") === 1 && n("#lGraf .pS") === 9 && inel() < 0.5);
+    return pasGata(1);
+  }).then(function () {
+    var s = document.querySelector("#lGraf .segU");
+    ver("DEMO pas 1: drumul de la 0 spre stânga, până la −10 V", +s.getAttribute("x1") === m().px(0) && Math.abs(+s.getAttribute("x2") - m().px(-10)) < 0.01 && +s.getAttribute("x2") < +s.getAttribute("x1"));
+    ver("DEMO manual: rămâne la pasul 1 până la «Mai departe»", lab.an.pas === 1);
+    return dorm(300);
+  }).then(function () {
+    ver("DEMO manual: tot pasul 1 după așteptare", lab.an.pas === 1);
+    apasa("#lUrm"); return cand(function () { return lab.an.pas === 2; });
+  }).then(function () {
+    ver("DEMO pas 2: text exact", txtPas() === "ID = −1,00 mA. De la 0, coboară un pătrățel.");
+    ver("DEMO pas 2: I_D evidențiat (nu U_D)", $("lcI").classList.contains("hlv") && !$("lcU").classList.contains("hlv"));
+    if (lat) { var c6 = rand(6).cells; ver("DEMO tabla pas 2: în tabel e evidențiat I_D", c6[5].classList.contains("hlv") && !c6[4].classList.contains("hlv")); }
+    return pasGata(2);
+  }).then(function () {
+    var s = document.querySelector("#lGraf .segI"), y0 = m().py(0), y1 = m().py(-1);
+    ver("DEMO pas 2: intervalul 0 … −1 mA accentuat pe axa verticală (un pătrățel sub zero)", Math.abs(+s.getAttribute("y1") - y0) < 0.01 && Math.abs(+s.getAttribute("y2") - y1) < 0.01 && y1 > y0 && n("#lGraf .pasI") === 1 && +s.getAttribute("x1") === m().px(0));
+    ver("DEMO pas 2: punctul salvat încă ascuns", n("#lGraf .pS") === 9);
+    var sc = $("lGraf").clientWidth / 460, pxmA = Math.abs(m().py(0) - m().py(1)) * sc;
+    ver("DEMO pas 2: un pătrățel are " + pxmA.toFixed(1) + " px pe ecran; lupa apare numai sub 14 px", (pxmA < 14) === (n("#lGraf .lupa") === 1));
+    if (n("#lGraf .lupa")) { var et = Array.prototype.map.call(document.querySelectorAll("#lGraf .lupaEt"), function (e) { return e.textContent; }), ls = document.querySelector("#lGraf .lupaSeg"); ver("DEMO pas 2, lupa: reperele 0 și −1 mA; segmentul acoperă exact primul pătrățel sub zero", et.indexOf("0") >= 0 && et.indexOf("−1 mA") >= 0 && +ls.getAttribute("y2") > +ls.getAttribute("y1") && Math.abs((+ls.getAttribute("y2") - +ls.getAttribute("y1")) - +ls.getAttribute("data-pas")) < 0.01); }
+    if (!lat) { var rc = $("lRandC").getBoundingClientRect(), g = $("lGraf").getBoundingClientRect(); ver("DEMO telefon pas 2: banda (explicația, «Mai departe») și graficul vizibile fără derulare (" + Math.round(rc.top) + "–" + Math.round(g.bottom) + " / " + window.innerHeight + " y " + window.pageYOffset + " banda " + Math.round(bandaSus()) + " H " + document.documentElement.scrollHeight + ")", rc.top >= bandaSus() - 1 && g.bottom <= window.innerHeight + 1 && $("lUrm").getBoundingClientRect().bottom <= window.innerHeight); }
+    apasa("#lUrm"); return pasGata(3);
+  }).then(function () {
+    var pt = lab.puncte[6], f = document.querySelector("#lGraf .pFinal");
+    ver("DEMO pas 3: text exact cu numărul real", txtPas() === "Aici este punctul 7. Marchează-l și pe fișă.");
+    ver("DEMO pas 3: verticala din U_D și orizontala din I_D, marcajul la intersecție", n("#lGraf .ghidV") === 1 && n("#lGraf .ghidH") === 1 && Math.abs(+f.getAttribute("cx") - m().px(pt.Ud)) < 0.01 && Math.abs(+f.getAttribute("cy") - m().py(pt.I)) < 0.01 && document.querySelector("#lGraf .nrFinal").textContent === "7");
+    ver("DEMO pas 3: «Mai departe» devine «Gata»", $("lUrm").disabled && /Gata/.test(t("lUrm")));
+    apasa("#lInchide");
+    ver("DEMO închis: afișare normală (punct salvat vizibil, inel normal, fără ghidaje)", !lab.an && n("#lGraf .anim") === 0 && n("#lGraf .pS") === 10 && inel() === 1 && /Punctul 7:/.test(t("lRandC")));
+    // 2) 6 V invers, I_D ≈ 0
+    rand(4).click(); apasa("#lTrasare"); return cand(function () { return lab.an && lab.an.pas === 1; });
+  }).then(function () {
+    ver("DEMO 6 V pas 1", txtPas() === "UD = −6,00 V. Pornește de la 0 și mergi spre stânga până la −6 V.");
+    apasa("#lUrm"); return cand(function () { return lab.an.pas === 2; });
+  }).then(function () {
+    ver("DEMO 6 V pas 2: «≈ 0 mA», practic pe axa orizontală", txtPas() === "ID ≈ 0 mA. La scara acestui grafic, punctul se marchează practic pe axa orizontală.");
+    // 3) punct direct între gradații (2 V: 0,60 V; 1,40 mA), în ansamblu și în vederea mărită
+    rand(1).click();
+    ver("DEMO: schimbarea rândului oprește demonstrația și curăță ghidajele", !lab.an && n("#lGraf .anim") === 0 && n(".zbor") === 0 && n(".hlv") === 0 && lab.sel === 1);
+    apasa("#lTrasare"); return cand(function () { return lab.an && lab.an.pas === 1; });
+  }).then(function () {
+    ver("DEMO 3 V (ansamblu) pas 1: între 0 V și 1 V", txtPas() === "UD = 0,71 V. Pornește de la 0 și mergi spre dreapta: punctul cade între 0 V și 1 V.");
+    apasa("#lUrm"); return cand(function () { return lab.an.pas === 2; });
+  }).then(function () {
+    ver("DEMO 3 V (ansamblu) pas 2: între 2 mA și 3 mA", txtPas() === "ID = 2,29 mA. De la 0, urcă: punctul cade între 2 mA și 3 mA.");
+    apasa('.l-graf [data-v="dir"]');
+    ver("DEMO: schimbarea vederii oprește demonstrația", !lab.an && n("#lGraf .anim") === 0);
+    apasa("#lTrasare"); return cand(function () { return lab.an && lab.an.pas === 1; });
+  }).then(function () {
+    ver("DEMO 3 V (vederea directă, 1 pătrățel = 0,1 V) pas 1: între 0,7 V și 0,8 V", lab.vedere === "dir" && txtPas() === "UD = 0,71 V. Pornește de la 0 și mergi spre dreapta: punctul cade între 0,7 V și 0,8 V.");
+    // 4) redare automată: din pasul 1, fără clicuri
+    $("lAuto").click();
+    return cand(function () { return lab.an && lab.an.pas === 3 && lab.an.gata; });
+  }).then(function () {
+    ver("DEMO automat: ajunge singur la pasul 3, cu marcajul final", lab.an.pas === 3 && lab.an.final && n("#lGraf .pFinal") === 1 && lab.an.auto);
+    apasa("#lReia"); return cand(function () { return lab.an && lab.an.pas === 1; });
+  }).then(function () {
+    ver("DEMO reluare: înapoi la pasul 1, fără ghidaje vechi, redarea automată păstrată", lab.an.pas === 1 && n("#lGraf .ghidV") === 0 && lab.an.auto);
+    rand(9).click();
+    ver("DEMO: alt rând în timpul redării automate: oprire și curățare", !lab.an && n("#lGraf .anim") === 0 && n(".zbor") === 0);
+    // 5) 470 Ω, redare automată pornită din bandă după «Arată cum se trasează»
+    apasa("#lTrasare"); return cand(function () { return lab.an && lab.an.pas === 1; });
+  }).then(function () {
+    ver("DEMO 470 Ω: din vederea directă se trece la «Ansamblu»", lab.vedere === "ans");
+    ver("DEMO 470 Ω pas 1: între −10 V și −11 V", txtPas() === "UD = −10,23 V. Pornește de la 0 și mergi spre stânga: punctul cade între −10 V și −11 V.");
+    $("lAuto").click(); return cand(function () { return lab.an && lab.an.pas === 2; });
+  }).then(function () {
+    ver("DEMO 470 Ω pas 2: între −10 mA și −11 mA", txtPas() === "ID = −10,15 mA. De la 0, coboară: punctul cade între −10 mA și −11 mA.");
+    return cand(function () { return lab.an && lab.an.pas === 3 && lab.an.gata; });
+  }).then(function () {
+    var f = document.querySelector("#lGraf .pFinal"), pts = f.getAttribute("points").split(" ");
+    ver("DEMO 470 Ω pas 3: triunghi albastru, numărul 10", pts.length === 3 && f.getAttribute("fill") === MK[470].c && document.querySelector("#lGraf .nrFinal").textContent === "10");
+    apasa("#lInchide");
+    apasa("#lCurba"); ver("LAB: «Arată curba» separat, după demonstrație", n("#lGraf .curba") >= 1 && n("#lGraf .pS") === 10); apasa("#lCurba");
+    apasa('.l-graf [data-v="cot"]'); ver("LAB: vederea cotului: 5 puncte", n("#lGraf .pS") === 5); apasa('.l-graf [data-v="ans"]');
+    apasa("#lSterge"); ver("LAB: șterge ultimul punct; selecția lui dispare", $("lTab").tBodies[0].rows.length === 9 && lab.sel === -1 && $("lTrasare").disabled);
+    lab.vit = 1;
+    apasa("#bP3"); ver("LAB -> problema 3: exercițiile revin", !$("exercitii").hidden && $("lab").hidden);
+    $("rasp").value = "4,3"; $("verif").click(); ver("FL2 problema 3 după integrare: corect", /Corect/.test($("msg").textContent));
+    apasa("#bP5"); document.querySelector('[data-o="dioda"]').click(); $("confirm").click(); ver("FL2 problema 5 după integrare: soluția", $("vD").textContent === "≈ −6 V");
+    ver("fără derulare orizontală", document.documentElement.scrollWidth <= window.innerWidth + 1);
+  });
+}
+
+/* ===== Lecția 3: Verificarea cu multimetrul (FL3: piesele P1-P4 scoase din circuit; P5 pe placă) =====
+   Valorile sunt cele din FL3; P5 după desprindere: 0,57 V și OL (scenariul simulat aprobat la 2026-11-23). */
+var PIESE3 = {
+  P1: { desc: "Piesa P1: diodă de siliciu verificată separat, scoasă din circuit. Banda de pe capsulă s-a șters.", v: { 1: "0,58 V", 2: "OL" }, stare: "functionala", anod: 1 },
+  P2: { desc: "Piesa P2: diodă de siliciu verificată separat, scoasă din circuit.", v: { 1: "OL", 2: "OL" }, stare: "intrerupta" },
+  P3: { desc: "Piesa P3: diodă de siliciu verificată separat, scoasă din circuit.", v: { 1: "0,00 V", 2: "0,00 V" }, stare: "scurt" },
+  P4: { desc: "Piesa P4: diodă de siliciu verificată separat, scoasă din circuit. Banda de pe capsulă s-a șters.", v: { 1: "OL", 2: "0,61 V" }, stare: "functionala", anod: 2 },
+  P5: { desc: "Piesa P5: diodă lipită pe o placă nealimentată, în paralel cu un rezistor.", placa: { 1: "0,43 V", 2: "0,43 V" }, v: { 1: "0,57 V", 2: "OL" }, stare: "functionala", anod: 1 }
+};
+var NUME3 = { functionala: "funcțională", intrerupta: "întreruptă", scurt: "în scurtcircuit" };
+// faza: "masoara" (citirile în curs), "desprinde" (P5: citirile de pe placă făcute), "interpreteaza", "anod" (alegerea anodului), "gata"
+var l3 = { p: "P1", grup: "separat", cit: [], rosu: 0, faza: "masoara", stare: null, anod: 0, placa: null, gresite: 0 };
+function l3Piesa() { return PIESE3[l3.p]; }
+function l3Valoare(r) { var pc = l3Piesa(); return (l3.grup === "placa" ? pc.placa : pc.v)[r]; }
+function l3Alege(p) {
+  l3 = { p: p, grup: p === "P5" ? "placa" : "separat", cit: [], rosu: 0, faza: "masoara", stare: null, anod: 0, placa: null, gresite: 0 };
+  Array.prototype.forEach.call(document.querySelectorAll(".l3-piese button"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-p") === p); });
+  $("l3Msg").className = "mesaj"; $("l3Msg").innerHTML = "";
+  l3Actualizeaza();
+}
+function l3Terminal(t) {
+  if (l3.faza === "masoara" && l3.cit.length === 0) {              // prima citire: roșul pe terminalul atins, negrul pe celălalt
+    l3.rosu = t; l3.cit.push({ rosu: t, val: l3Valoare(t) });
+  } else if (l3.faza === "anod") {
+    l3.anod = t; $("l3Confirma").disabled = false;
+  }
+  l3Actualizeaza();
+}
+function l3Inverseaza() {
+  if (l3.faza !== "masoara" || l3.cit.length !== 1) { return; }
+  l3.rosu = 3 - l3.rosu; l3.cit.push({ rosu: l3.rosu, val: l3Valoare(l3.rosu) });
+  if (l3.grup === "placa") { l3.faza = "desprinde"; l3.placa = l3.cit.slice(); }
+  else { l3.faza = "interpreteaza"; }
+  l3Actualizeaza();
+}
+function l3Desprinde() {
+  if (l3.faza !== "desprinde") { return; }
+  l3.grup = "desprins"; l3.cit = []; l3.rosu = 0; l3.faza = "masoara";
+  l3Actualizeaza();
+}
+function l3Stare(s) {
+  if (l3.faza !== "interpreteaza" && l3.faza !== "anod") { return; }
+  l3.stare = s; l3.anod = 0;
+  l3.faza = s === "functionala" ? "anod" : "interpreteaza";
+  $("l3Confirma").disabled = s === "functionala";
+  $("l3Msg").className = "mesaj"; $("l3Msg").innerHTML = "";
+  l3Actualizeaza();
+}
+// citirea care decide: cea cu tensiune (la piesa funcțională) sau ambele
+function l3IndexTensiune() { for (var k = 0; k < l3.cit.length; k++) { if (/V$/.test(l3.cit[k].val) && l3.cit[k].val !== "0,00 V") { return k; } } return -1; }
+function l3Confirma() {
+  var pc = l3Piesa(), m = $("l3Msg"), c = l3.cit, txt;
+  function cit(k) { return "citirea " + (k + 1) + " (roșu pe " + c[k].rosu + ")"; }
+  var desprindere = l3.p === "P5" ? " Desprinderea a fost necesară pentru că, pe placă, curentul aparatului trecea și prin rezistorul legat în paralel, de aceea aparatul arăta 0,43 V în ambele sensuri; cu un terminal desprins se măsoară numai dioda." : "";
+  if (l3.stare !== pc.stare) {
+    l3.gresite++;
+    var k = l3IndexTensiune();
+    if (pc.stare === "functionala") { txt = "Privește " + cit(k) + ": aparatul arată " + c[k].val + ", iar în celălalt sens OL. Piesa conduce într-un singur sens."; l3.evid = [k]; }
+    else if (pc.stare === "intrerupta") { txt = "Privește ambele citiri: OL în ambele sensuri. Piesa nu conduce în niciun sens."; l3.evid = [0, 1]; }
+    else { txt = "Privește ambele citiri: 0,00 V în ambele sensuri. Piesa conduce în ambele sensuri, ca un fir."; l3.evid = [0, 1]; }
+    m.className = "mesaj rau"; m.innerHTML = "<b>Nu încă.</b> " + txt + " Alege din nou.";
+    l3.stare = null; l3.anod = 0; l3.faza = "interpreteaza"; $("l3Confirma").disabled = true;
+    l3Actualizeaza(); return;
+  }
+  if (pc.stare === "functionala" && l3.anod !== pc.anod) {
+    l3.gresite++; var kt = l3IndexTensiune(); l3.evid = [kt];
+    m.className = "mesaj rau"; m.innerHTML = "<b>Starea e corectă, dar terminalele sunt inversate.</b> Privește " + cit(kt) + ": tensiunea " + c[kt].val + " a apărut cu sonda roșie pe " + c[kt].rosu + ". Sonda roșie dă tensiune numai la anod. Atinge din nou anodul.";
+    l3.anod = 0; l3.faza = "anod"; $("l3Confirma").disabled = true;
+    l3Actualizeaza(); return;
+  }
+  l3.faza = "gata"; l3.evid = [];
+  if (pc.stare === "functionala") {
+    var kk = l3IndexTensiune();
+    txt = "<b>Corect: piesa este funcțională.</b> Tensiunea " + c[kk].val + " a apărut în " + cit(kk) + ", iar în celălalt sens aparatul arată OL. Sonda roșie era la anod: <b>" + pc.anod + " este anodul (A), " + (3 - pc.anod) + " este catodul (C)</b>." + desprindere;
+  } else if (pc.stare === "intrerupta") {
+    txt = "<b>Corect: piesa este întreruptă.</b> OL în ambele sensuri: niciun sens nu conduce. Anodul și catodul nu se pot identifica din aceste citiri, pentru că nicio citire nu arată tensiune.";
+  } else {
+    txt = "<b>Corect: piesa este în scurtcircuit.</b> 0,00 V în ambele sensuri: conduce la fel în ambele sensuri, ca un fir. Anodul și catodul nu se pot identifica, pentru că nu există un sens direct după care să le recunoști.";
+  }
+  m.className = "mesaj bun"; m.innerHTML = txt;
+  l3Actualizeaza();
+}
+function l3RandCitiri(lista, titlu) {
+  var h = titlu ? '<div class="l3-grup">' + titlu + '</div>' : "";
+  for (var k = 0; k < 2; k++) {
+    var c = lista[k], ev = !titlu || titlu === "Cu un terminal desprins" ? (l3.evid || []).indexOf(k) >= 0 : false;
+    h += '<div class="l3-cit' + (c ? "" : " gol") + (ev ? " evid" : "") + '"><span class="l3-nr">Citirea ' + (k + 1) + '</span> ' +
+      '<span class="l3-poz">' + (c ? 'Roșu pe <b class="r">' + c.rosu + '</b> · Negru pe <b>' + (3 - c.rosu) + '</b>' : (k === 0 ? "atinge un terminal" : "inversează sondele")) + '</span> ' +
+      '<span class="l3-val">' + (c ? c.val : "—") + '</span></div>';
+  }
+  return h;
+}
+function l3Actualizeaza() {
+  var pc = l3Piesa(), f = l3.faza;
+  $("l3Desc").textContent = pc.desc + (l3.p === "P5" && l3.grup === "desprins" ? " Un terminal al diodei e desprins de pe placă." : "");
+  // citirile: P5 păstrează la vedere ambele grupuri
+  var h;
+  if (l3.p === "P5") { h = l3RandCitiri(l3.grup === "placa" ? l3.cit : l3.placa, "Pe placă") + (l3.grup === "desprins" ? l3RandCitiri(l3.cit, "Cu un terminal desprins") : ""); }
+  else { h = l3RandCitiri(l3.cit, ""); }
+  $("l3Citiri").innerHTML = h;
+  // instrucțiunea pasului
+  var ins;
+  if (f === "masoara" && l3.cit.length === 0) { ins = l3.grup === "desprins" ? "Repetă măsurarea: atinge terminalul pe care pui sonda roșie." : "Atinge terminalul pe care pui sonda roșie. Sonda neagră se așază pe celălalt."; }
+  else if (f === "masoara") { ins = "Apasă «Inversează sondele» pentru a doua citire."; }
+  else if (f === "desprinde") { ins = ""; }
+  else if (f === "interpreteaza") { ins = "Compară cele două citiri și alege starea piesei."; }
+  else if (f === "anod") { ins = l3.anod ? "Anodul: " + l3.anod + ", catodul: " + (3 - l3.anod) + ". Apasă «Confirmă» sau atinge celălalt terminal." : "Atinge anodul."; }
+  else { ins = "Gata. Alege altă piesă sau apasă «Reia piesa»."; }
+  $("l3Instr").textContent = ins;
+  $("l3Instr").hidden = f === "desprinde";
+  $("l3Despr").hidden = f !== "desprinde";
+  if (f === "desprinde") { $("l3DesprMsg").textContent = "Ai obținut " + l3.cit[0].val + " în ambele sensuri. Desprinde un terminal al diodei și repetă măsurarea."; }
+  // comenzi
+  $("l3Inv").disabled = !(f === "masoara" && l3.cit.length === 1);
+  var termActiv = (f === "masoara" && l3.cit.length === 0) || f === "anod";
+  ["l3T1", "l3T2"].forEach(function (id, k) {
+    var b = $(id), t = k + 1; b.disabled = !termActiv;
+    b.textContent = f === "anod" ? "Anodul: " + t : (f === "masoara" && l3.cit.length === 0 ? "Roșu pe " + t : "Terminalul " + t);
+    b.setAttribute("aria-pressed", f === "anod" && l3.anod === t);
+  });
+  var poateInterpreta = f === "interpreteaza" || f === "anod";
+  var nota;
+  if (l3.grup === "placa") { nota = l3.cit.length === 0 ? "Măsoară în ambele sensuri." : (l3.cit.length === 1 ? "Inversează sondele." : ""); }
+  else { nota = poateInterpreta || f === "gata" ? "Starea piesei, după ambele citiri:" : "Fă întâi cele două citiri."; }
+  $("l3InterpNota").textContent = nota; $("l3InterpNota").hidden = nota === "";
+  Array.prototype.forEach.call(document.querySelectorAll(".l3-stari button"), function (b) { b.disabled = !poateInterpreta; b.setAttribute("aria-pressed", l3.stare === b.getAttribute("data-s")); });
+  $("l3Anod").hidden = f !== "anod";
+  $("l3Anod").innerHTML = 'Atinge anodul: <span class="l3-anod-b"><button type="button" data-t="1" aria-pressed="' + (l3.anod === 1) + '">Anodul: 1</button><button type="button" data-t="2" aria-pressed="' + (l3.anod === 2) + '">Anodul: 2</button></span>';
+  if (f === "gata" || f === "masoara" || f === "desprinde") { $("l3Confirma").disabled = true; }
+  l3Schema();
+}
+function l3Schema() {
+  var svg = $("l3Schema"); gol(svg);
+  var pc = l3Piesa(), placa = l3.p === "P5", desprins = l3.grup === "desprins", f = l3.faza;
+  var conectat = l3.cit.length > 0, rosu = l3.rosu, neg = 3 - rosu, ultima = l3.cit[l3.cit.length - 1];
+  var afis = conectat ? ultima.val.replace(" V", "") : "OL";
+  // multimetrul
+  el("rect", { x: 140, y: 6, width: 180, height: 150, rx: 12, fill: "#2d3945", stroke: "#0b1117", "stroke-width": 2.5 }, "", svg);
+  el("rect", { x: 154, y: 18, width: 152, height: 62, rx: 4, fill: "#cfe6c9", stroke: "#0b1a10", "stroke-width": 2 }, "", svg);
+  el("text", { x: 296, y: 66, "text-anchor": "end", "font-size": 40, "font-family": "Consolas, 'Courier New', monospace", "font-weight": 700, fill: "#12301b", "class": "l3-afis" }, afis, svg);
+  if (afis !== "OL") { el("text", { x: 300, y: 76, "font-size": 14, "font-weight": 700, fill: "#12301b" }, "V", svg); }
+  el("text", { x: 160, y: 34, "font-size": 12, fill: "#2c4a34" }, "testare diodă", svg);
+  el("circle", { cx: 185, cy: 132, r: 10, fill: "#111", stroke: "#bbb", "stroke-width": 2 }, "", svg);
+  el("circle", { cx: 275, cy: 132, r: 10, fill: "#c62828", stroke: "#fff", "stroke-width": 2 }, "", svg);
+  el("text", { x: 185, y: 112, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: "#fff" }, "COM", svg);
+  el("text", { x: 275, y: 112, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: "#fff" }, "VΩ +", svg);
+  // piesa: terminalele 1 (stânga) și 2 (dreapta)
+  var TY = 250, X1 = 110, X2 = 350;
+  if (placa) {
+    el("rect", { x: 60, y: 196, width: 340, height: 124, rx: 8, fill: "#e7f0dc", stroke: "#6b8f4e", "stroke-width": 2 }, "", svg);
+    el("text", { x: 70, y: 314, "font-size": 12, fill: "#3d5a2a" }, "placa (nealimentată)", svg);
+    // rezistorul în paralel, sub diodă
+    el("polyline", { points: X1 + "," + TY + " " + X1 + ",292 200,292", fill: "none", stroke: "#555", "stroke-width": 3 }, "", svg);
+    el("rect", { x: 200, y: 282, width: 60, height: 20, fill: "#fff", stroke: "#333", "stroke-width": 2.5 }, "", svg);
+    el("polyline", { points: "260,292 " + X2 + ",292 " + X2 + "," + TY, fill: "none", stroke: "#555", "stroke-width": 3 }, "", svg);
+    el("text", { x: 230, y: 276, "text-anchor": "middle", "font-size": 13, "font-weight": 700 }, "R", svg);
+  }
+  // corpul diodei (fără bandă vizibilă: nu dă răspunsul)
+  var xd2 = desprins ? X2 - 26 : X2;
+  el("line", { x1: X1, y1: TY, x2: 190, y2: TY, stroke: "#777", "stroke-width": 4 }, "", svg);
+  el("rect", { x: 190, y: TY - 16, width: 80, height: 32, rx: 7, fill: "#26282b" }, "", svg);
+  el("text", { x: 230, y: TY + 5, "text-anchor": "middle", "font-size": 13, fill: "#fff" }, l3.p, svg);
+  if (desprins) {
+    el("polyline", { points: "270," + TY + " " + (X2 - 40) + "," + TY + " " + xd2 + "," + (TY - 40), fill: "none", stroke: "#777", "stroke-width": 4 }, "", svg);
+    el("circle", { cx: X2, cy: TY, r: 6, fill: "#b0b8bf" }, "", svg);
+    el("text", { x: X2, y: TY + 24, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: "#9a2a00" }, "desprins", svg);
+  } else { el("line", { x1: 270, y1: TY, x2: X2, y2: TY, stroke: "#777", "stroke-width": 4 }, "", svg); }
+  var Y2 = desprins ? TY - 40 : TY;
+  [[X1, TY, 1], [xd2, Y2, 2]].forEach(function (q) {
+    var activ = (f === "masoara" && l3.cit.length === 0) || f === "anod";
+    var g = el("g", { "class": "l3-tgt", "data-t": q[2], role: "button", tabindex: activ ? 0 : -1, "aria-label": "Terminalul " + q[2] }, "", svg);
+    el("circle", { cx: q[0], cy: q[1], r: 20, fill: activ ? "#ffe680" : "#e3e7eb", stroke: "#222", "stroke-width": 2 }, "", g);
+    el("text", { x: q[0], y: q[1] + 7, "text-anchor": "middle", "font-size": 20, "font-weight": 800 }, String(q[2]), g);
+    if ((f === "anod" && l3.anod) || f === "gata") {
+      var an = f === "gata" ? (pc.stare === "functionala" ? pc.anod : 0) : l3.anod;
+      if (an) { el("text", { x: q[0], y: q[1] + 44, "text-anchor": "middle", "font-size": 18, "font-weight": 800, fill: q[2] === an ? "#c62828" : "#1f5fbf" }, q[2] === an ? "A" : "C", svg); }
+    }
+  });
+  // sondele: din borne până la terminale (sau în aer)
+  function sonda(xj, xt, yt, c, et) {
+    var yc = conectat ? yt - 22 : 200;
+    el("path", { d: "M" + xj + ",142 C" + xj + ",190 " + xt + "," + (yc - 50) + " " + xt + "," + yc, fill: "none", stroke: c, "stroke-width": 4, "stroke-linecap": "round" }, "", svg);
+    el("rect", { x: xt - 5, y: yc - 4, width: 10, height: 18, rx: 3, fill: c }, "", svg);
+    el("text", { x: xt + (xt < 230 ? -12 : 12), y: yc - 6, "text-anchor": xt < 230 ? "end" : "start", "font-size": 14, "font-weight": 800, fill: c === "#111" ? "#111" : "#c62828", stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" }, et, svg);
+  }
+  var xs = function (t) { return t === 1 ? X1 : xd2; }, ys = function (t) { return t === 1 ? TY : Y2; };
+  if (conectat) { sonda(185, xs(neg), ys(neg), "#111", "negru"); sonda(275, xs(rosu), ys(rosu), "#c62828", "roșu"); }
+  else { sonda(185, 150, 200, "#111", "negru"); sonda(275, 310, 200, "#c62828", "roșu"); }
+  Array.prototype.forEach.call(svg.querySelectorAll(".l3-tgt"), function (g) {
+    g.addEventListener("click", function () { l3Terminal(+g.getAttribute("data-t")); });
+    g.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); l3Terminal(+g.getAttribute("data-t")); } });
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll(".l3-piese button"), function (b) { b.addEventListener("click", function () { l3Alege(b.getAttribute("data-p")); }); });
+Array.prototype.forEach.call(document.querySelectorAll(".l3-stari button"), function (b) { b.addEventListener("click", function () { l3Stare(b.getAttribute("data-s")); }); });
+$("l3T1").addEventListener("click", function () { l3Terminal(1); });
+$("l3T2").addEventListener("click", function () { l3Terminal(2); });
+$("l3Inv").addEventListener("click", l3Inverseaza);
+$("l3Desprinde").addEventListener("click", l3Desprinde);
+$("l3Reia").addEventListener("click", function () { l3Alege(l3.p); });
+$("l3Confirma").addEventListener("click", l3Confirma);
+$("l3Anod").addEventListener("click", function (ev) { var t = ev.target.getAttribute && ev.target.getAttribute("data-t"); if (t) { l3Terminal(+t); } });
+// filele lecțiilor
+function alegeLectia(n) {
+  document.querySelector("main").classList.toggle("l3", n === 3);
+  $("tabL2").setAttribute("aria-selected", n === 2); $("tabL3").setAttribute("aria-selected", n === 3);
+  if (n === 3) { if (lab.an) { opresteAnim(); } l3Actualizeaza(); }
+  else if (!$("lab").hidden) { labActualizeaza(true); }
+}
+$("tabL2").addEventListener("click", function () { alegeLectia(2); });
+$("tabL3").addEventListener("click", function () { alegeLectia(3); });
+l3Alege("P1");
+
+function testLec3(ver) {
+  function t(id) { return $(id).textContent.replace(/\s+/g, " ").trim(); }
+  function cit() { return Array.prototype.map.call(document.querySelectorAll("#l3Citiri .l3-cit"), function (r) { return r.textContent.replace(/\s+/g, " ").trim(); }); }
+  function stare(s) { document.querySelector('.l3-stari [data-s="' + s + '"]').click(); }
+  function tinta(n) { document.querySelector('#l3Schema .l3-tgt[data-t="' + n + '"]').dispatchEvent(new Event("click")); }
+  function inEcran(e) { var r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= window.innerHeight + 1 && r.height > 0; }
+  alegeLectia(3);
+  ver("L3: fila «Lecția 3» se deschide; lecția 2 ascunsă", getComputedStyle($("lec3")).display !== "none" && getComputedStyle($("lab")).display === "none" && getComputedStyle(document.querySelector(".alege")).display === "none");
+  // P1, roșu întâi pe 1
+  l3Alege("P1");
+  ver("L3 P1: la început sondele în aer, afișaj OL, interpretarea blocată", document.querySelector("#l3Schema .l3-afis").textContent === "OL" && document.querySelector('.l3-stari [data-s="functionala"]').disabled && $("l3Inv").disabled);
+  tinta(1);
+  ver("L3 P1 (roșu întâi pe 1): prima citire «Roșu pe 1 · Negru pe 2» 0,58 V, pe afișaj și în listă", /Roșu pe 1 · Negru pe 2 0,58 V/.test(cit()[0]) && document.querySelector("#l3Schema .l3-afis").textContent === "0,58" && !$("l3Inv").disabled);
+  $("l3Inv").click();
+  ver("L3 P1: «Inversează sondele»: a doua citire «Roșu pe 2 · Negru pe 1» OL; ambele la vedere", /Roșu pe 2 · Negru pe 1 OL/.test(cit()[1]) && /0,58 V/.test(cit()[0]) && $("l3Inv").disabled);
+  stare("intrerupta"); $("l3Confirma").click();
+  ver("L3 P1: stare greșită -> trimitere la citirea cu tensiune, reîncercare cu citirile pe ecran", /Nu încă/.test(t("l3Msg")) && /citirea 1 \(roșu pe 1\)/.test(t("l3Msg")) && document.querySelectorAll("#l3Citiri .evid").length === 1 && cit().length === 2 && !document.querySelector('.l3-stari [data-s="functionala"]').disabled);
+  stare("functionala");
+  ver("L3 P1: «Funcțională» -> «Atinge anodul»", t("l3Instr") === "Atinge anodul." && !$("l3Anod").hidden && $("l3Confirma").disabled);
+  tinta(2);
+  ver("L3 P1: anodul ales pe 2 -> 2 marcat A, 1 marcat C, perechea se confirmă", /Anodul: 2, catodul: 1/.test(t("l3Instr")) && !$("l3Confirma").disabled);
+  $("l3Confirma").click();
+  ver("L3 P1: terminale inversate -> feedback pe citirea 1, alegerea anodului din nou", /terminalele sunt inversate/.test(t("l3Msg")) && /roșu pe 1/.test(t("l3Msg")) && l3.faza === "anod");
+  $("l3T1").click(); $("l3Confirma").click();
+  ver("L3 P1: corect: funcțională, 1 = anod, 2 = catod", /Corect: piesa este funcțională/.test(t("l3Msg")) && /1 este anodul \(A\), 2 este catodul \(C\)/.test(t("l3Msg")) && l3.faza === "gata");
+  // P1, roșu întâi pe 2 (cealaltă alegere inițială)
+  $("l3Reia").click(); tinta(2); $("l3Inv").click();
+  ver("L3 P1 (roșu întâi pe 2): citirea 1 OL, citirea 2 «Roșu pe 1» 0,58 V", /Roșu pe 2 · Negru pe 1 OL/.test(cit()[0]) && /Roșu pe 1 · Negru pe 2 0,58 V/.test(cit()[1]));
+  stare("functionala"); tinta(1); $("l3Confirma").click();
+  ver("L3 P1 (roșu întâi pe 2): corect, explicația numește citirea 2", /Corect/.test(t("l3Msg")) && /citirea 2 \(roșu pe 1\)/.test(t("l3Msg")));
+  // P4: anodul pe 2
+  l3Alege("P4"); tinta(1); $("l3Inv").click(); stare("functionala"); tinta(2); $("l3Confirma").click();
+  ver("L3 P4: OL, apoi 0,61 V cu roșu pe 2 -> anodul 2", /Corect/.test(t("l3Msg")) && /2 este anodul/.test(t("l3Msg")));
+  // P2 și P3: defecte, fără anod
+  l3Alege("P2"); tinta(1); $("l3Inv").click(); stare("functionala");
+  ver("L3 P2: la «Funcțională» se cere anodul (alegerea elevului)", l3.faza === "anod");
+  tinta(1); $("l3Confirma").click();
+  ver("L3 P2: greșit -> «OL în ambele sensuri», ambele citiri evidențiate", /OL în ambele sensuri/.test(t("l3Msg")) && document.querySelectorAll("#l3Citiri .evid").length === 2);
+  stare("intrerupta"); $("l3Confirma").click();
+  ver("L3 P2: corect: întreruptă; anodul nu se poate identifica", /Corect: piesa este întreruptă/.test(t("l3Msg")) && /nu se pot identifica/.test(t("l3Msg")));
+  l3Alege("P3"); tinta(2); $("l3Inv").click(); stare("scurt"); $("l3Confirma").click();
+  ver("L3 P3: corect: în scurtcircuit (0,00 V în ambele sensuri), fără anod", /Corect: piesa este în scurtcircuit/.test(t("l3Msg")) && /0,00 V în ambele sensuri/.test(t("l3Msg")));
+  // P5: pe placă, desprindere, interpretare
+  function mesajeP5(eticheta) {
+    ver(eticheta + " 0 citiri: «Măsoară în ambele sensuri.», fără indicație de desprindere", t("l3InterpNota") === "Măsoară în ambele sensuri." && $("l3Despr").hidden && !/Desprinde/.test(t("l3Instr")));
+    tinta(2);
+    ver(eticheta + " 1 citire: 0,43 V și poziția sondelor; «Inversează sondele.», fără indicație de desprindere", /Roșu pe 2 · Negru pe 1 0,43 V/.test(cit()[0]) && t("l3InterpNota") === "Inversează sondele." && $("l3Despr").hidden);
+    $("l3Inv").click();
+    var unde = Array.prototype.filter.call(document.querySelectorAll("#lec3 p, #lec3 div"), function (e) { return e.children.length === 0 && /Desprinde un terminal al diodei/.test(e.textContent) && getComputedStyle(e).display !== "none" && !e.closest("[hidden]"); });
+    ver(eticheta + " 2 citiri: «Ai obținut 0,43 V în ambele sensuri. Desprinde un terminal al diodei și repetă măsurarea.», într-un singur loc, lângă buton", t("l3DesprMsg") === "Ai obținut 0,43 V în ambele sensuri. Desprinde un terminal al diodei și repetă măsurarea." && !$("l3Despr").hidden && $("l3Desprinde").parentNode === $("l3Despr") && unde.length === 1 && $("l3InterpNota").hidden && document.querySelector('.l3-stari [data-s="functionala"]').disabled);
+  }
+  l3Alege("P5");
+  ver("L3 P5: schema arată dioda în paralel cu rezistorul, pe placă", /placa/.test($("l3Schema").textContent) && /R/.test($("l3Schema").textContent));
+  mesajeP5("L3 P5");
+  $("l3Reia").click();
+  mesajeP5("L3 P5 după «Reia piesa»:");
+  $("l3Desprinde").click();
+  ver("L3 P5: după desprindere, mesajul dispare; terminalul desprins apare pe schemă; rezultatele «Pe placă» rămân", $("l3Despr").hidden && /desprins/.test($("l3Schema").textContent) && /Pe placă/.test(t("l3Citiri")) && /Cu un terminal desprins/.test(t("l3Citiri")) && cit().length === 4 && /0,43 V/.test(cit()[0]));
+  tinta(2); $("l3Inv").click();
+  ver("L3 P5 desprins (roșu întâi pe 2): OL, apoi 0,57 V cu roșu pe 1", /Roșu pe 2 · Negru pe 1 OL/.test(cit()[2]) && /Roșu pe 1 · Negru pe 2 0,57 V/.test(cit()[3]));
+  stare("functionala");
+  ver("L3 P5: la alegerea stării și a anodului, ambele grupuri de citiri sunt vizibile", cit().length === 4 && /Pe placă/.test(t("l3Citiri")) && /Cu un terminal desprins/.test(t("l3Citiri")) && /0,43 V/.test(cit()[0]) && /0,57 V/.test(cit()[3]));
+  document.querySelector('#l3Anod [data-t="1"]').click();
+  ver("L3 P5: anodul ales din panoul de interpretare (fără derulare pe telefon)", l3.anod === 1 && !$("l3Confirma").disabled);
+  $("l3Confirma").click();
+  ver("L3 P5: corect: funcțională, 1 = anod, cu explicația desprinderii", /Corect: piesa este funcțională/.test(t("l3Msg")) && /1 este anodul/.test(t("l3Msg")) && /Desprinderea a fost necesară/.test(t("l3Msg")) && /rezistorul legat în paralel/.test(t("l3Msg")));
+  l3Alege("P5"); tinta(1); $("l3Inv").click(); $("l3Desprinde").click(); tinta(1); $("l3Inv").click();
+  ver("L3 P5 desprins (roșu întâi pe 1): 0,57 V, apoi OL", /Roșu pe 1 · Negru pe 2 0,57 V/.test(cit()[2]) && /Roșu pe 2 · Negru pe 1 OL/.test(cit()[3]));
+  ver("L3: pozițiile sondelor și citirile în ecran" + (window.innerWidth < 900 ? " (telefon: după derulare la citiri)" : " (tabla)"), window.innerWidth < 900 || (inEcran(document.querySelector("#l3Schema .l3-afis")) && inEcran($("l3Citiri"))));
+  ver("L3: fără derulare orizontală", document.documentElement.scrollWidth <= window.innerWidth + 1);
+  alegeLectia(2);
+  ver("L3 -> L2: lecția 2 revine", getComputedStyle($("lec3")).display === "none" && getComputedStyle(document.querySelector(".alege")).display !== "none");
+}
+
+/* ===== Testul noii interfețe (tabla: două zone; telefon: «Măsoară» / «Trasează») și regresiile ei ===== */
+function testTraseu(ver) {
+  function t(id) { return $(id).textContent.replace(/\s+/g, " ").trim(); }
+  function dorm(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+  function cand(f) { var k = 0; return (function b() { if (f() || k++ > 600) { return Promise.resolve(); } return dorm(20).then(b); })(); }
+  function inEcran(e) { var r = e.getBoundingClientRect(); return r.top >= bandaSus() - 1 && r.bottom <= window.innerHeight + 1 && r.height > 0; }
+  function vizibil_(e) { return getComputedStyle(e).display !== "none" && e.getBoundingClientRect().height > 0; }
+  var tel = window.innerWidth < 900;
+  sasePuncte();
+  ver("TRASEU: șase puncte salvate (primele șase din fișă)", lab.puncte.length === 6);
+  ver("TRASEU: reglaje rapide directe 1, 3, 6, 10 V", Array.prototype.map.call(document.querySelectorAll("#lRapid button"), function (b) { return b.textContent; }).join("|") === "1 V|3 V|6 V|10 V");
+  if (tel) { vederTel("masoara"); window.scrollTo(0, $("lab").getBoundingClientRect().top + window.pageYOffset); }
+  $("lInv").click();
+  ver("TRASEU: reglaje rapide inverse 6, 10, 11, 15 V", Array.prototype.map.call(document.querySelectorAll("#lRapid button"), function (b) { return b.textContent; }).join("|") === "6 V|10 V|11 V|15 V");
+  document.querySelector('#lRapid [data-e="11"]').click(); document.querySelector('.seg3 [data-r="1000"]').click();
+  ver("TRASEU: citire imediată U_D = −10,00 V, I_D = −1,00 mA (E = 11,0 V)", t("lD") === "−10,00 V" && t("lI") === "−1,00 mA" && t("lEval") === "11,0 V");
+  ver("TRASEU: U_D, I_D și «Salvează punctul» în ecran, împreună" + (tel ? " (telefon, «Măsoară»)" : " (tabla)"), inEcran($("lD")) && inEcran($("lI")) && inEcran($("lSalv")));
+  var y0 = window.pageYOffset; $("lSalv").click();
+  ver("TRASEU: «Punctul 7 salvat.» pe același ecran; măsurarea poate continua", t("lMsg") === "Punctul 7 salvat." && window.pageYOffset === y0 && inEcran($("lSalv")) && (!tel || $("lab").getAttribute("data-tel") === "masoara"));
+  if (tel) { $("tTra").click(); ver("TRASEU telefon: «Trasează» arată tabelul și graficul", vizibil_(document.querySelector(".l-tabel")) && vizibil_($("lGraf")) && !vizibil_(document.querySelector(".l-citiri"))); }
+  $("lTab").tBodies[0].rows[6].click();
+  ver("TRASEU: rând ales: indicația «Atinge un rând…» ascunsă, «Arată cum se trasează» vizibil", $("lIndRand").hidden && !$("lTrasare").hidden);
+  if (!tel) { ver("TRASEU tabla: rândul 7 și graficul vizibile simultan, fără derulare", inEcran($("lTab").tBodies[0].rows[6]) && inEcran($("lGraf")) && document.documentElement.scrollHeight <= window.innerHeight + 1); }
+  lab.vit = 0.03; $("lTrasare").click();
+  return cand(function () { return lab.an && lab.an.pas === 1 && lab.an.gata; }).then(function () {
+    if (tel) {
+      ver("TRASEU telefon: în demonstrație tabelul și bara vederilor sunt restrânse", !vizibil_(document.querySelector(".l-tabel")) && !vizibil_(document.querySelector(".graf-cap")));
+      ver("TRASEU telefon: rândul compact «Punctul 7 · U_D = −10,00 V · I_D = −1,00 mA» cu «Schimbă punctul»", vizibil_(document.querySelector("#lRandC .cap-s")) && /Punctul 7/.test(t("lRandC")) && /−10,00 V/.test(t("lRandC")) && /−1,00 mA/.test(t("lRandC")) && vizibil_($("lSchimba")));
+    }
+    var u = $("lUrm"); ver("TRASEU: «Mai departe» pe un singur rând", u.getBoundingClientRect().height < 60 && getComputedStyle(u).whiteSpace === "nowrap");
+    $("lUrm").click(); return cand(function () { return lab.an && lab.an.pas === 2 && lab.an.gata; });
+  }).then(function () {
+    var y2 = window.pageYOffset;
+    ver("TRASEU pasul 2: «I_D = −1,00 mA. De la 0, coboară un pătrățel.»", /ID = −1,00 mA\. De la 0, coboară un pătrățel\./.test(t("lPasTxt")));
+    ver("TRASEU pasul 2: rândul, explicația, graficul cu lupa și «Mai departe» în ecran, fără derulare", inEcran($("lRandC")) && inEcran($("lPasTxt")) && inEcran($("lGraf")) && inEcran($("lUrm")) && document.querySelectorAll("#lGraf .lupa").length === 1 && (tel || document.documentElement.scrollHeight <= window.innerHeight + 1));
+    ver("TRASEU: avansarea nu a derulat pagina", window.pageYOffset === y2);
+    if (!tel) { ver("TRASEU tabla: rândul 7 selectat rămâne vizibil în tabel", inEcran($("lTab").tBodies[0].rows[6])); }
+    // regresie: «Schimbă punctul» în timpul redării automate
+    $("lAuto").click();
+    ver("TRASEU: redarea automată pornită", lab.an && lab.an.auto);
+    $("lSchimba").click();
+    ver("REGRESIE: «Schimbă punctul» în timpul redării automate oprește demonstrația și redeschide tabelul", !lab.an && document.querySelectorAll("#lGraf .anim").length === 0 && document.querySelectorAll(".zbor").length === 0 && vizibil_(document.querySelector(".l-tabel")) && lab.sel === 6);
+    return dorm(400);
+  }).then(function () {
+    ver("REGRESIE: după oprire, demonstrația nu mai avansează singură", !lab.an);
+    $("lTab").tBodies[0].rows[4].click(); $("lTrasare").click(); $("lAuto") && $("lAuto").click();
+    return cand(function () { return lab.an && lab.an.pas >= 1; });
+  }).then(function () {
+    $("lAuto").click();
+    $("lTab").tBodies[0].rows[6].click();
+    ver("REGRESIE: alt rând ales în timpul redării automate: oprire și curățare", !lab.an && document.querySelectorAll("#lGraf .anim").length === 0 && lab.sel === 6);
+    if (tel) {
+      $("tMas").click();
+      ver("REGRESIE: înapoi în «Măsoară»: inversă, 11 V, 1 kΩ, 7 puncte și selecția păstrate", lab.s === -1 && lab.E === 11 && lab.R === 1000 && lab.puncte.length === 7 && lab.sel === 6 && t("lD") === "−10,00 V" && inEcran($("lSalv")));
+      $("tTra").click(); ver("REGRESIE: din nou în «Trasează»: rândul 7 tot ales", lab.sel === 6 && /Punctul 7/.test(t("lRandC")));
+    }
+    $("lVedereSel").value = "dir"; $("lVedereSel").dispatchEvent(new Event("change"));
+    ver("TRASEU: selectorul «Vedere» (telefon) schimbă vederea", lab.vedere === "dir");
+    $("lVedereSel").value = "ans"; $("lVedereSel").dispatchEvent(new Event("change"));
+    lab.vit = 1;
+  });
+}
+
+/* ===== Autotest (#test) și stări demonstrative pentru capturi (#demo-...) ===== */
+function autotest() {
+  var out = [], n = 0, er = 0;
+  function ver(d, ok) { n++; if (!ok) { er++; } out.push((ok ? "OK     " : "EROARE ") + d); }
+  function txt(id) { return $(id).textContent; }
+  function scrie(v) { $("rasp").value = v; $("verif").click(); }
+  function alege(o) { document.querySelector('[data-o="' + o + '"]').click(); $("confirm").click(); }
+  function ascuns() { return txt("vD") === "?" && txt("vR") === "?" && txt("vI") === "?" && $("rezultat").hidden && !/punctul circuitului/.test(txt("graf")) && !/V\s*A\s*= 0 V|0 V \(reper\)/.test(txt("schema")); }
+  function aratat5() { return txt("vD") === "≈ −6 V" && txt("vR") === "≈ 0 V" && txt("vI") === "≈ 0 mA" && !$("rezultat").hidden && /problema 5\)/.test(txt("graf")) && /0 V \(reper\)/.test(txt("schema")) && /= 0 V/.test(txt("schema")) && /≈ \+6 V/.test(txt("schema")); }
+  var r3 = circuit(5, 1), r5 = circuit(6, -1);
+  ver("model P3: U_D ≈ 0,63 V, I ≈ 4,37 mA", fmt(r3.Ud, 2) === "0,63" && fmt(r3.I, 2) === "4,37");
+  ver("model P5: U_D = −6,00 V, |I| < 1e-6 mA", fmt(r5.Ud, 2) === "−6,00" && Math.abs(r5.I) < 1e-6);
+  ver("citește 4,3 / 4.30 / 4,30 mA; respinge text", citesteNumar("4,3") === 4.3 && citesteNumar("4.30") === 4.3 && citesteNumar(" 4,30 mA ") === 4.3 && isNaN(citesteNumar("abc")));
+  // P3: corect din prima
+  alegeEx("p3"); ver("P3 deschidere: totul ascuns", ascuns());
+  scrie("4,30"); ver("P3 corect din prima: citiri fișă + bară + explicație", /Corect/.test(txt("msg")) && txt("vI") === "4,30 mA" && txt("vD") === "0,70 V" && /4,30 V/.test(txt("bara")) && /0,70 V/.test(txt("bara")) && $("intrebare").hidden);
+  ver("P3: schema directă păstrează U_R, U_D și I_D", /UR/.test(txt("schema").replace(/\s/g, "")) && /UD/.test(txt("schema").replace(/\s/g, "")) && /ID/.test(txt("schema").replace(/\s/g, "")));
+  $("compara").click(); ver("P3 comparație: 0,63 V, 4,37 mA, 4,30 mA corect", /0,63 V/.test(txt("cmp")) && /4,37 mA/.test(txt("cmp")) && /4,30 mA, este corect/.test(txt("cmp")) && txt("vI") === "4,37 mA");
+  $("gDir").click(); ver("P3 detaliu direct: scări și ambele puncte", /I \(mA\)/.test(txt("graf")) && /fișa: 4,30 mA/.test(txt("graf")) && /model: 0,63 V; 4,37 mA/.test(txt("graf"))); $("gAns").click();
+  // P3: greșit, apoi corect; două greșeli
+  $("reia").click(); ver("P3 reluare: totul ascuns, câmp gol", ascuns() && $("rasp").value === "");
+  scrie("5"); ver("P3 greșit (5): îndrumare spre U_R, nimic afișat", /tensiunea pe rezistor/.test(txt("msg")) && ascuns());
+  scrie("4300"); ver("P3 a doua greșeală (4300): feedback de unitate, câmpul rămâne activ", /unitatea/.test(txt("msg")) && ascuns() && !$("rasp").disabled);
+  scrie("5,7"); ver("P3 (5,7): a adunat 0,7 V", /adunat/.test(txt("msg")));
+  scrie("4.3"); ver("P3 apoi corect (4.3)", /Corect/.test(txt("msg")) && txt("vI") === "4,30 mA");
+  // P5: corect din prima
+  alegeEx("p5"); ver("P5 deschidere: totul ascuns, Confirmă dezactivat", ascuns() && $("confirm").disabled);
+  ver("P5 schema: fără săgeți de tensiune, cu I_inv", !/UR|UD/.test(txt("schema").replace(/\s/g, "")) && /Iinv/.test(txt("schema").replace(/\s/g, "")));
+  alege("dioda"); ver("P5 corect din prima: soluția completă", /Corect: pe diodă/.test(txt("msg")) && aratat5());
+  ver("P5: bara cu module", /\|U_R\| ≈ 0, \|U_D\| ≈ 6 V/.test($("bara").querySelector(".bara").getAttribute("aria-label")));
+  ver("P5: explicația V_A − V_C ≈ −6 V", /VA − VC ≈ 0 − 6 = −6 V/.test(txt("explSemn")));
+  // P5: greșit, apoi corect
+  $("reia").click(); ver("P5 reluare: totul ascuns", ascuns());
+  alege("rez"); ver("P5 prima greșeală (rezistor): indiciul U_R = R·I, nimic afișat", /ce poți spune despre UR = R · I/.test(txt("msg")) && ascuns() && $("confirm").disabled && !document.querySelector('[data-o="dioda"]').disabled);
+  alege("dioda"); ver("P5 apoi corect: soluția completă", /Corect: pe diodă/.test(txt("msg")) && aratat5());
+  // P5: două greșeli
+  $("reia").click(); alege("07"); ver("P5 prima greșeală (0,7 V): indiciu despre conducție și anod", /dioda în conducție/.test(txt("msg")) && /anodul/.test(txt("msg")) && ascuns());
+  alege("rez"); ver("P5 a doua greșeală: soluția afișată", /Răspunsul corect: pe diodă/.test(txt("msg")) && aratat5());
+  document.querySelector('#regiuni [data-r="3"]').click();
+  ver("străpungerea: textul cerut, punctul rămâne în blocare", /Curentul invers crește mult în modul pentru o variație mică a tensiunii inverse\./.test(txt("notaGraf")) && /rămâne în blocare inversă/.test(txt("notaGraf")));
+  ver("fără valoare numerică pentru V_BR", !/BR\s*=/.test(txt("graf")));
+  $("arataAC").click(); ver("A/C la cerere", /A/.test(txt("schema")) && /C/.test(txt("schema"))); $("arataAC").click();
+  ver("fără derulare orizontală", document.documentElement.scrollWidth <= window.innerWidth + 1);
+  var pre = $("autotest");
+  testLab(ver).then(function () { return testTraseu(ver); }).then(function () { testLec3(ver); }).catch(function (e) { ver("excepție în testul laboratorului: " + e, false); }).then(function () {
+    out.push(n + " verificări, " + er + " erori.");
+    pre.hidden = false; pre.textContent = out.join("\n"); document.title = "TEST GATA";
+  });
+}
+function demo(h) {
+  var p = h.split("-");
+  if (p[1] === "lab") { alegeLab(); [[1, 1], [1, 3], [1, 6], [1, 10], [-1, 6], [-1, 10], [-1, 11], [-1, 15]].forEach(function (q) { lab.s = q[0]; lab.E = q[1]; lab.R = 1000; labSalveaza(); }); if (p.indexOf("b") >= 0) { lab.R = 2200; labSalveaza(); lab.R = 470; labSalveaza(); } lab.s = -1; lab.E = 11; lab.R = 1000; if (p.indexOf("b") >= 0) { lab.E = 15; lab.R = 470; } if (p.indexOf("curba") >= 0) { lab.curba = true; } if (p.indexOf("cot") >= 0) { lab.vedere = "cot"; } if (p.indexOf("dir") >= 0) { lab.vedere = "dir"; } $("lMsg").textContent = ""; labActualizeaza();
+    if (p.indexOf("anim") >= 0) { lab.sel = 6; labActualizeaza(); lab.an = { idx: 6, pas: 2, gata: true, prU: 1, prI: 1, fv: 0, fh: 0, final: false, auto: false }; var ingust = window.innerWidth < 900; lab.an.sursa = ingust ? "compact" : "tabel"; labRandC(); labGraf(labActual()); if (!ingust) { $("lTab").tBodies[0].rows[6].cells[5].classList.add("hlv"); } if (ingust) { window.scrollTo(0, $("lRandC").getBoundingClientRect().top + window.pageYOffset - bandaH() - 6); var dif = bandaSus() + 4 - $("lRandC").getBoundingClientRect().top; if (dif > 0) { window.scrollBy(0, dif); } } }
+    return; }
+  alegeEx(p[1] === "p5" ? "p5" : "p3");
+  if (p[1] === "p3" && p[2]) { $("rasp").value = p[2] === "gresit" ? "5" : "4,3"; $("verif").click(); if (p[2] === "comparat") { $("compara").click(); } if (p[3] === "dir") { $("gDir").click(); } }
+  if (p[1] === "p5" && p[2]) {
+    if (p[2] === "indiciu") { document.querySelector('[data-o="rez"]').click(); $("confirm").click(); }
+    else { document.querySelector('[data-o="dioda"]').click(); $("confirm").click(); }
+    if (p[3] === "r3") { document.querySelector('#regiuni [data-r="3"]').click(); }
+  }
+  if (p.indexOf("ac") >= 0) { $("arataAC").click(); }
+  if (p.indexOf("tastatura") >= 0) { $("rasp").focus(); }
+}
+
+/* ===== Macheta: șase puncte salvate, apoi traseul elevului pentru punctul 7 ===== */
+function sasePuncte() { alegeLab(); lab.puncte = []; lab.sel = -1; [[1, 1], [1, 3], [1, 6], [1, 10], [-1, 6], [-1, 10]].forEach(function (q) { lab.s = q[0]; lab.E = q[1]; lab.R = 1000; labSalveaza(); }); lab.s = 1; lab.E = 1; lab.R = 1000; $("lMsg").textContent = ""; labActualizeaza(); }
+function demoMacheta(h) {
+  sasePuncte();
+  if (h === "m7") { $("lInv").click(); document.querySelector('#lRapid [data-e="11"]').click(); document.querySelector('.seg3 [data-r="1000"]').click(); $("lSalv").click(); }
+  if (h === "pas2") {
+    $("lInv").click(); document.querySelector('#lRapid [data-e="11"]').click(); $("lSalv").click();
+    if (window.innerWidth < 900) { vederTel("traseaza"); }
+    lab.sel = 6; labActualizeaza(); lab.an = { idx: 6, pas: 2, gata: true, prU: 1, prI: 1, fv: 0, fh: 0, final: false, auto: false, sursa: window.innerWidth < 900 ? "compact" : "tabel" };
+    labRandC(); labGraf(labActual()); $("lcI").classList.add("hlv");
+    if (window.innerWidth >= 900) { $("lTab").tBodies[0].rows[6].cells[5].classList.add("hlv"); }
+    else { window.scrollTo(0, $("lRandC").getBoundingClientRect().top + window.pageYOffset - bandaH() - 6); }
+  }
+  if (window.innerWidth < 900 && h !== "pas2") { window.scrollTo(0, $("lab").getBoundingClientRect().top + window.pageYOffset); }
+}
+function testMacheta() {
+  var out = [], n = 0, er = 0;
+  function ver(d, ok) { n++; if (!ok) { er++; } out.push((ok ? "OK     " : "EROARE ") + d); }
+  function t(id) { return $(id).textContent.replace(/\s+/g, " ").trim(); }
+  function dorm(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+  function cand(f) { var k = 0; return (function b() { if (f() || k++ > 600) { return Promise.resolve(); } return dorm(20).then(b); })(); }
+  function inEcran(e) { var r = e.getBoundingClientRect(); return r.top >= bandaSus() - 1 && r.bottom <= window.innerHeight + 1 && r.height > 0; }
+  var tel = window.innerWidth < 900;
+  sasePuncte();
+  ver("start: șase puncte salvate", lab.puncte.length === 6 && $("lTab").tBodies[0].rows.length === 6);
+  ver("reglaje rapide directe 1, 3, 6, 10 V", Array.prototype.map.call(document.querySelectorAll("#lRapid button"), function (b) { return b.textContent; }).join("|") === "1 V|3 V|6 V|10 V");
+  ver("«Arată cum se trasează» ascuns fără punct ales", $("lTrasare").hidden);
+  if (tel) { window.scrollTo(0, $("lab").getBoundingClientRect().top + window.pageYOffset); }
+  $("lInv").click();
+  ver("reglaje rapide inverse 6, 10, 11, 15 V", Array.prototype.map.call(document.querySelectorAll("#lRapid button"), function (b) { return b.textContent; }).join("|") === "6 V|10 V|11 V|15 V");
+  document.querySelector('#lRapid [data-e="11"]').click(); document.querySelector('.seg3 [data-r="1000"]').click();
+  ver("citire imediată: U_D = −10,00 V, I_D = −1,00 mA (sursa 11,0 V)", t("lD") === "−10,00 V" && t("lI") === "−1,00 mA" && t("lEval") === "11,0 V");
+  ver("U_D, I_D și «Salvează punctul» vizibile fără derulare" + (tel ? " (telefon, «Măsoară»)" : " (tabla)"), inEcran($("lD")) && inEcran($("lI")) && inEcran($("lSalv")));
+  var y0 = window.pageYOffset;
+  $("lSalv").click();
+  ver("după salvare: «Punctul 7 salvat.», același ecran", t("lMsg") === "Punctul 7 salvat." && window.pageYOffset === y0 && $("lab").getAttribute("data-tel") === "masoara");
+  if (tel) { $("tTra").click(); ver("«Trasează»: tabelul și graficul vizibile, «Măsoară» ascuns", getComputedStyle(document.querySelector(".l-mas")).display === "none" && getComputedStyle(document.querySelector(".l-tra")).display !== "none"); }
+  else { ver("tabla: rândul 7 și graficul vizibile simultan, fără derularea paginii", inEcran($("lTab").tBodies[0].rows[6]) && inEcran($("lGraf")) && document.documentElement.scrollHeight <= window.innerHeight + 1); }
+  $("lTab").tBodies[0].rows[6].click();
+  ver("punct ales: coordonatele lângă grafic și «Arată cum se trasează» vizibil", /Punctul 7:/.test(t("lRandC")) && /−10,00 V/.test(t("lRandC")) && /−1,00 mA/.test(t("lRandC")) && !$("lTrasare").hidden);
+  lab.vit = 0.03; $("lTrasare").click();
+  return cand(function () { return lab.an && lab.an.pas === 1 && lab.an.gata; }).then(function () {
+    $("lUrm").click(); return cand(function () { return lab.an && lab.an.pas === 2 && lab.an.gata; });
+  }).then(function () {
+    ver("pasul 2: «I_D = −1,00 mA. De la 0, coboară un pătrățel.»", /ID = −1,00 mA\. De la 0, coboară un pătrățel\./.test(t("lPasTxt")));
+    ver("pasul 2: explicația, «Mai departe» și graficul în ecran", inEcran($("lPasTxt")) && inEcran($("lUrm")) && $("lGraf").getBoundingClientRect().top < window.innerHeight);
+    if (tel) {
+      $("tMas").click();
+      ver("înapoi în «Măsoară»: reglajele (inversă, 11 V, 1 kΩ), cele 7 puncte și selecția păstrate", lab.s === -1 && lab.E === 11 && lab.R === 1000 && lab.puncte.length === 7 && lab.sel === 6 && t("lD") === "−10,00 V");
+      $("tTra").click();
+      ver("din nou în «Trasează»: rândul 7 tot ales", lab.sel === 6 && /Punctul 7:/.test(t("lRandC")));
+    }
+    $("lVedereSel").value = "dir"; $("lVedereSel").dispatchEvent(new Event("change"));
+    ver("selectorul «Vedere» schimbă vederea", lab.vedere === "dir"); $("lVedereSel").value = "ans"; $("lVedereSel").dispatchEvent(new Event("change"));
+    $("lCurba").click(); ver("«Arată curba» lângă grafic", document.querySelectorAll("#lGraf .curba").length >= 1 && $("lCurba").closest(".l-graf") !== null); $("lCurba").click();
+    ver("fără derulare orizontală", document.documentElement.scrollWidth <= window.innerWidth + 1);
+    lab.vit = 1;
+    out.push(n + " verificări, " + er + " erori.");
+    var pre = $("autotest"); pre.hidden = false; pre.textContent = out.join("\n"); document.title = "TEST GATA";
+  });
+}
+if (location.hash === "#testm") { testMacheta(); }
+else if (/^#mac-/.test(location.hash)) { demoMacheta(location.hash.slice(5)); }
+if (location.hash === "#l3-p5") { alegeLectia(3); l3Alege("P5"); l3Terminal(2); l3Inverseaza(); l3Desprinde(); l3Terminal(1); l3Inverseaza(); l3Stare("functionala"); }
+if (location.hash === "#test") { autotest(); }
+else if (/^#demo-/.test(location.hash)) { demo(location.hash.slice(1)); }
+})();
+</script>
+</body>
+</html>

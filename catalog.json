@@ -345,9 +345,13 @@
                 {
                   "titlu": "Verificarea diodelor și identificarea defectelor (Lucru)",
                   "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/06-fisa-de-lucru-verificarea-diodelor-si-identificarea-defectelor.pdf"
+                },
+                {
+                  "titlu": "Trasarea caracteristicii statice (Lab)",
+                  "cale_pdf": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/11-fisa-de-laborator-trasarea-caracteristicii-statice.pdf"
                 }
               ],
-              "cale_simulator": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/studiul-diodei.html"
+              "cale_simulator": "./clasa-X/M1-Bazele-electronicii-analogice/03-00-M1-DIO01-diode-semiconductoare/studiul-diodei-V1.html"
             }
           ]
         },
